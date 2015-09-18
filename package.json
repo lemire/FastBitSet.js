@@ -1,0 +1,16 @@
+{
+  "name": "FastBitSet",
+  "description": "Speed-optimized BitSet implementation for modern browsers and JavaScript engines",
+  "keywords": ["bitmap", "bitset", "performance"],
+  "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lemire/FastBitSet.js"
+  },
+  "main": "FastBitSet.js",
+  "licenses": [{
+            "type": "Apache",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0"
+        }
+        ],
+}
