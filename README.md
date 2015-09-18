@@ -1,4 +1,4 @@
-# FastBitSet.js : Speed-optimized BitSet implementation for modern browsers and JavaScript engines
+# FastBitSet.js : a Speed-optimized BitSet implementation 
 
 FastBitSet.js is an optimized implementation of the BitSet (also called Bitmap or bit vector) data
 structure in JavaScript. It is ideal for maintaining sets of integers.
