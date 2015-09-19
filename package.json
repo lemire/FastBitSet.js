@@ -15,10 +15,9 @@
     },
 "main": "FastBitSet.js"
     ,
-"licenses":
-    [{
-"type": "Apache",
-"url": "http://www.apache.org/licenses/LICENSE-2.0"
-    }
-    ]
+"scripts":
+    {
+"test": "nodejs unit/basictests.js"
+    },
+"license": "Apache-2.0"
 }
