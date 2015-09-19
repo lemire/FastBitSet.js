@@ -34,7 +34,7 @@
 
  // Set the bit at index to true
  FastBitSet.prototype.set = function(index) {
- 	if(this.count * this.WORD_SIZE < index) {
+ 	if(this.count * this.WORD_SIZE <= index) {
  		this.resize(index)
  	}
  	this.words[(index / this.WORD_SIZE)|0] |= 1 << (index % this.WORD_SIZE);
@@ -42,7 +42,7 @@
 
  // Set the bit at index to false
  FastBitSet.prototype.clear = function(index) {
- 	if(this.count * this.WORD_SIZE < index) {
+ 	if(this.count * this.WORD_SIZE <= index) {
  		this.resize(index)
  	}
  	this.words[(index / this.WORD_SIZE)|0] &= ~(1 << (index % this.WORD_SIZE));
@@ -59,7 +59,7 @@
 
  // Is the bit at index true or false? Returns a boolean
  FastBitSet.prototype.get = function(index) {
- 	if(this.count * this.WORD_SIZE < index) {
+ 	if(this.count * this.WORD_SIZE <= index) {
  		return false;
  	}
  	var mask = (1 << (index % this.WORD_SIZE))|0;
@@ -68,8 +68,8 @@
 
  // Resize the bitset so that we can write a value at index
  FastBitSet.prototype.resize = function(index) {
- 	if(this.count * this.WORD_SIZE < index) {
- 		var newcount = (index + this.WORD_SIZE - 1) / this.WORD_SIZE;
+ 	if(this.count * this.WORD_SIZE <= index) {
+ 		var newcount = (index + this.WORD_SIZE) / this.WORD_SIZE;
  		if(newcount < 1024) {
  			newcount = newcount * 2;
  		} else if(newcount < 4096){
@@ -104,3 +104,5 @@
      }
      return answer;
  };
+
+module['exports'] = FastBitSet;
