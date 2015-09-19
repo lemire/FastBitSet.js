@@ -5,43 +5,73 @@
  *
  * Speed-optimized BitSet implementation for modern browsers and JavaScript engines.
  *
+ * A BitSet is an ideal data structure to implement a Set when values being stored are
+ * reasonably small integers. It can be orders of magnitude faster than an generic Set implementation.
+ * The FastBitSet implementation optimizes for speed, leveraging commonly available features
+ * like typed arrays.
+ *
  * Simple usage :
  *
  *  var b = new FastBitSet();// initially empty
  *         // will throw exception if typed arrays are not supported
- *  b.set(1);// add the value "1"
- *  b.get(1); // check that the value is present! (will return true)
+ *  b.add(1);// add the value "1"
+ *  b.has(1); // check that the value is present! (will return true)
+ *  b.add(2);
+ *  b.add(10);
+ *  b.array(); // would return [1,2,10]
+ *
+ *  var c = new FastBitSet([1,2,3,10]); // create bitset initialized with values 1,2,3,10
  *
  */
  "use strict";
 
- // size in bits of the bitset (or nothing for default)
+ function isIterable(obj) {
+   if (obj == null) {
+     return false
+   }
+   return obj[Symbol.iterator] !== undefined
+ }
+ // you can provide an iterable
  // an exception is thrown if typed arrays are not supported
- function FastBitSet (size) {
- 	size = typeof size !== 'undefined' ? size : this.WORD_SIZE;
- 	this.count = ((size + this.WORD_SIZE - 1) / this.WORD_SIZE) | 0; // number of words in use
+ function FastBitSet (iterable) {
  	if(typeof Uint32Array === 'function') {
- 	    this.words = new Uint32Array(this.count);
+ 	    this.words = new Uint32Array(4);
+			this.count = 0;
+			if(isIterable(iterable)) {
+			  for (var key of iterable) {
+          this.add(key);
+        }
+			}
  	} else {
  	    console.log("Your JavaScript engine does not support typed arrays.");
  	    throw "Uint32Array unsupported";
  	}
  }
+ FastBitSet.prototype[Symbol.iterator] = 1;
+
+
 
  FastBitSet.prototype.WORD_SIZE = 32|0;
 
 
 
  // Set the bit at index to true
- FastBitSet.prototype.set = function(index) {
+ FastBitSet.prototype.add = function(index) {
  	if(this.count * this.WORD_SIZE <= index) {
  		this.resize(index)
  	}
  	this.words[(index / this.WORD_SIZE)|0] |= 1 << (index % this.WORD_SIZE);
  };
 
+ // Remove all values
+ FastBitSet.prototype.clear = function() {
+	 this.count = 0;
+	 this.words = new Uint32Array(count);
+ };
+
+
  // Set the bit at index to false
- FastBitSet.prototype.clear = function(index) {
+ FastBitSet.prototype.remove = function(index) {
  	if(this.count * this.WORD_SIZE <= index) {
  		this.resize(index)
  	}
@@ -50,15 +80,17 @@
 
  // Return true if no bit is set
  FastBitSet.prototype.isEmpty = function(index) {
-     for( var i = 0; i < this.count; i++) {
+     for( var  i = 0; i < this.count; i++) {
          if(this.words[i] !== 0) return false;
      }
      return true;
  };
 
 
+
+
  // Is the bit at index true or false? Returns a boolean
- FastBitSet.prototype.get = function(index) {
+ FastBitSet.prototype.has = function(index) {
  	if(this.count * this.WORD_SIZE <= index) {
  		return false;
  	}
@@ -68,20 +100,24 @@
 
  // Resize the bitset so that we can write a value at index
  FastBitSet.prototype.resize = function(index) {
- 	if(this.count * this.WORD_SIZE <= index) {
- 		var newcount = (index + this.WORD_SIZE) / this.WORD_SIZE;
- 		if(newcount < 1024) {
- 			newcount = newcount * 2;
- 		} else if(newcount < 4096){
- 			newcount = 3 * newcount / 2;
+	if(this.count * this.WORD_SIZE > index) {
+		return; //nothing to do
+	}
+	this.count = (index + this.WORD_SIZE) / this.WORD_SIZE;
+ 	if(this.words.length * this.WORD_SIZE <= index) {
+ 		var newsize  = this.count;
+ 		if(newsize  < 1024) {
+ 			newsize  = newsize  * 2;
+ 		} else if(newsize  < 4096){
+ 			newsize  = 3 * newsize  / 2;
  		} else {
- 			newcount = 4 * newcount / 5;
+ 			newsize  = 4 * newsize  / 5;
  		}
- 		var newwords = new Uint32Array(newcount);
+ 		var newwords = new Uint32Array(newsize);
  		newwords.set(this.words);
  		this.words = newwords;
- 		this.count = newcount;
  	}
+
  };
 
 
@@ -97,12 +133,31 @@
  }
 
  // How many set bits?
- FastBitSet.prototype.cardinality = function(index) {
+ FastBitSet.prototype.size = function() {
      var answer = 0|0;
-     for( var i = 0; i < this.count; i++) {
+		 var c = this.count|0;
+     for( var  i = 0|0; i < c; i++) {
          answer += this.HammingWeight(this.words[i]);
      }
      return answer;
  };
+
+ // Return an array with the set bit locations (values)
+ // an iterator would be preferable but JavaScript is still too immature
+ FastBitSet.prototype.array = function() {
+	 var answer = new Array(this.size());
+	 var pos = 0|0;
+	 var c = this.count|0;
+	 for (var k = 0|0; k < c; ++k) {
+			 var w =  this.words[k];
+			 while (w != 0) {
+					 var t = w & -w;
+					 answer[pos++] = k * this.WORD_SIZE + this.HammingWeight(t - 1);
+					 w ^= t;
+			 }
+	 }
+	 return answer;
+ };
+
 
 module['exports'] = FastBitSet;
