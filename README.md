@@ -46,7 +46,7 @@ Testing
 
 Using node.js, you can test the code as follows...
 
-      $ node unit/basictests.py
+      $ nodejs unit/basictests.py
 
 Alternatives
 ===
