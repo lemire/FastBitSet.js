@@ -39,7 +39,10 @@ var b = new FastBitSet();// initially empty
          // will throw exception if typed arrays are not supported
 b.set(1);// add the value "1"
 ```
+npm install
+===
 
+      $ npm install fastbitset
 
 Testing
 ===
