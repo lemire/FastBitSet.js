@@ -17,10 +17,18 @@
  *  b.add(1);// add the value "1"
  *  b.has(1); // check that the value is present! (will return true)
  *  b.add(2);
+ *  console.log(""+b);// should display {1,2}
  *  b.add(10);
  *  b.array(); // would return [1,2,10]
  *
  *  var c = new FastBitSet([1,2,3,10]); // create bitset initialized with values 1,2,3,10
+ *  c.difference(b); // from c, remove elements that are in b
+ *  var su = c.union_size(b);// compute the size of the union (bitsets are unchanged)
+ * c.union(b); // c will contain all elements that are in c and b
+ * var s1 = c.intersection_size(b);// compute the size of the intersection (bitsets are unchanged)
+ * c.intersection(b); // c will only contain elements that are in both c and b
+ * c = b.clone(); // create a (deep) copy of b and assign it to c.
+ * c.equals(b); // check whether c and b are equal
  *
  */
  "use strict";
@@ -35,12 +43,14 @@
  // an exception is thrown if typed arrays are not supported
  function FastBitSet (iterable) {
  	if(typeof Uint32Array === 'function') {
- 	    this.words = new Uint32Array(4);
-			this.count = 0;
+			this.count = 0|0;
 			if(isIterable(iterable)) {
+				this.words = new Uint32Array(4);
 			  for (var key of iterable) {
           this.add(key);
         }
+			} else {
+				this.words = new Uint32Array(0);
 			}
  	} else {
  	    console.log("Your JavaScript engine does not support typed arrays.");
@@ -65,7 +75,7 @@
 
  // Remove all values
  FastBitSet.prototype.clear = function() {
-	 this.count = 0;
+	 this.count = 0|0;
 	 this.words = new Uint32Array(count);
  };
 
@@ -103,7 +113,7 @@
 	if(this.count * this.WORD_SIZE > index) {
 		return; //nothing to do
 	}
-	this.count = (index + this.WORD_SIZE) / this.WORD_SIZE;
+	this.count = (index + this.WORD_SIZE) / this.WORD_SIZE | 0;
  	if(this.words.length * this.WORD_SIZE <= index) {
  		var newsize  = this.count;
  		if(newsize  < 1024) {
@@ -122,7 +132,7 @@
 
 
  // fast function to compute the Hamming weight of a 32-bit unsigned integer
- FastBitSet.prototype.HammingWeight = function(x) {
+ FastBitSet.prototype.hamming_weight = function(x) {
      x = x | 0;
      x -= ((x >>> 1) & 0x55555555);
      var m2 = 0x33333333;
@@ -137,7 +147,7 @@
      var answer = 0|0;
 		 var c = this.count|0;
      for( var  i = 0|0; i < c; i++) {
-         answer += this.HammingWeight(this.words[i]);
+         answer += this.hamming_weight(this.words[i]);
      }
      return answer;
  };
@@ -152,12 +162,103 @@
 			 var w =  this.words[k];
 			 while (w != 0) {
 					 var t = w & -w;
-					 answer[pos++] = k * this.WORD_SIZE + this.HammingWeight(t - 1);
+					 answer[pos++] = k * this.WORD_SIZE + this.hamming_weight(t - 1);
 					 w ^= t;
 			 }
 	 }
 	 return answer;
  };
+
+
+   // Computes the intersection between this bitset and another one,
+ 	// the current bitmap is modified
+   FastBitSet.prototype.clone = function() {
+		 var clone = Object.create(FastBitSet.prototype);
+		 clone.count = this.count;
+		 clone.words = new Uint32Array(this.words);
+		 return clone;
+ 	};
+
+  // Computes the intersection between this bitset and another one,
+	// the current bitmap is modified
+  FastBitSet.prototype.intersection = function(otherbitmap) {
+		var newcount = Math.min(this.count,otherbitmap.count);
+		for (var k = 0|0; k < newcount; ++k) {
+			this.words[k] &= otherbitmap.words[k];
+		}
+		for (var k = newcount; k < this.count; ++k) {
+			this.words[k] = 0;
+		}
+		this.count = newcount;
+	};
+
+	// Computes the size of the intersection between this bitset and another one
+  FastBitSet.prototype.intersection_size = function(otherbitmap) {
+		var newcount = Math.min(this.count,otherbitmap.count);
+		var answer = 0|0;
+		for (var k = 0|0; k < newcount; ++k) {
+			answer += this.hamming_weight(this.words[k] & otherbitmap.words[k]);
+		}
+		return answer;
+	};
+
+	// Computes the intersection between this bitset and another one,
+	// the current bitmap is modified
+  FastBitSet.prototype.equals = function(otherbitmap) {
+		if(this.count != otherbitmap.count) return false;
+		for (var k = 0|0; k < this.count; ++k) {
+			if(this.words[k] != otherbitmap.words[k]) return false;
+		}
+		return true;
+	};
+
+
+	// Computes the difference between this bitset and another one,
+	// the current bitset is modified
+	FastBitSet.prototype.difference = function(otherbitmap) {
+		var newcount = Math.min(this.count,otherbitmap.count);
+		for (var k = 0|0; k < newcount; ++k) {
+			this.words[k] &= ~otherbitmap.words[k];
+		}
+	};
+
+	// Returns a string representation
+	FastBitSet.prototype.toString = function() {
+		return "{"+this.array().join(",")+"}";
+	};
+
+	// Computes the union between this bitset and another one,
+	// the current bitset is modified
+	FastBitSet.prototype.union = function(otherbitmap) {
+		var mcount = Math.min(this.count,otherbitmap.count);
+		for (var k = 0|0; k < mcount; ++k) {
+			this.words[k] |= otherbitmap.words[k];
+		}
+		if(this.count < otherbitmap.count) {
+			this.resize(otherbitmap.count * this.WORD_SIZE - 1);
+			var sl = otherbitmap.words.subarray(mcount,otherbitmap.count);
+			this.words.set(sl,mcount);
+			this.count = otherbitmap.count;
+		}
+	};
+	// Computes the size union between this bitset and another one
+  FastBitSet.prototype.union_size = function(otherbitmap) {
+		var mcount = Math.min(this.count,otherbitmap.count);
+		var answer = 0|0;
+		for (var k = 0|0; k < mcount; ++k) {
+			answer += this.hamming_weight(this.words[k] | otherbitmap.words[k]);
+		}
+		if(this.count < otherbitmap.count) {
+			for(var k = mcount ; k < otherbitmap.count; ++k) {
+				answer += this.hamming_weight(otherbitmap.words[k]);
+			}
+		} else {
+			for(var k = mcount ; k < this.count; ++k) {
+				answer += this.hamming_weight(this.words[k]);
+			}
+		}
+		return answer;
+	};
 
 
 module['exports'] = FastBitSet;
