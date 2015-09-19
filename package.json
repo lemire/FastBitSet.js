@@ -1,23 +1,28 @@
 {
-"name": "FastBitSet"
-    ,
-"description": "Speed-optimized BitSet implementation for modern browsers and JavaScript engines"
-    ,
-"keywords":
-    ["bitmap", "bitset", "performance"],
-"version": "0.0.1"
-    ,
-"repository":
-    {
-"type": "git"
-        ,
-"url": "https://github.com/lemire/FastBitSet.js"
-    },
-"main": "FastBitSet.js"
-    ,
-"scripts":
-    {
-"test": "nodejs unit/basictests.js"
-    },
-"license": "Apache-2.0"
+  "name": "fastbitset",
+  "description": "Speed-optimized BitSet implementation for modern browsers and JavaScript engines",
+  "keywords": [
+    "bitmap",
+    "bitset",
+    "performance"
+  ],
+  "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lemire/FastBitSet.js.git"
+  },
+  "main": "FastBitSet.js",
+  "scripts": {
+    "test": "test unit/basictests.js"
+  },
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/lemire/FastBitSet.js/issues"
+  },
+  "homepage": "https://github.com/lemire/FastBitSet.js#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "mocha": "^2.3.2"
+  },
+  "author": "Daniel Lemire <lemire@gmail.com> (http://lemire.me/en/)"
 }
