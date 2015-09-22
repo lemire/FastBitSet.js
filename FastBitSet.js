@@ -179,8 +179,7 @@ FastBitSet.prototype.array = function() {
 };
 
 
-// Computes the intersection between this bitset and another one,
-// the current bitmap is modified
+// Creates a copy of this bitmap
 FastBitSet.prototype.clone = function() {
     var clone = Object.create(FastBitSet.prototype);
     clone.count = this.count;
