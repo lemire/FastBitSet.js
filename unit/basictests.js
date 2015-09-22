@@ -1,4 +1,6 @@
- "use strict";
+/* This script expects node.js */
+ 
+"use strict";
 
 var FastBitSet = require("../FastBitSet.js");
 

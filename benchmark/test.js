@@ -1,9 +1,13 @@
+/* performance benchmark */
+/* This script expects node.js */
+
 "use strict";
 
 var FastBitSet = require("../FastBitSet.js");
 var BitSet = require("bitset.js");
 var Benchmark = require('benchmark');
-var tBitSet = require("bitset")
+var tBitSet = require("bitset");
+var os = require('os');
 
 function CreateBench() {
     console.log("starting bitmap creation benchmark");
@@ -26,7 +30,7 @@ function CreateBench() {
         }
         return b;
     }  )
-    .add('BitSet', function() {
+    .add('infusion.BitSet.js', function() {
         var bs = new BitSet();
         for(var i = 0 ; i < 1024  ; i++) {
             bs = bs.set(3*i+5,true);
@@ -69,7 +73,7 @@ function CardBench() {
     var ms = suite.add('FastBitSet', function() {
         return b.size();
     }  )
-    .add('BitSet', function() {
+    .add('infusion.BitSet.js', function() {
         return bs.cardinality();
     })
     .add('tdegrunt.BitSet', function() {
@@ -103,7 +107,7 @@ function QueryBench() {
     var ms = suite.add('FastBitSet', function() {
         return b.has(122);
     }  )
-    .add('BitSet', function() {
+    .add('infusion.BitSet.js', function() {
         return bs.get(122);
     })
 		.add('FastBitSet2', function() {
@@ -149,7 +153,7 @@ function AndBench() {
     var ms = suite.add('FastBitSet (creates new bitset)', function() {
         return b1.clone().intersection(b2);
     }  )
-    .add('BitSet (creates new bitset)', function() {
+    .add('infusion.BitSet.js (creates new bitset)', function() {
         return bs1.and(bs2);
     })
     .add('tdegrunt.BitSet (inplace)', function() {
@@ -195,7 +199,7 @@ function OrBench() {
     var ms = suite.add('FastBitSet (creates new bitset)', function() {
         return b1.clone().union(b2);
     }  )
-    .add('BitSet (creates new bitset)', function() {
+    .add('infusion.BitSet.js (creates new bitset)', function() {
         return bs1.or(bs2);
     })
     .add('tdegrunt.BitSet (inplace)', function() {
@@ -241,7 +245,7 @@ function DifferenceBench() {
     var ms = suite.add('FastBitSet (creates new bitset)', function() {
         return b1.clone().difference(b2);
     }  )
-    .add('BitSet (creates new bitset)', function() {
+    .add('infusion.BitSet.js (creates new bitset)', function() {
         return bs1.and(bs2.not());
     })
     .add('tdegrunt.BitSet (inplace)', function() {
@@ -265,7 +269,9 @@ var main = function() {
     console.log("Benchmarking against:");
     console.log("infusion.BitSet.js from https://github.com/infusion/BitSet.js");
     console.log("tdegrunt.BitSet from https://github.com/tdegrunt/bitset");
-    console.log("Platform: "+process.platform+" "+process.arch);
+    console.log("Platform: "+process.platform+" "+os.release()+" "+process.arch);
+    console.log(os.cpus()[0]["model"]);
+    console.log("Node version "+process.versions.node+", v8 version "+process.versions.v8);
     console.log();
 
     DifferenceBench();
