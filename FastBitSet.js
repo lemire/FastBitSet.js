@@ -170,14 +170,7 @@ FastBitSet.prototype.array = function() {
         var w =  this.words[k];
         while (w != 0) {
             var t = w & -w;
-            var x = t;
-            x -= ((x >>> 1) & 0x55555555);
-            var m2 = 0x33333333;
-            x = (x & m2) + ((x >> 2) & m2);
-            x = (x + (x >> 4)) & 0x0f0f0f0f;
-            x += x >> 8;
-            x += x >> 16;
-            answer[pos++] = k * this.WORD_SIZE + (x & 0x3f);
+            answer[pos++] = k * this.WORD_SIZE + this.hamming_weight(t - 1);
             w ^= t;
         }
     }
