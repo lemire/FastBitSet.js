@@ -15,39 +15,52 @@ Is it faster?
 
 It can be quite fast compared to competitive alternatives :
 
-     FastBitSet.js/benchmark$ nodejs test.js
+```bash
+FastBitSet.js/benchmark$ nodejs test.js
+Benchmarking against:
+infusion.BitSet.js from https://github.com/infusion/BitSet.js
+tdegrunt.BitSet from https://github.com/tdegrunt/bitset
+Platform: linux x64
 
-     starting difference query benchmark
-     FastBitSet x 1,446,097 ops/sec ±1.17% (93 runs sampled)
-     BitSet x 270,655 ops/sec ±0.25% (102 runs sampled)
-     Fastest is FastBitSet
+starting difference query benchmark
+FastBitSet (creates new bitset) x 1,345,935 ops/sec ±0.72% (91 runs sampled)
+BitSet (creates new bitset) x 267,798 ops/sec ±0.24% (102 runs sampled)
+tdegrunt.BitSet (inplace) x 3,072,864 ops/sec ±0.12% (103 runs sampled)
+FastBitSet (inplace) x 5,855,271 ops/sec ±0.44% (102 runs sampled)
+Fastest is FastBitSet (inplace)
 
-     starting intersection query benchmark
-     FastBitSet x 1,197,440 ops/sec ±1.67% (90 runs sampled)
-     BitSet x 481,867 ops/sec ±0.06% (103 runs sampled)
-     Fastest is FastBitSet
+starting intersection query benchmark
+FastBitSet (creates new bitset) x 1,158,913 ops/sec ±1.69% (85 runs sampled)
+BitSet (creates new bitset) x 464,984 ops/sec ±0.05% (102 runs sampled)
+tdegrunt.BitSet (inplace) x 774,494 ops/sec ±0.04% (101 runs sampled)
+FastBitSet (inplace) x 5,772,496 ops/sec ±0.03% (103 runs sampled)
+Fastest is FastBitSet (inplace)
 
-     starting union query benchmark
-     FastBitSet x 465,480 ops/sec ±2.61% (73 runs sampled)
-     BitSet x 112,931 ops/sec ±0.35% (104 runs sampled)
-     Fastest is FastBitSet
-     
-     starting cardinality benchmark
-     FastBitSet x 2,619,372 ops/sec ±0.02% (101 runs sampled)
-     BitSet x 886,358 ops/sec ±0.21% (100 runs sampled)
-     Fastest is FastBitSet
-     
-     starting bitmap creation benchmark
-     FastBitSet x 95,298 ops/sec ±0.18% (99 runs sampled)
-     BitSet x 137 ops/sec ±0.75% (23 runs sampled)
-     Fastest is FastBitSet
+starting union query benchmark
+FastBitSet (creates new bitset) x 465,877 ops/sec ±2.93% (73 runs sampled)
+BitSet (creates new bitset) x 108,882 ops/sec ±0.54% (102 runs sampled)
+tdegrunt.BitSet (inplace) x 1,850,252 ops/sec ±0.21% (101 runs sampled)
+FastBitSet (inplace) x 2,525,279 ops/sec ±0.16% (104 runs sampled)
+Fastest is FastBitSet (inplace)
 
-     starting query benchmark     
-     FastBitSet x 80,480,295 ops/sec ±0.23% (104 runs sampled)
-     BitSet x 64,405,701 ops/sec ±0.34% (93 runs sampled)
-     Fastest is FastBitSet
+starting cardinality benchmark
+FastBitSet x 2,556,262 ops/sec ±0.04% (102 runs sampled)
+BitSet x 881,624 ops/sec ±0.26% (100 runs sampled)
+tdegrunt.BitSet x 52,534 ops/sec ±0.58% (104 runs sampled)
+Fastest is FastBitSet
 
-(The BitSet package is available at https://github.com/infusion/BitSet.js.) 
+starting bitmap creation benchmark
+FastBitSet x 90,980 ops/sec ±0.81% (98 runs sampled)
+BitSet x 136 ops/sec ±0.31% (89 runs sampled)
+tdegrunt.BitSet x 81,738 ops/sec ±0.32% (101 runs sampled)
+Fastest is FastBitSet
+
+starting query benchmark
+FastBitSet x 82,342,683 ops/sec ±0.75% (102 runs sampled)
+BitSet x 61,559,497 ops/sec ±0.07% (97 runs sampled)
+tdegrunt.BitSet x 75,025,118 ops/sec ±0.01% (104 runs sampled)
+Fastest is FastBitSet
+```
 
 Usage
 ===
