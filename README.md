@@ -41,7 +41,8 @@ It can be quite fast compared to competitive alternatives :
      FastBitSet x 95,298 ops/sec ±0.18% (99 runs sampled)
      BitSet x 137 ops/sec ±0.75% (23 runs sampled)
      Fastest is FastBitSet
-     
+
+     starting query benchmark     
      FastBitSet x 80,480,295 ops/sec ±0.23% (104 runs sampled)
      BitSet x 64,405,701 ops/sec ±0.34% (93 runs sampled)
      Fastest is FastBitSet
