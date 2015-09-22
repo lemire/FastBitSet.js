@@ -62,6 +62,7 @@ FastBitSet.prototype[Symbol.iterator] = 1;
 
 
 FastBitSet.prototype.WORD_SIZE = 32|0;
+FastBitSet.prototype.LOG_WORD_SIZE = 5|0;
 
 
 
@@ -70,7 +71,7 @@ FastBitSet.prototype.add = function(index) {
     if(this.count * this.WORD_SIZE <= index) {
         this.resize(index)
     }
-    this.words[(index / this.WORD_SIZE)|0] |= 1 << (index % this.WORD_SIZE);
+    this.words[ index >> this.LOG_WORD_SIZE] |= 1 << (index % this.WORD_SIZE);
 };
 
 // Remove all values
@@ -85,7 +86,7 @@ FastBitSet.prototype.remove = function(index) {
     if(this.count * this.WORD_SIZE <= index) {
         this.resize(index)
     }
-    this.words[(index / this.WORD_SIZE)|0] &= ~(1 << (index % this.WORD_SIZE));
+    this.words[index  >> this.LOG_WORD_SIZE] &= ~(1 << index);
 };
 
 // Return true if no bit is set
@@ -97,16 +98,11 @@ FastBitSet.prototype.isEmpty = function(index) {
 };
 
 
-
-
 // Is the bit at index true or false? Returns a boolean
 FastBitSet.prototype.has = function(index) {
-    if(this.count * this.WORD_SIZE <= index) {
-        return false;
-    }
-    var mask = (1 << (index % this.WORD_SIZE))|0;
-    return (this.words[(index / this.WORD_SIZE)|0] & mask) !== 0;
+    return (this.words[index  >> this.LOG_WORD_SIZE] & (1 << index)) !== 0;
 };
+
 
 // Resize the bitset so that we can write a value at index
 FastBitSet.prototype.resize = function(index) {
@@ -170,7 +166,7 @@ FastBitSet.prototype.array = function() {
         var w =  this.words[k];
         while (w != 0) {
             var t = w & -w;
-            answer[pos++] = k * this.WORD_SIZE + this.hamming_weight(t - 1);
+            answer[pos++] = (k << this.LOG_WORD_SIZE) + this.hamming_weight(t - 1);
             w ^= t;
         }
     }
