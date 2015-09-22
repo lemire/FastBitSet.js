@@ -2,11 +2,11 @@
 
 A BitSet  (also called Bitmap or bit vector) is an ideal data structure to implement a
 set when values being stored are reasonably small integers. It can be orders of magnitude
-faster than an generic set implementation. Moreover, a BitSet has fast support for set
+faster than a generic set implementation. Moreover, a BitSet has fast support for set
 operations (union, difference, intersection).
 
 The FastBitSet.js implementation optimizes for speed, leveraging commonly available features
-like typed arrays. It should be supported by most of the modern browsers and JavaScript
+like typed arrays. It can be several times faster than competitive alternatives. It should be supported by most of the modern browsers and JavaScript
 engines.  It is ideal for maintaining sets of integers when performance matters.
 
 
