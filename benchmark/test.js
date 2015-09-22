@@ -110,9 +110,6 @@ function QueryBench() {
     .add('infusion.BitSet.js', function() {
         return bs.get(122);
     })
-		.add('FastBitSet2', function() {
-        return b.hast(122);
-    })
     .add('tdegrunt.BitSet', function() {
         return bt.get(122);
     })
