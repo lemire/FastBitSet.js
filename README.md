@@ -16,6 +16,21 @@ Is it faster?
 It can be quite fast compared to competitive alternatives :
 
      FastBitSet.js/benchmark$ nodejs test.js
+
+     starting difference query benchmark
+     FastBitSet x 1,446,097 ops/sec ±1.17% (93 runs sampled)
+     BitSet x 270,655 ops/sec ±0.25% (102 runs sampled)
+     Fastest is FastBitSet
+
+     starting intersection query benchmark
+     FastBitSet x 1,197,440 ops/sec ±1.67% (90 runs sampled)
+     BitSet x 481,867 ops/sec ±0.06% (103 runs sampled)
+     Fastest is FastBitSet
+
+     starting union query benchmark
+     FastBitSet x 465,480 ops/sec ±2.61% (73 runs sampled)
+     BitSet x 112,931 ops/sec ±0.35% (104 runs sampled)
+     Fastest is FastBitSet
      
      starting cardinality benchmark
      FastBitSet x 2,619,372 ops/sec ±0.02% (101 runs sampled)

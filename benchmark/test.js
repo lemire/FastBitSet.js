@@ -4,56 +4,6 @@ var FastBitSet = require("../FastBitSet.js");
 var BitSet = require("bitset.js");
 var Benchmark = require('benchmark');
 
-// Return an array with the set bit locations (values)
-// an iterator would be preferable but JavaScript is still too immature
-FastBitSet.prototype.array2 = function() {
-    var answer = new Array(this.size());
-    var pos = 0|0;
-    var c = this.count|0;
-    for (var k = 0|0; k < c; ++k) {
-        var w =  this.words[k];
-        while (w != 0) {
-            var t = w & -w;
-						var x = t;
-						x -= ((x >>> 1) & 0x55555555);
-						var m2 = 0x33333333;
-						x = (x & m2) + ((x >> 2) & m2);
-						x = (x + (x >> 4)) & 0x0f0f0f0f;
-						x += x >> 8;
-						x += x >> 16;
-            answer[pos++] = k * this.WORD_SIZE + (x & 0x3f);
-            w ^= t;
-        }
-    }
-    return answer;
-};
-
-
-
-function ArrayBench() {
-    console.log("starting array extraction benchmark");
-    var b = new FastBitSet();
-    for(var i = 0 ; i < 1024  ; i++) {
-        b.add(3*i+5);
-    }
-    var suite = new Benchmark.Suite();
-    // add tests
-    var ms = suite.add('FastBitSet', function() { return b.array();
-    }  )
-		.add('FastBitSet2', function() { return b.array2();
-    }  )
-    // add listeners
-    .on('cycle', function(event) {
-        console.log(String(event.target));
-    })
-    .on('complete', function() {
-        console.log('Fastest is ' + this.filter('fastest').pluck('name'));
-    })
-    // run async
-.run({ 'async': false });
-}
-
-
 
 function CreateBench() {
     console.log("starting bitmap creation benchmark");
@@ -152,7 +102,7 @@ function AndBench() {
     console.log("starting intersection query benchmark");
     var b1 = new FastBitSet();
     var bs1 = new BitSet();
-		var b2 = new FastBitSet();
+    var b2 = new FastBitSet();
     var bs2 = new BitSet();
 
     for(var i = 0 ; i < 1024  ; i++) {
@@ -186,7 +136,7 @@ function OrBench() {
     console.log("starting union query benchmark");
     var b1 = new FastBitSet();
     var bs1 = new BitSet();
-		var b2 = new FastBitSet();
+    var b2 = new FastBitSet();
     var bs2 = new BitSet();
 
     for(var i = 0 ; i < 1024  ; i++) {
@@ -220,7 +170,7 @@ function DifferenceBench() {
     console.log("starting difference query benchmark");
     var b1 = new FastBitSet();
     var bs1 = new BitSet();
-		var b2 = new FastBitSet();
+    var b2 = new FastBitSet();
     var bs2 = new BitSet();
 
     for(var i = 0 ; i < 1024  ; i++) {
