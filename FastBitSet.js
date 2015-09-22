@@ -148,7 +148,14 @@ FastBitSet.prototype.size = function() {
     var answer = 0|0;
     var c = this.count|0;
     for( var  i = 0|0; i < c; i++) {
-        answer += this.hamming_weight(this.words[i]);
+        var x = this.words[i];
+        x -= ((x >>> 1) & (0x55555555|0));
+        var m2 = (0x33333333|0);
+        x = (x & m2) + ((x >> 2) & m2);
+        x = (x + (x >> 4)) & (0x0f0f0f0f|0);
+        x += x >> 8;
+        x += x >> 16;
+        answer += x & 0x3f;
     }
     return answer;
 };
@@ -163,6 +170,7 @@ FastBitSet.prototype.array = function() {
         var w =  this.words[k];
         while (w != 0) {
             var t = w & -w;
+            // could be faster by inlining hamming_weight
             answer[pos++] = k * this.WORD_SIZE + this.hamming_weight(t - 1);
             w ^= t;
         }
@@ -198,6 +206,7 @@ FastBitSet.prototype.intersection_size = function(otherbitmap) {
     var newcount = Math.min(this.count,otherbitmap.count);
     var answer = 0|0;
     for (var k = 0|0; k < newcount; ++k) {
+        // could run faster by inlining hamming_weight
         answer += this.hamming_weight(this.words[k] & otherbitmap.words[k]);
     }
     return answer;
@@ -247,14 +256,17 @@ FastBitSet.prototype.union_size = function(otherbitmap) {
     var mcount = Math.min(this.count,otherbitmap.count);
     var answer = 0|0;
     for (var k = 0|0; k < mcount; ++k) {
+        // could run faster by inlining hamming_weight
         answer += this.hamming_weight(this.words[k] | otherbitmap.words[k]);
     }
     if(this.count < otherbitmap.count) {
         for(var k = mcount ; k < otherbitmap.count; ++k) {
+            // could inline hamming weight call for speed
             answer += this.hamming_weight(otherbitmap.words[k]);
         }
     } else {
         for(var k = mcount ; k < this.count; ++k) {
+            // could inline hamming weight for speed
             answer += this.hamming_weight(this.words[k]);
         }
     }

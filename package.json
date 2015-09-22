@@ -20,7 +20,9 @@
     "url": "https://github.com/lemire/FastBitSet.js/issues"
   },
   "homepage": "https://github.com/lemire/FastBitSet.js#readme",
-  "dependencies": {},
+  "dependencies": {
+    "benchmark": "^1.0.0"
+  },
   "devDependencies": {
     "mocha": "^2.3.2"
   },

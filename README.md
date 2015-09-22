@@ -9,6 +9,30 @@ The FastBitSet.js implementation optimizes for speed, leveraging commonly availa
 like typed arrays. It should be supported by most of the modern browsers and JavaScript
 engines.  It is ideal for maintaining sets of integers when performance matters.
 
+
+Is it faster?
+===
+
+It can be quite fast compared to competitive alternatives :
+
+     FastBitSet.js/benchmark$ nodejs test.js
+     
+     starting cardinality benchmark
+     FastBitSet x 2,619,372 ops/sec ±0.02% (101 runs sampled)
+     BitSet x 886,358 ops/sec ±0.21% (100 runs sampled)
+     Fastest is FastBitSet
+     
+     starting bitmap creation benchmark
+     FastBitSet x 95,298 ops/sec ±0.18% (99 runs sampled)
+     BitSet x 137 ops/sec ±0.75% (23 runs sampled)
+     Fastest is FastBitSet
+     
+     FastBitSet x 80,480,295 ops/sec ±0.23% (104 runs sampled)
+     BitSet x 64,405,701 ops/sec ±0.34% (93 runs sampled)
+     Fastest is FastBitSet
+
+(The BitSet package is available at https://github.com/infusion/BitSet.js.) 
+
 Usage
 ===
 
@@ -51,8 +75,5 @@ Using node.js, you can test the code as follows...
 
       $ nodejs unit/basictests.js
 
-Alternatives
-===
 
 
-See https://github.com/infusion/BitSet.js
