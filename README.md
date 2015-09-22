@@ -34,7 +34,7 @@ c.equals(b); // check whether c and b are equal
 If you are using node.js, you need to import the module:
 
 ```javascript
-var FastBitSet = require("FastBitSet.js");
+var FastBitSet = require("FastBitSet");
 var b = new FastBitSet();// initially empty
          // will throw exception if typed arrays are not supported
 b.set(1);// add the value "1"
