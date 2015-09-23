@@ -51,9 +51,10 @@ npm install
 Testing
 ===
 
-Using node.js, you can test the code as follows...
+Using node.js (npm), you can test the code as follows...
 
-      $ nodejs unit/basictests.js
+      $ npm install mocha
+      $ npm test
 
 
 
