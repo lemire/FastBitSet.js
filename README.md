@@ -127,7 +127,7 @@ FastBitSet (fast way) x 2,992,401 ops/sec ±0.01% (103 runs sampled)
 mattkrick.fast-bitset (creates new bitset) x 351,309 ops/sec ±1.87% (91 runs sampled)
 Fastest is FastBitSet (fast way)
 
-starting union cardinality query benchmark
+starting difference cardinality query benchmark
 FastBitSet (creates new bitset) x 267,774 ops/sec ±1.51% (93 runs sampled)
 infusion.BitSet.js (creates new bitset) x 34,177 ops/sec ±0.04% (102 runs sampled)
 FastBitSet (fast way) x 2,837,819 ops/sec ±0.01% (103 runs sampled)
