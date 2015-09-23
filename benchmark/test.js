@@ -210,12 +210,12 @@ function AndBench() {
     .add('infusion.BitSet.js (creates new bitset)', function() {
         return bs1.and(bs2);
     })
-    .add('tdegrunt.BitSet (inplace)', function() {
+    /*.add('tdegrunt.BitSet (inplace)', function() {
         return bt1.and(bt2);
     })
     .add('FastBitSet (inplace)', function() {
         return b1.intersection(b2);
-    }  )
+    }  )*/
     .add('mattkrick.fast-bitset', function() {
         return fb1.and(fb2);
     })
@@ -419,12 +419,12 @@ function OrBench() {
     .add('infusion.BitSet.js (creates new bitset)', function() {
         return bs1.or(bs2);
     })
-    .add('tdegrunt.BitSet (inplace)', function() {
+    /*.add('tdegrunt.BitSet (inplace)', function() {
         return bt1.or(bt2);
     })
     .add('FastBitSet (inplace)', function() {
         return b1.union(b2);
-    }  )
+    }  )*/
     .add('mattkrick.fast-bitset', function() {
         return fb1.or(fb2);
     })
@@ -473,12 +473,12 @@ function DifferenceBench() {
     .add('infusion.BitSet.js (creates new bitset)', function() {
         return bs1.and(bs2.not());
     })
-    .add('tdegrunt.BitSet (inplace)', function() {
+    /*.add('tdegrunt.BitSet (inplace)', function() {
         return bt1.andNot(bt2);
     })
     .add('FastBitSet (inplace)', function() {
         return b1.difference(b2);
-    }  )
+    }  )*/
     // add listeners
     .on('cycle', function(event) {
         console.log(String(event.target));
