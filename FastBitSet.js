@@ -6,7 +6,7 @@
  * Speed-optimized BitSet implementation for modern browsers and JavaScript engines.
  *
  * A BitSet is an ideal data structure to implement a Set when values being stored are
- * reasonably small integers. It can be orders of magnitude faster than an generic Set implementation.
+ * reasonably small integers. It can be orders of magnitude faster than a generic set implementation.
  * The FastBitSet implementation optimizes for speed, leveraging commonly available features
  * like typed arrays.
  *

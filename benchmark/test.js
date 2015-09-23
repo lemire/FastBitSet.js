@@ -59,6 +59,64 @@ function CreateBench() {
     .run({ 'async': false });
 }
 
+
+function CreateBench() {
+    console.log("starting dynamic bitmap creation benchmark");
+    var b = new FastBitSet();
+    var bs = new BitSet();
+    var bt = new tBitSet();
+    var fb = new fBitSet(3*1024+5);
+    for(var i = 0 ; i < 1024  ; i++) {
+        b.add(3*i+5);
+        bs = bs.set(3*i+5,true);
+        bt.set(3*i+5);
+        fb.set(3*i+5);
+    }
+    if(bs.cardinality() != b.size() ) throw "something is off";
+    if(bs.cardinality() != bt.cardinality() ) throw "something is off";
+    if(bs.cardinality() != fb.getCardinality()) throw "something is off";
+    var suite = new Benchmark.Suite();
+    // add tests
+    var ms = suite.add('FastBitSet', function() {
+        var b = new FastBitSet();
+        for(var i = 0 ; i < 1024  ; i++) {
+            b.add(3*i+5);
+        }
+        return b;
+    }  )
+    .add('infusion.BitSet.js', function() {
+        var bs = new BitSet();
+        for(var i = 0 ; i < 1024  ; i++) {
+            bs = bs.set(3*i+5,true);
+        }
+        return bs;
+    })
+    .add('tdegrunt.BitSet', function() {
+        var bt = new tBitSet();
+        for(var i = 0 ; i < 1024  ; i++) {
+            bt.set(3*i+5);
+        }
+        return bt;
+    })
+    .add('Set', function() {
+        var bt = new Set();
+        for(var i = 0 ; i < 1024  ; i++) {
+            bt.add(3*i+5);
+        }
+        return bt;
+    })
+    // add listeners
+    .on('cycle', function(event) {
+        console.log(String(event.target));
+    })
+    .on('complete', function() {
+        console.log('Fastest is ' + this.filter('fastest').pluck('name'));
+    })
+    // run async
+    .run({ 'async': false });
+}
+
+
 function ArrayBench() {
     console.log("starting array extraction benchmark");
     var b = new FastBitSet();
@@ -99,11 +157,13 @@ function ForEachBench() {
     var bs = new BitSet();
     var bt = new tBitSet();
     var fb = new fBitSet(3*1024+5);
+    var s = new Set();
     for(var i = 0 ; i < 1024  ; i++) {
         b.add(3*i+5);
         bs = bs.set(3*i+5,true);
         bt.set(3*i+5);
         fb.set(3*i+5);
+        s.add(3*i+5);
     }
     var card = 0;
     for(var i in b.array()) {
@@ -130,6 +190,14 @@ function ForEachBench() {
         return card;
     }  )
     .add('mattkrick.fast-bitset', function() {
+        var card = 0;
+        var inc = function() {
+            card++;
+        }
+        fb.forEach(inc);
+        return card;
+    })
+    .add('Set', function() {
         var card = 0;
         var inc = function() {
             card++;
@@ -195,11 +263,13 @@ function QueryBench() {
     var bs = new BitSet();
     var bt = new tBitSet();
     var fb = new fBitSet(3*1024+5);
+    var s = new Set();
     for(var i = 0 ; i < 1024  ; i++) {
         b.add(3*i+5);
         bs = bs.set(3*i+5,true);
         bt.set(3*i+5);
         fb.set(3*i+5);
+        s.add(3*i+5);
     }
     if(bs.cardinality() != b.size() ) throw "something is off";
     if(bs.cardinality() != bt.cardinality() ) throw "something is off";
@@ -217,6 +287,9 @@ function QueryBench() {
     })
     .add('mattkrick.fast-bitset', function() {
         return fb.get(122);
+    })
+    .add('Set', function() {
+        return s.has(122);
     })
     // add listeners
     .on('cycle', function(event) {
@@ -549,6 +622,7 @@ var main = function() {
     console.log("infusion.BitSet.js from https://github.com/infusion/BitSet.js");
     console.log("tdegrunt.BitSet from https://github.com/tdegrunt/bitset");
     console.log("mattkrick.fast-bitset from https://github.com/mattkrick/fast-bitset")
+    console.log("standard Set object from JavaScript")
     console.log("")
     console.log("Platform: "+process.platform+" "+os.release()+" "+process.arch);
     console.log(os.cpus()[0]["model"]);
