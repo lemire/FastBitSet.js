@@ -44,7 +44,9 @@ function isIterable(obj) {
 function FastBitSet (iterable) {
     if(typeof Uint32Array === 'function') {
         this.count = 0|0;
-        if(isIterable(iterable)) {
+        if(Number.isInteger(iterable)) {
+            this.words = new Uint32Array(iterable);
+        } else if(isIterable(iterable)) {
             this.words = new Uint32Array(4);
             for (var key of iterable) {
                 this.add(key);
@@ -191,11 +193,32 @@ FastBitSet.prototype.intersection_size = function(otherbitmap) {
 };
 
 // Computes the intersection between this bitset and another one,
+// a new bitmap is generated
+FastBitSet.prototype.new_intersection = function(otherbitmap) {
+    var answer = Object.create(FastBitSet.prototype);
+    answer.count = Math.min(this.count,otherbitmap.count);
+    answer.words = new Uint32Array(answer.count);
+    for (var k = 0|0; k < answer.count; ++k) {
+        answer.words[k] = this.words[k] & otherbitmap.words[k];
+    }
+    return answer;
+};
+
+// Computes the intersection between this bitset and another one,
 // the current bitmap is modified
 FastBitSet.prototype.equals = function(otherbitmap) {
-    if(this.count != otherbitmap.count) return false;
-    for (var k = 0|0; k < this.count; ++k) {
+    var mcount = Math.min(this.count , otherbitmap.count)
+    for (var k = 0|0; k < mcount; ++k) {
         if(this.words[k] != otherbitmap.words[k]) return false;
+    }
+    if(this.count < otherbitmap.count) {
+        for (var k = this.count; k < otherbitmap.count; ++k) {
+            if(otherbitmap.words[k] != 0) return false;
+        }
+    } else if (otherbitmap.count < this.count) {
+        for (var k = otherbitmap.count; k < this.count; ++k) {
+            if(this.words[k] != 0) return false;
+        }
     }
     return true;
 };
@@ -241,12 +264,34 @@ FastBitSet.prototype.union = function(otherbitmap) {
     }
     if(this.count < otherbitmap.count) {
         this.resize((otherbitmap.count  << 5) - 1);
-        var sl = otherbitmap.words.subarray(mcount,otherbitmap.count);
-        this.words.set(sl,mcount);
+        for (var k = mcount; k < otherbitmap.count; ++k) {
+            this.words[k] = otherbitmap.words[k] ;
+        }
         this.count = otherbitmap.count;
     }
     return this;
 };
+
+// Computes the union between this bitset and another one,
+// a new bitmap is generated
+FastBitSet.prototype.new_union = function(otherbitmap) {
+    var answer = Object.create(FastBitSet.prototype);
+    answer.count = Math.max(this.count,otherbitmap.count);
+    answer.words = new Uint32Array(answer.count);
+
+    var mcount = Math.min(this.count,otherbitmap.count)
+    for (var k = 0; k < mcount; ++k) {
+        answer.words[k] = this.words[k] | otherbitmap.words[k];
+    }
+    for (var k = mcount; k < this.count; ++k) {
+        answer.words[k] = this.words[k] ;
+    }
+    for (var k = mcount; k < otherbitmap.count; ++k) {
+        answer.words[k] = otherbitmap.words[k] ;
+    }
+    return answer;
+};
+
 
 // Computes the size union between this bitset and another one
 FastBitSet.prototype.union_size = function(otherbitmap) {

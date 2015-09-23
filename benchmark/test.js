@@ -207,7 +207,7 @@ function AndBench() {
     var suite = new Benchmark.Suite();
     // add tests
     var ms = suite.add('FastBitSet (creates new bitset)', function() {
-        return b1.clone().intersection(b2);
+        return b1.new_intersection(b2);
     }  )
     .add('infusion.BitSet.js (creates new bitset)', function() {
         return bs1.and(bs2);
@@ -263,7 +263,7 @@ function AndCardBench() {
     var suite = new Benchmark.Suite();
     // add tests
     var ms = suite.add('FastBitSet (creates new bitset)', function() {
-        return b1.clone().intersection(b2).size();
+        return b1.new_intersection(b2).size();
     }  )
     .add('infusion.BitSet.js (creates new bitset)', function() {
         return bs1.and(bs2).cardinality();
@@ -316,7 +316,7 @@ function OrCardBench() {
     var suite = new Benchmark.Suite();
     // add tests
     var ms = suite.add('FastBitSet (creates new bitset)', function() {
-        return b1.clone().union(b2).size();
+        return b1.new_union(b2).size();
     }  )
     .add('infusion.BitSet.js (creates new bitset)', function() {
         return bs1.or(bs2).cardinality();
@@ -370,7 +370,7 @@ function DifferenceCardBench() {
     var suite = new Benchmark.Suite();
     // add tests
     var ms = suite.add('FastBitSet (creates new bitset)', function() {
-        return b1.clone().union(b2).size();
+        return b1.new_union(b2).size();
     }  )
     .add('infusion.BitSet.js (creates new bitset)', function() {
         return bs1.and(bs2.not()).cardinality();
@@ -420,17 +420,17 @@ function OrBench() {
     var suite = new Benchmark.Suite();
     // add tests
     var ms = suite.add('FastBitSet (creates new bitset)', function() {
-        return b1.clone().union(b2);
+        return b1.new_union(b2);
     }  )
-    .add('infusion.BitSet.js (creates new bitset)', function() {
-        return bs1.or(bs2);
-    })
-    .add('tdegrunt.BitSet (inplace)', function() {
-        return bt1.or(bt2);
-    })
-    .add('FastBitSet (inplace)', function() {
-        return b1.union(b2);
-    }  )
+    /*    .add('infusion.BitSet.js (creates new bitset)', function() {
+            return bs1.or(bs2);
+        })
+        .add('tdegrunt.BitSet (inplace)', function() {
+            return bt1.or(bt2);
+        })
+        .add('FastBitSet (inplace)', function() {
+            return b1.union(b2);
+        }  )*/
     .add('mattkrick.fast-bitset', function() {
         return fb1.or(fb2);
     })
