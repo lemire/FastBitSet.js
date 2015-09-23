@@ -56,7 +56,7 @@ function CreateBench() {
         console.log('Fastest is ' + this.filter('fastest').pluck('name'));
     })
     // run async
-    .run({ 'async': false });
+.run({ 'async': false });
 }
 
 function ArrayBench() {
@@ -90,7 +90,7 @@ function ArrayBench() {
         console.log('Fastest is ' + this.filter('fastest').pluck('name'));
     })
     // run async
-    .run({ 'async': false });
+.run({ 'async': false });
 }
 
 
@@ -132,7 +132,7 @@ function CardBench() {
         console.log('Fastest is ' + this.filter('fastest').pluck('name'));
     })
     // run async
-    .run({ 'async': false });
+.run({ 'async': false });
 }
 
 function QueryBench() {
@@ -172,7 +172,7 @@ function QueryBench() {
         console.log('Fastest is ' + this.filter('fastest').pluck('name'));
     })
     // run async
-    .run({ 'async': false });
+.run({ 'async': false });
 }
 
 function AndBench() {
@@ -227,7 +227,7 @@ function AndBench() {
         console.log('Fastest is ' + this.filter('fastest').pluck('name'));
     })
     // run async
-    .run({ 'async': false });
+.run({ 'async': false });
 }
 
 function AndCardBench() {
@@ -279,7 +279,7 @@ function AndCardBench() {
         console.log('Fastest is ' + this.filter('fastest').pluck('name'));
     })
     // run async
-    .run({ 'async': false });
+.run({ 'async': false });
 }
 
 function OrCardBench() {
@@ -331,7 +331,7 @@ function OrCardBench() {
         console.log('Fastest is ' + this.filter('fastest').pluck('name'));
     })
     // run async
-    .run({ 'async': false });
+.run({ 'async': false });
 }
 
 
@@ -381,7 +381,7 @@ function DifferenceCardBench() {
         console.log('Fastest is ' + this.filter('fastest').pluck('name'));
     })
     // run async
-    .run({ 'async': false });
+.run({ 'async': false });
 }
 
 
@@ -416,15 +416,15 @@ function OrBench() {
     var ms = suite.add('FastBitSet (creates new bitset)', function() {
         return b1.new_union(b2);
     }  )
-    /*    .add('infusion.BitSet.js (creates new bitset)', function() {
-            return bs1.or(bs2);
-        })
-        .add('tdegrunt.BitSet (inplace)', function() {
-            return bt1.or(bt2);
-        })
-        .add('FastBitSet (inplace)', function() {
-            return b1.union(b2);
-        }  )*/
+    .add('infusion.BitSet.js (creates new bitset)', function() {
+        return bs1.or(bs2);
+    })
+    .add('tdegrunt.BitSet (inplace)', function() {
+        return bt1.or(bt2);
+    })
+    .add('FastBitSet (inplace)', function() {
+        return b1.union(b2);
+    }  )
     .add('mattkrick.fast-bitset', function() {
         return fb1.or(fb2);
     })
@@ -436,7 +436,7 @@ function OrBench() {
         console.log('Fastest is ' + this.filter('fastest').pluck('name'));
     })
     // run async
-    .run({ 'async': false });
+.run({ 'async': false });
 }
 
 function DifferenceBench() {
@@ -487,7 +487,7 @@ function DifferenceBench() {
         console.log('Fastest is ' + this.filter('fastest').pluck('name'));
     })
     // run async
-    .run({ 'async': false });
+.run({ 'async': false });
 }
 
 var main = function() {
