@@ -292,7 +292,6 @@ FastBitSet.prototype.new_union = function(otherbitmap) {
     return answer;
 };
 
-
 // Computes the size union between this bitset and another one
 FastBitSet.prototype.union_size = function(otherbitmap) {
     var mcount = Math.min(this.count,otherbitmap.count);

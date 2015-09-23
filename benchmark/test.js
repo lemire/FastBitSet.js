@@ -501,11 +501,11 @@ var main = function() {
     console.log("Node version "+process.versions.node+", v8 version "+process.versions.v8);
     console.log();
 
+    OrBench();
+    console.log("");
     DifferenceBench();
     console.log("");
     AndBench();
-    console.log("");
-    OrBench();
     console.log("");
     CardBench();
     console.log("");
