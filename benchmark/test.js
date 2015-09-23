@@ -336,7 +336,7 @@ function OrCardBench() {
 
 
 function DifferenceCardBench() {
-    console.log("starting union cardinality query benchmark");
+    console.log("starting difference cardinality query benchmark");
     var b1 = new FastBitSet();
     var bs1 = new BitSet();
     var bt1 = new tBitSet();
