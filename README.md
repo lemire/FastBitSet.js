@@ -1,6 +1,6 @@
 # FastBitSet.js : a speed-optimized BitSet implementation
-[![Build Status](https://travis-ci.org/lemire/FastBitSet.js.png)](https://travis-ci.org/lemire/FastBitSet.js)
-[![][license img]][license]
+[![Build Status](https://travis-ci.org/lemire/FastBitSet.js.png)](https://travis-ci.org/lemire/FastBitSet.js) [![][license img]][license]
+Apache License 2.0
 
 A BitSet  (also called Bitmap or bit vector) is an ideal data structure to implement a
 set when values being stored are reasonably small integers. It can be orders of magnitude
@@ -14,7 +14,6 @@ engines.  It is ideal for maintaining sets of integers when performance matters.
 License
 ===
 
-Apache 2.0
 
 
 Usage
