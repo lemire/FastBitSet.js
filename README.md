@@ -11,6 +11,12 @@ The FastBitSet.js implementation optimizes for speed, leveraging commonly availa
 like typed arrays. It can be several times faster than competitive alternatives. It should be supported by most of the modern browsers and JavaScript
 engines.  It is ideal for maintaining sets of integers when performance matters.
 
+License
+===
+
+Apache 2.0
+
+
 Usage
 ===
 
