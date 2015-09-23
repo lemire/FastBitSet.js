@@ -7,20 +7,24 @@ var FastBitSet = require("../FastBitSet.js");
 var BitSet = require("bitset.js");
 var Benchmark = require('benchmark');
 var tBitSet = require("bitset");
+var fBitSet = require("fast-bitset");
 var os = require('os');
 
 function CreateBench() {
-    console.log("starting bitmap creation benchmark");
+    console.log("starting dynamic bitmap creation benchmark");
     var b = new FastBitSet();
     var bs = new BitSet();
     var bt = new tBitSet();
+    var fb = new fBitSet(3*1024+5);
     for(var i = 0 ; i < 1024  ; i++) {
         b.add(3*i+5);
         bs = bs.set(3*i+5,true);
         bt.set(3*i+5);
+        fb.set(3*i+5);
     }
     if(bs.cardinality() != b.size() ) throw "something is off";
     if(bs.cardinality() != bt.cardinality() ) throw "something is off";
+    if(bs.cardinality() != fb.getCardinality()) throw "something is off";
     var suite = new Benchmark.Suite();
     // add tests
     var ms = suite.add('FastBitSet', function() {
@@ -53,7 +57,44 @@ function CreateBench() {
     })
     // run async
     .run({ 'async': false });
+    console.log('mattkrick.fast-bitset cannot create bitsets dynamically');
 }
+
+function ArrayBench() {
+    console.log("starting array extraction benchmark");
+    var b = new FastBitSet();
+    var bs = new BitSet();
+    var bt = new tBitSet();
+    var fb = new fBitSet(3*1024+5);
+    for(var i = 0 ; i < 1024  ; i++) {
+        b.add(3*i+5);
+        bs = bs.set(3*i+5,true);
+        bt.set(3*i+5);
+        fb.set(3*i+5);
+    }
+    if(bs.cardinality() != b.size() ) throw "something is off";
+    if(bs.cardinality() != bt.cardinality() ) throw "something is off";
+    if(bs.cardinality() != fb.getCardinality()) throw "something is off";
+    var suite = new Benchmark.Suite();
+    // add tests
+    var ms = suite.add('FastBitSet', function() {
+        return b.array();
+    }  )
+    .add('mattkrick.fast-bitset', function() {
+        return fb.getIndices();
+    })
+    // add listeners
+    .on('cycle', function(event) {
+        console.log(String(event.target));
+    })
+    .on('complete', function() {
+        console.log('Fastest is ' + this.filter('fastest').pluck('name'));
+    })
+    // run async
+    .run({ 'async': false });
+    console.log('mattkrick.fast-bitset cannot create bitsets dynamically');
+}
+
 
 
 function CardBench() {
@@ -61,13 +102,16 @@ function CardBench() {
     var b = new FastBitSet();
     var bs = new BitSet();
     var bt = new tBitSet();
+    var fb = new fBitSet(3*1024+5);
     for(var i = 0 ; i < 1024  ; i++) {
         b.add(3*i+5);
         bs = bs.set(3*i+5,true);
         bt.set(3*i+5);
+        fb.set(3*i+5);
     }
     if(bs.cardinality() != b.size() ) throw "something is off";
     if(bs.cardinality() != bt.cardinality() ) throw "something is off";
+    if(bs.cardinality() != fb.getCardinality()) throw "something is off";
     var suite = new Benchmark.Suite();
     // add tests
     var ms = suite.add('FastBitSet', function() {
@@ -78,6 +122,9 @@ function CardBench() {
     })
     .add('tdegrunt.BitSet', function() {
         return bt.cardinality();
+    })
+    .add('mattkrick.fast-bitset', function() {
+        return fb.getCardinality();
     })
     // add listeners
     .on('cycle', function(event) {
@@ -95,13 +142,16 @@ function QueryBench() {
     var b = new FastBitSet();
     var bs = new BitSet();
     var bt = new tBitSet();
+    var fb = new fBitSet(3*1024+5);
     for(var i = 0 ; i < 1024  ; i++) {
         b.add(3*i+5);
         bs = bs.set(3*i+5,true);
         bt.set(3*i+5);
+        fb.set(3*i+5);
     }
     if(bs.cardinality() != b.size() ) throw "something is off";
     if(bs.cardinality() != bt.cardinality() ) throw "something is off";
+    if(bs.cardinality() != fb.getCardinality()) throw "something is off";
     var suite = new Benchmark.Suite();
     // add tests
     var ms = suite.add('FastBitSet', function() {
@@ -112,6 +162,9 @@ function QueryBench() {
     })
     .add('tdegrunt.BitSet', function() {
         return bt.get(122);
+    })
+    .add('mattkrick.fast-bitset', function() {
+        return fb.get(122);
     })
     // add listeners
     .on('cycle', function(event) {
@@ -129,22 +182,28 @@ function AndBench() {
     var b1 = new FastBitSet();
     var bs1 = new BitSet();
     var bt1 = new tBitSet();
+    var fb1 = new fBitSet(6*1024+5);
     var b2 = new FastBitSet();
     var bs2 = new BitSet();
     var bt2 = new tBitSet();
-
+    var fb2 = new fBitSet(6*1024+5);
     for(var i = 0 ; i < 1024  ; i++) {
         b1.add(3*i+5);
         bs1 = bs1.set(3*i+5,true);
         bt1.set(3*i+5);
+        fb1.set(3*i+5);
         b2.add(6*i+5);
         bs2 = bs2.set(6*i+5,true);
         bt2.set(6*i+5);
+        fb2.set(6*i+5);
     }
     if(bs1.cardinality() != b1.size() ) throw "something is off";
     if(bs1.cardinality() != bt1.cardinality() ) throw "something is off";
+    if(bs1.cardinality() != fb1.getCardinality() ) throw "something is off";
     if(bs2.cardinality() != b2.size() ) throw "something is off";
     if(bs2.cardinality() != bt2.cardinality() ) throw "something is off";
+    if(bs2.cardinality() != fb2.getCardinality() ) throw "something is off";
+
     var suite = new Benchmark.Suite();
     // add tests
     var ms = suite.add('FastBitSet (creates new bitset)', function() {
@@ -159,6 +218,9 @@ function AndBench() {
     .add('FastBitSet (inplace)', function() {
         return b1.intersection(b2);
     }  )
+    .add('mattkrick.fast-bitset', function() {
+        return fb1.and(fb2);
+    })
     // add listeners
     .on('cycle', function(event) {
         console.log(String(event.target));
@@ -168,29 +230,193 @@ function AndBench() {
     })
     // run async
     .run({ 'async': false });
+    console.log('mattkrick.fast-bitset requires same-length bitsets');
 }
+
+function AndCardBench() {
+    console.log("starting intersection cardinality query benchmark");
+    var b1 = new FastBitSet();
+    var bs1 = new BitSet();
+    var bt1 = new tBitSet();
+    var fb1 = new fBitSet(6*1024+5);
+    var b2 = new FastBitSet();
+    var bs2 = new BitSet();
+    var bt2 = new tBitSet();
+    var fb2 = new fBitSet(6*1024+5);
+    for(var i = 0 ; i < 1024  ; i++) {
+        b1.add(3*i+5);
+        bs1 = bs1.set(3*i+5,true);
+        bt1.set(3*i+5);
+        fb1.set(3*i+5);
+        b2.add(6*i+5);
+        bs2 = bs2.set(6*i+5,true);
+        bt2.set(6*i+5);
+        fb2.set(6*i+5);
+    }
+    if(bs1.cardinality() != b1.size() ) throw "something is off";
+    if(bs1.cardinality() != bt1.cardinality() ) throw "something is off";
+    if(bs1.cardinality() != fb1.getCardinality() ) throw "something is off";
+    if(bs2.cardinality() != b2.size() ) throw "something is off";
+    if(bs2.cardinality() != bt2.cardinality() ) throw "something is off";
+    if(bs2.cardinality() != fb2.getCardinality() ) throw "something is off";
+
+    var suite = new Benchmark.Suite();
+    // add tests
+    var ms = suite.add('FastBitSet (creates new bitset)', function() {
+        return b1.clone().intersection(b2).size();
+    }  )
+    .add('infusion.BitSet.js (creates new bitset)', function() {
+        return bs1.and(bs2).cardinality();
+    })
+    .add('FastBitSet (fast way)', function() {
+        return b1.intersection_size(b2);
+    }  )
+    .add('mattkrick.fast-bitset (creates new bitset)', function() {
+        return fb1.and(fb2).getCardinality();
+    })
+    // add listeners
+    .on('cycle', function(event) {
+        console.log(String(event.target));
+    })
+    .on('complete', function() {
+        console.log('Fastest is ' + this.filter('fastest').pluck('name'));
+    })
+    // run async
+    .run({ 'async': false });
+    console.log('mattkrick.fast-bitset requires same-length bitsets');
+}
+
+function OrCardBench() {
+    console.log("starting union cardinality query benchmark");
+    var b1 = new FastBitSet();
+    var bs1 = new BitSet();
+    var bt1 = new tBitSet();
+    var fb1 = new fBitSet(6*1024+5);
+    var b2 = new FastBitSet();
+    var bs2 = new BitSet();
+    var bt2 = new tBitSet();
+    var fb2 = new fBitSet(6*1024+5);
+    for(var i = 0 ; i < 1024  ; i++) {
+        b1.add(3*i+5);
+        bs1 = bs1.set(3*i+5,true);
+        bt1.set(3*i+5);
+        fb1.set(3*i+5);
+        b2.add(6*i+5);
+        bs2 = bs2.set(6*i+5,true);
+        bt2.set(6*i+5);
+        fb2.set(6*i+5);
+    }
+    if(bs1.cardinality() != b1.size() ) throw "something is off";
+    if(bs1.cardinality() != bt1.cardinality() ) throw "something is off";
+    if(bs1.cardinality() != fb1.getCardinality() ) throw "something is off";
+    if(bs2.cardinality() != b2.size() ) throw "something is off";
+    if(bs2.cardinality() != bt2.cardinality() ) throw "something is off";
+    if(bs2.cardinality() != fb2.getCardinality() ) throw "something is off";
+
+    var suite = new Benchmark.Suite();
+    // add tests
+    var ms = suite.add('FastBitSet (creates new bitset)', function() {
+        return b1.clone().union(b2).size();
+    }  )
+    .add('infusion.BitSet.js (creates new bitset)', function() {
+        return bs1.or(bs2).cardinality();
+    })
+    .add('FastBitSet (fast way)', function() {
+        return b1.union_size(b2);
+    }  )
+    .add('mattkrick.fast-bitset (creates new bitset)', function() {
+        return fb1.or(fb2).getCardinality();
+    })
+    // add listeners
+    .on('cycle', function(event) {
+        console.log(String(event.target));
+    })
+    .on('complete', function() {
+        console.log('Fastest is ' + this.filter('fastest').pluck('name'));
+    })
+    // run async
+    .run({ 'async': false });
+    console.log('mattkrick.fast-bitset requires same-length bitsets');
+}
+
+
+function DifferenceCardBench() {
+    console.log("starting union cardinality query benchmark");
+    var b1 = new FastBitSet();
+    var bs1 = new BitSet();
+    var bt1 = new tBitSet();
+    var fb1 = new fBitSet(6*1024+5);
+    var b2 = new FastBitSet();
+    var bs2 = new BitSet();
+    var bt2 = new tBitSet();
+    var fb2 = new fBitSet(6*1024+5);
+    for(var i = 0 ; i < 1024  ; i++) {
+        b1.add(3*i+5);
+        bs1 = bs1.set(3*i+5,true);
+        bt1.set(3*i+5);
+        fb1.set(3*i+5);
+        b2.add(6*i+5);
+        bs2 = bs2.set(6*i+5,true);
+        bt2.set(6*i+5);
+        fb2.set(6*i+5);
+    }
+    if(bs1.cardinality() != b1.size() ) throw "something is off";
+    if(bs1.cardinality() != bt1.cardinality() ) throw "something is off";
+    if(bs1.cardinality() != fb1.getCardinality() ) throw "something is off";
+    if(bs2.cardinality() != b2.size() ) throw "something is off";
+    if(bs2.cardinality() != bt2.cardinality() ) throw "something is off";
+    if(bs2.cardinality() != fb2.getCardinality() ) throw "something is off";
+
+    var suite = new Benchmark.Suite();
+    // add tests
+    var ms = suite.add('FastBitSet (creates new bitset)', function() {
+        return b1.clone().union(b2).size();
+    }  )
+    .add('infusion.BitSet.js (creates new bitset)', function() {
+        return bs1.and(bs2.not()).cardinality();
+    })
+    .add('FastBitSet (fast way)', function() {
+        return b1.difference_size(b2);
+    }  )
+    // add listeners
+    .on('cycle', function(event) {
+        console.log(String(event.target));
+    })
+    .on('complete', function() {
+        console.log('Fastest is ' + this.filter('fastest').pluck('name'));
+    })
+    // run async
+    .run({ 'async': false });
+    console.log('mattkrick.fast-bitset cannot compute differences');
+}
+
 
 function OrBench() {
     console.log("starting union query benchmark");
     var b1 = new FastBitSet();
     var bs1 = new BitSet();
     var bt1 = new tBitSet();
+    var fb1 = new fBitSet(6*1024+5);
     var b2 = new FastBitSet();
     var bs2 = new BitSet();
     var bt2 = new tBitSet();
-
+    var fb2 = new fBitSet(6*1024+5);
     for(var i = 0 ; i < 1024  ; i++) {
         b1.add(3*i+5);
         bs1 = bs1.set(3*i+5,true);
         bt1.set(3*i+5);
+        fb1.set(3*i+5);
         b2.add(6*i+5);
         bs2 = bs2.set(6*i+5,true);
         bt2.set(6*i+5);
+        fb2.set(6*i+5);
     }
     if(bs1.cardinality() != b1.size() ) throw "something is off";
     if(bs1.cardinality() != bt1.cardinality() ) throw "something is off";
+    if(bs1.cardinality() != fb1.getCardinality() ) throw "something is off";
     if(bs2.cardinality() != b2.size() ) throw "something is off";
     if(bs2.cardinality() != bt2.cardinality() ) throw "something is off";
+    if(bs2.cardinality() != fb2.getCardinality() ) throw "something is off";
     var suite = new Benchmark.Suite();
     // add tests
     var ms = suite.add('FastBitSet (creates new bitset)', function() {
@@ -205,6 +431,9 @@ function OrBench() {
     .add('FastBitSet (inplace)', function() {
         return b1.union(b2);
     }  )
+    .add('mattkrick.fast-bitset', function() {
+        return fb1.or(fb2);
+    })
     // add listeners
     .on('cycle', function(event) {
         console.log(String(event.target));
@@ -214,6 +443,7 @@ function OrBench() {
     })
     // run async
     .run({ 'async': false });
+    console.log('mattkrick.fast-bitset requires same-length bitsets');
 }
 
 function DifferenceBench() {
@@ -221,22 +451,27 @@ function DifferenceBench() {
     var b1 = new FastBitSet();
     var bs1 = new BitSet();
     var bt1 = new tBitSet();
+    var fb1 = new fBitSet(6*1024+5);
     var b2 = new FastBitSet();
     var bs2 = new BitSet();
     var bt2 = new tBitSet();
-
+    var fb2 = new fBitSet(6*1024+5);
     for(var i = 0 ; i < 1024  ; i++) {
         b1.add(3*i+5);
         bs1 = bs1.set(3*i+5,true);
         bt1.set(3*i+5);
+        fb1.set(3*i+5);
         b2.add(6*i+5);
         bs2 = bs2.set(6*i+5,true);
         bt2.set(6*i+5);
+        fb2.set(6*i+5);
     }
     if(bs1.cardinality() != b1.size() ) throw "something is off";
     if(bs1.cardinality() != bt1.cardinality() ) throw "something is off";
+    if(bs1.cardinality() != fb1.getCardinality() ) throw "something is off";
     if(bs2.cardinality() != b2.size() ) throw "something is off";
     if(bs2.cardinality() != bt2.cardinality() ) throw "something is off";
+    if(bs2.cardinality() != fb2.getCardinality() ) throw "something is off";
     var suite = new Benchmark.Suite();
     // add tests
     var ms = suite.add('FastBitSet (creates new bitset)', function() {
@@ -260,12 +495,14 @@ function DifferenceBench() {
     })
     // run async
     .run({ 'async': false });
+    console.log('mattkrick.fast-bitset cannot compute differences');
 }
 
 var main = function() {
     console.log("Benchmarking against:");
     console.log("infusion.BitSet.js from https://github.com/infusion/BitSet.js");
     console.log("tdegrunt.BitSet from https://github.com/tdegrunt/bitset");
+    console.log("mattkrick.fast-bitset from https://github.com/mattkrick/fast-bitset")
     console.log("Platform: "+process.platform+" "+os.release()+" "+process.arch);
     console.log(os.cpus()[0]["model"]);
     console.log("Node version "+process.versions.node+", v8 version "+process.versions.v8);
@@ -282,6 +519,14 @@ var main = function() {
     CreateBench();
     console.log("");
     QueryBench();
+    console.log("");
+    ArrayBench();
+    console.log("");
+    AndCardBench();
+    console.log("");
+    DifferenceCardBench();
+    console.log("");
+    OrCardBench();
 }
 
 if (require.main === module) {

@@ -68,10 +68,10 @@ FastBitSet.prototype.LOG_WORD_SIZE = 5|0;
 
 // Set the bit at index to true
 FastBitSet.prototype.add = function(index) {
-    if(this.count * this.WORD_SIZE <= index) {
+    if((this.count << 5) <= index) {
         this.resize(index)
     }
-    this.words[ index >> this.LOG_WORD_SIZE] |= 1 << (index % this.WORD_SIZE);
+    this.words[ index >> 5] |= 1 << index ;
 };
 
 // Remove all values
@@ -83,10 +83,10 @@ FastBitSet.prototype.clear = function() {
 
 // Set the bit at index to false
 FastBitSet.prototype.remove = function(index) {
-    if(this.count * this.WORD_SIZE <= index) {
+    if((this.count  << 5) <= index) {
         this.resize(index)
     }
-    this.words[index  >> this.LOG_WORD_SIZE] &= ~(1 << index);
+    this.words[index  >> 5] &= ~(1 << index);
 };
 
 // Return true if no bit is set
@@ -100,25 +100,17 @@ FastBitSet.prototype.isEmpty = function(index) {
 
 // Is the bit at index true or false? Returns a boolean
 FastBitSet.prototype.has = function(index) {
-    return (this.words[index  >> this.LOG_WORD_SIZE] & (1 << index)) !== 0;
+    return (this.words[index  >> 5] & (1 << index)) !== 0;
 };
-
 
 // Resize the bitset so that we can write a value at index
 FastBitSet.prototype.resize = function(index) {
-    if(this.count * this.WORD_SIZE > index) {
+    if((this.count  << 5) > index) {
         return; //nothing to do
     }
-    this.count = (index + this.WORD_SIZE) / this.WORD_SIZE | 0;
-    if(this.words.length * this.WORD_SIZE <= index) {
-        var newsize  = this.count;
-        if(newsize  < 1024) {
-            newsize  = newsize  * 2;
-        } else if(newsize  < 4096) {
-            newsize  = 3 * newsize  / 2;
-        } else {
-            newsize  = 4 * newsize  / 5;
-        }
+    this.count = (index + 32) >> 5;
+    if((this.words.length  << 5) <= index) {
+        var newsize  = this.count << 1;
         var newwords = new Uint32Array(newsize);
         newwords.set(this.words);
         this.words = newwords;
@@ -129,32 +121,23 @@ FastBitSet.prototype.resize = function(index) {
 
 // fast function to compute the Hamming weight of a 32-bit unsigned integer
 FastBitSet.prototype.hamming_weight = function(x) {
-    x = x | 0;
-    x -= ((x >>> 1) & 0x55555555);
-    var m2 = 0x33333333;
-    x = (x & m2) + ((x >> 2) & m2);
-    x = (x + (x >> 4)) & 0x0f0f0f0f;
-    x += x >> 8;
-    x += x >> 16;
-    return x & 0x3f;
+    var v = x|0;
+    v -= ((v >> 1) & 0x55555555);
+    v = (v & 0x33333333) + ((v >> 2) & 0x33333333);
+    return ((v + (v >> 4) & 0xF0F0F0F) * 0x1010101) >> 24;
 }
 
 // How many set bits?
 FastBitSet.prototype.size = function() {
-    var answer = 0|0;
-    var c = this.count|0;
-    for( var  i = 0|0; i < c; i++) {
-        var x = this.words[i];
-        x -= ((x >>> 1) & (0x55555555|0));
-        var m2 = (0x33333333|0);
-        x = (x & m2) + ((x >> 2) & m2);
-        x = (x + (x >> 4)) & (0x0f0f0f0f|0);
-        x += x >> 8;
-        x += x >> 16;
-        answer += x & 0x3f;
+    var answer = 0;
+    for (var i = this.count - 1; i >= 0; i--) {
+        answer += this.hamming_weight(this.words[i] | 0);
     }
     return answer;
 };
+
+
+
 
 // Return an array with the set bit locations (values)
 // an iterator would be preferable but JavaScript is still too immature
@@ -166,7 +149,7 @@ FastBitSet.prototype.array = function() {
         var w =  this.words[k];
         while (w != 0) {
             var t = w & -w;
-            answer[pos++] = (k << this.LOG_WORD_SIZE) + this.hamming_weight(t - 1);
+            answer[pos++] = (k << 5) + this.hamming_weight(t - 1);
             w ^= t;
         }
     }
@@ -193,6 +176,7 @@ FastBitSet.prototype.intersection = function(otherbitmap) {
         this.words[k] = 0;
     }
     this.count = newcount;
+    return this;
 };
 
 // Computes the size of the intersection between this bitset and another one
@@ -224,6 +208,23 @@ FastBitSet.prototype.difference = function(otherbitmap) {
     for (var k = 0|0; k < newcount; ++k) {
         this.words[k] &= ~otherbitmap.words[k];
     }
+    return this;
+};
+
+
+
+// Computes the size of the difference between this bitset and another one
+FastBitSet.prototype.difference_size = function(otherbitmap) {
+    var newcount = Math.min(this.count,otherbitmap.count);
+    var answer = 0|0;
+    var k = 0|0;
+    for (; k < newcount; ++k) {
+        answer += this.hamming_weight(this.words[k] & (~otherbitmap.words[k]));
+    }
+    for(; k < this.count; ++k) {
+        answer += this.hamming_weight(this.words[k]);
+    }
+    return answer;
 };
 
 // Returns a string representation
@@ -239,12 +240,14 @@ FastBitSet.prototype.union = function(otherbitmap) {
         this.words[k] |= otherbitmap.words[k];
     }
     if(this.count < otherbitmap.count) {
-        this.resize(otherbitmap.count * this.WORD_SIZE - 1);
+        this.resize((otherbitmap.count  << 5) - 1);
         var sl = otherbitmap.words.subarray(mcount,otherbitmap.count);
         this.words.set(sl,mcount);
         this.count = otherbitmap.count;
     }
+    return this;
 };
+
 // Computes the size union between this bitset and another one
 FastBitSet.prototype.union_size = function(otherbitmap) {
     var mcount = Math.min(this.count,otherbitmap.count);
@@ -254,14 +257,12 @@ FastBitSet.prototype.union_size = function(otherbitmap) {
         answer += this.hamming_weight(this.words[k] | otherbitmap.words[k]);
     }
     if(this.count < otherbitmap.count) {
-        for(var k = mcount ; k < otherbitmap.count; ++k) {
-            // could inline hamming weight call for speed
-            answer += this.hamming_weight(otherbitmap.words[k]);
+        for(var k = this.count ; k < otherbitmap.count; ++k) {
+            answer += this.hamming_weight(otherbitmap.words[k]|0);
         }
     } else {
-        for(var k = mcount ; k < this.count; ++k) {
-            // could inline hamming weight for speed
-            answer += this.hamming_weight(this.words[k]);
+        for(var k = otherbitmap.count ; k < this.count; ++k) {
+            answer += this.hamming_weight(this.words[k]|0);
         }
     }
     return answer;

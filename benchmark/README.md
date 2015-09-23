@@ -8,4 +8,5 @@ npm i --save benchmark
 npm install microtime
 npm install bitset.js
 npm install bitset
+npm install fast-bitset
 nodejs test.js
