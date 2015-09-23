@@ -57,7 +57,6 @@ function CreateBench() {
     })
     // run async
     .run({ 'async': false });
-    console.log('mattkrick.fast-bitset cannot create bitsets dynamically');
 }
 
 function ArrayBench() {
@@ -92,7 +91,6 @@ function ArrayBench() {
     })
     // run async
     .run({ 'async': false });
-    console.log('mattkrick.fast-bitset cannot create bitsets dynamically');
 }
 
 
@@ -230,7 +228,6 @@ function AndBench() {
     })
     // run async
     .run({ 'async': false });
-    console.log('mattkrick.fast-bitset requires same-length bitsets');
 }
 
 function AndCardBench() {
@@ -283,7 +280,6 @@ function AndCardBench() {
     })
     // run async
     .run({ 'async': false });
-    console.log('mattkrick.fast-bitset requires same-length bitsets');
 }
 
 function OrCardBench() {
@@ -336,7 +332,6 @@ function OrCardBench() {
     })
     // run async
     .run({ 'async': false });
-    console.log('mattkrick.fast-bitset requires same-length bitsets');
 }
 
 
@@ -387,7 +382,6 @@ function DifferenceCardBench() {
     })
     // run async
     .run({ 'async': false });
-    console.log('mattkrick.fast-bitset cannot compute differences');
 }
 
 
@@ -443,7 +437,6 @@ function OrBench() {
     })
     // run async
     .run({ 'async': false });
-    console.log('mattkrick.fast-bitset requires same-length bitsets');
 }
 
 function DifferenceBench() {
@@ -495,7 +488,6 @@ function DifferenceBench() {
     })
     // run async
     .run({ 'async': false });
-    console.log('mattkrick.fast-bitset cannot compute differences');
 }
 
 var main = function() {
@@ -503,6 +495,7 @@ var main = function() {
     console.log("infusion.BitSet.js from https://github.com/infusion/BitSet.js");
     console.log("tdegrunt.BitSet from https://github.com/tdegrunt/bitset");
     console.log("mattkrick.fast-bitset from https://github.com/mattkrick/fast-bitset")
+    console.log("")
     console.log("Platform: "+process.platform+" "+os.release()+" "+process.arch);
     console.log(os.cpus()[0]["model"]);
     console.log("Node version "+process.versions.node+", v8 version "+process.versions.v8);
