@@ -68,15 +68,24 @@ FastBitSet.prototype.LOG_WORD_SIZE = 5|0;
 
 
 
-// Set the bit at index to true
+// Add the value (Set the bit at index to true)
 FastBitSet.prototype.add = function(index) {
     if((this.count << 5) <= index) {
         this.resize(index)
     }
-    this.words[ index >> 5] |= 1 << index ;
+    this.words[index >> 5] |= 1 << index ;
 };
 
-// Remove all values
+
+// If the value was not in the set, add it, otherwise remove it (flip bit at index)
+FastBitSet.prototype.flip = function(index) {
+    if((this.count << 5) <= index) {
+        this.resize(index)
+    }
+    this.words[index >> 5] ^= 1 << index ;
+};
+
+// Remove all values, reset memory usage
 FastBitSet.prototype.clear = function() {
     this.count = 0|0;
     this.words = new Uint32Array(count);
@@ -100,7 +109,7 @@ FastBitSet.prototype.isEmpty = function(index) {
 };
 
 
-// Is the bit at index true or false? Returns a boolean
+// Is the value contained in the set? Is the bit at index true or false? Returns a boolean
 FastBitSet.prototype.has = function(index) {
     return (this.words[index  >> 5] & (1 << index)) !== 0;
 };
@@ -110,26 +119,28 @@ FastBitSet.prototype.resize = function(index) {
     if((this.count  << 5) > index) {
         return; //nothing to do
     }
-    this.count = (index + 32) >> 5;
+    this.count = (index + 32) >> 5;// just what is needed
     if((this.words.length  << 5) <= index) {
-        var newsize  = this.count << 1;
-        var newwords = new Uint32Array(newsize);
-        newwords.set(this.words);
+        var newwords;
+        try {
+            newwords = new Uint32Array(this.count << 1); // we first try to allocate more
+        } catch(e) {
+            newwords = new Uint32Array(this.count); // if it fails, allocate just what is needed
+        }
+        newwords.set(this.words);// hopefully, this copy is fast
         this.words = newwords;
     }
-
 };
 
 
 // fast function to compute the Hamming weight of a 32-bit unsigned integer
-FastBitSet.prototype.hamming_weight = function(x) {
-    var v = x|0;
+FastBitSet.prototype.hamming_weight = function(v) {
     v -= ((v >> 1) & 0x55555555);
     v = (v & 0x33333333) + ((v >> 2) & 0x33333333);
     return ((v + (v >> 4) & 0xF0F0F0F) * 0x1010101) >> 24;
 }
 
-// How many set bits?
+// How many values stored in the set? How many set bits?
 FastBitSet.prototype.size = function() {
     var answer = 0;
     for (var i = this.count - 1; i >= 0; i--) {
@@ -138,24 +149,34 @@ FastBitSet.prototype.size = function() {
     return answer;
 };
 
-
-
-
 // Return an array with the set bit locations (values)
-// an iterator would be preferable but JavaScript is still too immature
 FastBitSet.prototype.array = function() {
     var answer = new Array(this.size());
     var pos = 0|0;
     var c = this.count|0;
-    for (var k = 0|0; k < c; ++k) {
+    for (var k = 0; k < c; ++k) {
         var w =  this.words[k];
         while (w != 0) {
             var t = w & -w;
-            answer[pos++] = (k << 5) + this.hamming_weight(t - 1);
+            answer[pos++] = (k << 5) + this.hamming_weight((t - 1)|0);
             w ^= t;
         }
     }
     return answer;
+};
+
+
+// Return an array with the set bit locations (values)
+FastBitSet.prototype.forEach = function(fnc) {
+    var c = this.count|0;
+    for (var k = 0; k < c; ++k) {
+        var w =  this.words[k];
+        while (w != 0) {
+            var t = w & -w;
+            fnc( (k << 5) + this.hamming_weight((t - 1)|0));
+            w ^= t;
+        }
+    }
 };
 
 
@@ -168,7 +189,7 @@ FastBitSet.prototype.clone = function() {
 };
 
 // Computes the intersection between this bitset and another one,
-// the current bitmap is modified
+// the current bitmap is modified  (and returned by the function)
 FastBitSet.prototype.intersection = function(otherbitmap) {
     var newcount = Math.min(this.count,otherbitmap.count);
     for (var k = 0|0; k < newcount; ++k) {
@@ -225,7 +246,7 @@ FastBitSet.prototype.equals = function(otherbitmap) {
 
 
 // Computes the difference between this bitset and another one,
-// the current bitset is modified
+// the current bitset is modified (and returned by the function)
 FastBitSet.prototype.difference = function(otherbitmap) {
     var newcount = Math.min(this.count,otherbitmap.count);
     for (var k = 0|0; k < newcount; ++k) {
@@ -256,7 +277,7 @@ FastBitSet.prototype.toString = function() {
 };
 
 // Computes the union between this bitset and another one,
-// the current bitset is modified
+// the current bitset is modified  (and returned by the function)
 FastBitSet.prototype.union = function(otherbitmap) {
     var mcount = Math.min(this.count,otherbitmap.count);
     for (var k = 0|0; k < mcount; ++k) {
@@ -291,6 +312,13 @@ FastBitSet.prototype.new_union = function(otherbitmap) {
     }
     return answer;
 };
+
+// Computes the difference between this bitset and another one,
+// a new bitmap is generated
+FastBitSet.prototype.new_difference = function(otherbitmap) {
+    return this.clone().difference(otherbitmap);// should be fast enough
+};
+
 
 // Computes the size union between this bitset and another one
 FastBitSet.prototype.union_size = function(otherbitmap) {

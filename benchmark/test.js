@@ -56,7 +56,7 @@ function CreateBench() {
         console.log('Fastest is ' + this.filter('fastest').pluck('name'));
     })
     // run async
-.run({ 'async': false });
+    .run({ 'async': false });
 }
 
 function ArrayBench() {
@@ -90,9 +90,63 @@ function ArrayBench() {
         console.log('Fastest is ' + this.filter('fastest').pluck('name'));
     })
     // run async
-.run({ 'async': false });
+    .run({ 'async': false });
 }
 
+function ForEachBench() {
+    console.log("starting forEach benchmark");
+    var b = new FastBitSet();
+    var bs = new BitSet();
+    var bt = new tBitSet();
+    var fb = new fBitSet(3*1024+5);
+    for(var i = 0 ; i < 1024  ; i++) {
+        b.add(3*i+5);
+        bs = bs.set(3*i+5,true);
+        bt.set(3*i+5);
+        fb.set(3*i+5);
+    }
+    var card = 0;
+    for(var i in b.array()) {
+        card++;
+    }
+
+    if(bs.cardinality() != b.size() ) throw "something is off";
+    if(bs.cardinality() != bt.cardinality() ) throw "something is off";
+    if(bs.cardinality() != fb.getCardinality()) throw "something is off";
+    var suite = new Benchmark.Suite();
+    // add tests
+    var ms = suite.add('FastBitSet', function() {
+        var card = 0;
+        var inc = function() {
+            card++;
+        }
+        b.forEach(inc);
+        return card;
+    }  ).add('FastBitSet (via array)', function() {
+        var card = 0;
+        for(var i in b.array()) {
+            card++;
+        }
+        return card;
+    }  )
+    .add('mattkrick.fast-bitset', function() {
+        var card = 0;
+        var inc = function() {
+            card++;
+        }
+        fb.forEach(inc);
+        return card;
+    })
+    // add listeners
+    .on('cycle', function(event) {
+        console.log(String(event.target));
+    })
+    .on('complete', function() {
+        console.log('Fastest is ' + this.filter('fastest').pluck('name'));
+    })
+    // run async
+    .run({ 'async': false });
+}
 
 
 function CardBench() {
@@ -132,7 +186,7 @@ function CardBench() {
         console.log('Fastest is ' + this.filter('fastest').pluck('name'));
     })
     // run async
-.run({ 'async': false });
+    .run({ 'async': false });
 }
 
 function QueryBench() {
@@ -172,7 +226,7 @@ function QueryBench() {
         console.log('Fastest is ' + this.filter('fastest').pluck('name'));
     })
     // run async
-.run({ 'async': false });
+    .run({ 'async': false });
 }
 
 function AndBench() {
@@ -227,7 +281,7 @@ function AndBench() {
         console.log('Fastest is ' + this.filter('fastest').pluck('name'));
     })
     // run async
-.run({ 'async': false });
+    .run({ 'async': false });
 }
 
 function AndCardBench() {
@@ -279,7 +333,7 @@ function AndCardBench() {
         console.log('Fastest is ' + this.filter('fastest').pluck('name'));
     })
     // run async
-.run({ 'async': false });
+    .run({ 'async': false });
 }
 
 function OrCardBench() {
@@ -331,7 +385,7 @@ function OrCardBench() {
         console.log('Fastest is ' + this.filter('fastest').pluck('name'));
     })
     // run async
-.run({ 'async': false });
+    .run({ 'async': false });
 }
 
 
@@ -381,7 +435,7 @@ function DifferenceCardBench() {
         console.log('Fastest is ' + this.filter('fastest').pluck('name'));
     })
     // run async
-.run({ 'async': false });
+    .run({ 'async': false });
 }
 
 
@@ -436,7 +490,7 @@ function OrBench() {
         console.log('Fastest is ' + this.filter('fastest').pluck('name'));
     })
     // run async
-.run({ 'async': false });
+    .run({ 'async': false });
 }
 
 function DifferenceBench() {
@@ -487,7 +541,7 @@ function DifferenceBench() {
         console.log('Fastest is ' + this.filter('fastest').pluck('name'));
     })
     // run async
-.run({ 'async': false });
+    .run({ 'async': false });
 }
 
 var main = function() {
@@ -520,6 +574,8 @@ var main = function() {
     DifferenceCardBench();
     console.log("");
     OrCardBench();
+    console.log("");
+    ForEachBench();
 }
 
 if (require.main === module) {

@@ -29,9 +29,10 @@ var out1 = c.new_union(b); // creates a new bitmap that contains everything in c
 var out2 = c.new_intersection(b); // creates a new bitmap that contains everything that is in both c and b 
 var s1 = c.intersection_size(b);// compute the size of the intersection (bitsets are unchanged)
 var s3 = c.difference_size(b);// compute the size of the difference (bitsets are unchanged)
-ccc.intersection(b); // c will only contain elements that are in both c and b
+c.intersection(b); // c will only contain elements that are in both c and b
 c = b.clone(); // create a (deep) copy of b and assign it to c.
 c.equals(b); // checks whether c and b are equal
+c.forEach(fnc); // execute fnc on each value stored in c
 ```
 
 If you are using node.js, you need to import the module:
