@@ -102,7 +102,8 @@ FastBitSet.prototype.remove = function(index) {
 
 // Return true if no bit is set
 FastBitSet.prototype.isEmpty = function(index) {
-    for( var  i = 0; i < this.count; i++) {
+    var c = this.count;
+    for( var  i = 0; i < c; i++) {
         if(this.words[i] !== 0) return false;
     }
     return true;
@@ -143,12 +144,12 @@ FastBitSet.prototype.hamming_weight = function(v) {
 // How many values stored in the set? How many set bits?
 FastBitSet.prototype.size = function() {
     var answer = 0;
-    for (var i = this.count - 1; i >= 0; i--) {
+    var c = this.count;
+    for (var i = 0; i < c; i++) {
         answer += this.hamming_weight(this.words[i] | 0);
     }
     return answer;
 };
-
 // Return an array with the set bit locations (values)
 FastBitSet.prototype.array = function() {
     var answer = new Array(this.size());
@@ -195,7 +196,8 @@ FastBitSet.prototype.intersection = function(otherbitmap) {
     for (var k = 0|0; k < newcount; ++k) {
         this.words[k] &= otherbitmap.words[k];
     }
-    for (var k = newcount; k < this.count; ++k) {
+    var c = this.count;
+    for (var k = newcount; k < c; ++k) {
         this.words[k] = 0;
     }
     this.count = newcount;
@@ -219,7 +221,8 @@ FastBitSet.prototype.new_intersection = function(otherbitmap) {
     var answer = Object.create(FastBitSet.prototype);
     answer.count = Math.min(this.count,otherbitmap.count);
     answer.words = new Uint32Array(answer.count);
-    for (var k = 0|0; k < answer.count; ++k) {
+    var c = answer.count;
+    for (var k = 0|0; k < c; ++k) {
         answer.words[k] = this.words[k] & otherbitmap.words[k];
     }
     return answer;
@@ -233,11 +236,13 @@ FastBitSet.prototype.equals = function(otherbitmap) {
         if(this.words[k] != otherbitmap.words[k]) return false;
     }
     if(this.count < otherbitmap.count) {
-        for (var k = this.count; k < otherbitmap.count; ++k) {
+        var c = otherbitmap.count;
+        for (var k = this.count; k < c; ++k) {
             if(otherbitmap.words[k] != 0) return false;
         }
     } else if (otherbitmap.count < this.count) {
-        for (var k = otherbitmap.count; k < this.count; ++k) {
+        var c = this.count;
+        for (var k = otherbitmap.count; k < c; ++k) {
             if(this.words[k] != 0) return false;
         }
     }
@@ -265,7 +270,8 @@ FastBitSet.prototype.difference_size = function(otherbitmap) {
     for (; k < newcount; ++k) {
         answer += this.hamming_weight(this.words[k] & (~otherbitmap.words[k]));
     }
-    for(; k < this.count; ++k) {
+    var c = this.count;
+    for(; k < c; ++k) {
         answer += this.hamming_weight(this.words[k]);
     }
     return answer;
@@ -285,7 +291,8 @@ FastBitSet.prototype.union = function(otherbitmap) {
     }
     if(this.count < otherbitmap.count) {
         this.resize((otherbitmap.count  << 5) - 1);
-        for (var k = mcount; k < otherbitmap.count; ++k) {
+        var c = otherbitmap.count;
+        for (var k = mcount; k < c; ++k) {
             this.words[k] = otherbitmap.words[k] ;
         }
         this.count = otherbitmap.count;
@@ -304,10 +311,12 @@ FastBitSet.prototype.new_union = function(otherbitmap) {
     for (var k = 0; k < mcount; ++k) {
         answer.words[k] = this.words[k] | otherbitmap.words[k];
     }
-    for (var k = mcount; k < this.count; ++k) {
+    var c = this.count;
+    for (var k = mcount; k < c; ++k) {
         answer.words[k] = this.words[k] ;
     }
-    for (var k = mcount; k < otherbitmap.count; ++k) {
+    var c2 = otherbitmap.count;
+    for (var k = mcount; k < c2; ++k) {
         answer.words[k] = otherbitmap.words[k] ;
     }
     return answer;
@@ -329,11 +338,13 @@ FastBitSet.prototype.union_size = function(otherbitmap) {
         answer += this.hamming_weight(this.words[k] | otherbitmap.words[k]);
     }
     if(this.count < otherbitmap.count) {
-        for(var k = this.count ; k < otherbitmap.count; ++k) {
+        var c = otherbitmap.count;
+        for(var k = this.count ; k < c; ++k) {
             answer += this.hamming_weight(otherbitmap.words[k]|0);
         }
     } else {
-        for(var k = otherbitmap.count ; k < this.count; ++k) {
+        var c = this.count;
+        for(var k = otherbitmap.count ; k < c; ++k) {
             answer += this.hamming_weight(this.words[k]|0);
         }
     }
