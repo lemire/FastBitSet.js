@@ -13,13 +13,13 @@ var os = require('os');
 var genericSetIntersection = function (set1, set2) {
   var answer = new Set();
   if(set2.length > set1.length) {
-    for (var j in set1) {
+    for (var j of set1) {
       if(set2.has(j)) {
         answer.add(j);
       }
     }
   } else {
-    for (var j in set2) {
+    for (var j of set2) {
       if(set1.has(j)) {
         answer.add(j);
       }
@@ -31,13 +31,13 @@ var genericSetIntersection = function (set1, set2) {
 var genericSetIntersectionCard = function (set1, set2) {
   var answer = 0;
   if(set2.length > set1.length) {
-    for (var j in set1) {
+    for (var j of set1) {
       if(set2.has(j)) {
         answer ++;
       }
     }
   } else {
-    for (var j in set2) {
+    for (var j of set2.values()) {
       if(set1.has(j)) {
         answer ++;
       }
@@ -49,7 +49,7 @@ var genericSetIntersectionCard = function (set1, set2) {
 
 var genericSetUnion = function (set1, set2) {
   var answer = new Set(set1);
-  for(var j in set2) {
+  for(var j of set2) {
         answer.add(j);
   }
   return answer;
@@ -62,8 +62,8 @@ var genericSetUnionCard = function (set1, set2) {
 
 var genericSetDifference = function (set1, set2) {
   var answer = new Set(set1);
-  for(var j in set2) {
-        answer.remove(j);
+  for(var j of set2) {
+        answer.delete(j);
   }
   return answer;
 }
@@ -336,7 +336,7 @@ function AndBench() {
         bs2 = bs2.set(6*i+5,true);
         bt2.set(6*i+5);
         fb2.set(6*i+5);
-        s2.add(3*i+5);
+        s2.add(6*i+5);
     }
     if(bs1.cardinality() != b1.size() ) throw "something is off";
     if(bs1.cardinality() != bt1.cardinality() ) throw "something is off";
@@ -398,8 +398,9 @@ function AndCardBench() {
         bs2 = bs2.set(6*i+5,true);
         bt2.set(6*i+5);
         fb2.set(6*i+5);
-        s2.add(3*i+5);
+        s2.add(6*i+5);
     }
+    if(genericSetIntersectionCard(s1,s2)!=b1.intersection_size(b2)) throw "potential bug";
     if(bs1.cardinality() != b1.size() ) throw "something is off";
     if(bs1.cardinality() != bt1.cardinality() ) throw "something is off";
     if(bs1.cardinality() != fb1.getCardinality() ) throw "something is off";
@@ -457,7 +458,7 @@ function OrCardBench() {
         bs2 = bs2.set(6*i+5,true);
         bt2.set(6*i+5);
         fb2.set(6*i+5);
-        s2.add(3*i+5);
+        s2.add(6*i+5);
     }
     if(bs1.cardinality() != b1.size() ) throw "something is off";
     if(bs1.cardinality() != bt1.cardinality() ) throw "something is off";
@@ -517,7 +518,7 @@ function DifferenceCardBench() {
         bs2 = bs2.set(6*i+5,true);
         bt2.set(6*i+5);
         fb2.set(6*i+5);
-        s2.add(3*i+5);
+        s2.add(6*i+5);
     }
     if(bs1.cardinality() != b1.size() ) throw "something is off";
     if(bs1.cardinality() != bt1.cardinality() ) throw "something is off";
@@ -574,7 +575,7 @@ function OrBench() {
         bs2 = bs2.set(6*i+5,true);
         bt2.set(6*i+5);
         fb2.set(6*i+5);
-        s2.add(3*i+5);
+        s2.add(6*i+5);
     }
     if(bs1.cardinality() != b1.size() ) throw "something is off";
     if(bs1.cardinality() != bt1.cardinality() ) throw "something is off";
@@ -635,7 +636,7 @@ function DifferenceBench() {
         bs2 = bs2.set(6*i+5,true);
         bt2.set(6*i+5);
         fb2.set(6*i+5);
-        s2.add(3*i+5);
+        s2.add(6*i+5);
     }
     if(bs1.cardinality() != b1.size() ) throw "something is off";
     if(bs1.cardinality() != bt1.cardinality() ) throw "something is off";
