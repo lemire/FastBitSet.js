@@ -10,55 +10,67 @@ var tBitSet = require("bitset");
 var fBitSet = require("fast-bitset");
 var os = require('os');
 
-function CreateBench() {
-    console.log("starting dynamic bitmap creation benchmark");
-    var b = new FastBitSet();
-    var bs = new BitSet();
-    var bt = new tBitSet();
-    var fb = new fBitSet(3*1024+5);
-    for(var i = 0 ; i < 1024  ; i++) {
-        b.add(3*i+5);
-        bs = bs.set(3*i+5,true);
-        bt.set(3*i+5);
-        fb.set(3*i+5);
+var genericSetIntersection = function (set1, set2) {
+  var answer = new Set();
+  if(set2.length > set1.length) {
+    for (var j in set1) {
+      if(set2.has(j)) {
+        answer.add(j);
+      }
     }
-    if(bs.cardinality() != b.size() ) throw "something is off";
-    if(bs.cardinality() != bt.cardinality() ) throw "something is off";
-    if(bs.cardinality() != fb.getCardinality()) throw "something is off";
-    var suite = new Benchmark.Suite();
-    // add tests
-    var ms = suite.add('FastBitSet', function() {
-        var b = new FastBitSet();
-        for(var i = 0 ; i < 1024  ; i++) {
-            b.add(3*i+5);
-        }
-        return b;
-    }  )
-    .add('infusion.BitSet.js', function() {
-        var bs = new BitSet();
-        for(var i = 0 ; i < 1024  ; i++) {
-            bs = bs.set(3*i+5,true);
-        }
-        return bs;
-    })
-    .add('tdegrunt.BitSet', function() {
-        var bt = new tBitSet();
-        for(var i = 0 ; i < 1024  ; i++) {
-            bt.set(3*i+5);
-        }
-        return bt;
-    })
-    // add listeners
-    .on('cycle', function(event) {
-        console.log(String(event.target));
-    })
-    .on('complete', function() {
-        console.log('Fastest is ' + this.filter('fastest').pluck('name'));
-    })
-    // run async
-    .run({ 'async': false });
+  } else {
+    for (var j in set2) {
+      if(set1.has(j)) {
+        answer.add(j);
+      }
+    }
+  }
+  return answer;
 }
 
+var genericSetIntersectionCard = function (set1, set2) {
+  var answer = 0;
+  if(set2.length > set1.length) {
+    for (var j in set1) {
+      if(set2.has(j)) {
+        answer ++;
+      }
+    }
+  } else {
+    for (var j in set2) {
+      if(set1.has(j)) {
+        answer ++;
+      }
+    }
+  }
+  return answer;
+}
+
+
+var genericSetUnion = function (set1, set2) {
+  var answer = new Set(set1);
+  for(var j in set2) {
+        answer.add(j);
+  }
+  return answer;
+}
+
+var genericSetUnionCard = function (set1, set2) {
+  return set1.size + set2.size - genericSetIntersectionCard(set1,set2)
+}
+
+
+var genericSetDifference = function (set1, set2) {
+  var answer = new Set(set1);
+  for(var j in set2) {
+        answer.remove(j);
+  }
+  return answer;
+}
+
+var genericSetDifferenceCard = function (set1, set2) {
+  return set1.size - genericSetIntersectionCard(set1,set2);
+}
 
 function CreateBench() {
     console.log("starting dynamic bitmap creation benchmark");
@@ -312,15 +324,19 @@ function AndBench() {
     var bs2 = new BitSet();
     var bt2 = new tBitSet();
     var fb2 = new fBitSet(6*1024+5);
+    var s1 = new Set();
+    var s2 = new Set();
     for(var i = 0 ; i < 1024  ; i++) {
         b1.add(3*i+5);
         bs1 = bs1.set(3*i+5,true);
         bt1.set(3*i+5);
         fb1.set(3*i+5);
+        s1.add(3*i+5);
         b2.add(6*i+5);
         bs2 = bs2.set(6*i+5,true);
         bt2.set(6*i+5);
         fb2.set(6*i+5);
+        s2.add(3*i+5);
     }
     if(bs1.cardinality() != b1.size() ) throw "something is off";
     if(bs1.cardinality() != bt1.cardinality() ) throw "something is off";
@@ -346,6 +362,9 @@ function AndBench() {
     .add('mattkrick.fast-bitset', function() {
         return fb1.and(fb2);
     })
+    .add('Set', function() {
+        return genericSetIntersection(s1,s2);
+    })
     // add listeners
     .on('cycle', function(event) {
         console.log(String(event.target));
@@ -367,15 +386,19 @@ function AndCardBench() {
     var bs2 = new BitSet();
     var bt2 = new tBitSet();
     var fb2 = new fBitSet(6*1024+5);
+    var s1 = new Set();
+    var s2 = new Set();
     for(var i = 0 ; i < 1024  ; i++) {
         b1.add(3*i+5);
         bs1 = bs1.set(3*i+5,true);
         bt1.set(3*i+5);
         fb1.set(3*i+5);
+        s1.add(3*i+5);
         b2.add(6*i+5);
         bs2 = bs2.set(6*i+5,true);
         bt2.set(6*i+5);
         fb2.set(6*i+5);
+        s2.add(3*i+5);
     }
     if(bs1.cardinality() != b1.size() ) throw "something is off";
     if(bs1.cardinality() != bt1.cardinality() ) throw "something is off";
@@ -398,6 +421,9 @@ function AndCardBench() {
     .add('mattkrick.fast-bitset (creates new bitset)', function() {
         return fb1.and(fb2).getCardinality();
     })
+    .add('Set', function() {
+        return genericSetIntersectionCard(s1,s2);
+    })
     // add listeners
     .on('cycle', function(event) {
         console.log(String(event.target));
@@ -419,15 +445,19 @@ function OrCardBench() {
     var bs2 = new BitSet();
     var bt2 = new tBitSet();
     var fb2 = new fBitSet(6*1024+5);
+    var s1 = new Set();
+    var s2 = new Set();
     for(var i = 0 ; i < 1024  ; i++) {
         b1.add(3*i+5);
         bs1 = bs1.set(3*i+5,true);
         bt1.set(3*i+5);
         fb1.set(3*i+5);
+        s1.add(3*i+5);
         b2.add(6*i+5);
         bs2 = bs2.set(6*i+5,true);
         bt2.set(6*i+5);
         fb2.set(6*i+5);
+        s2.add(3*i+5);
     }
     if(bs1.cardinality() != b1.size() ) throw "something is off";
     if(bs1.cardinality() != bt1.cardinality() ) throw "something is off";
@@ -449,6 +479,9 @@ function OrCardBench() {
     }  )
     .add('mattkrick.fast-bitset (creates new bitset)', function() {
         return fb1.or(fb2).getCardinality();
+    })
+    .add('Set', function() {
+        return genericSetUnionCard(s1,s2);
     })
     // add listeners
     .on('cycle', function(event) {
@@ -472,15 +505,19 @@ function DifferenceCardBench() {
     var bs2 = new BitSet();
     var bt2 = new tBitSet();
     var fb2 = new fBitSet(6*1024+5);
+    var s1 = new Set();
+    var s2 = new Set();
     for(var i = 0 ; i < 1024  ; i++) {
         b1.add(3*i+5);
         bs1 = bs1.set(3*i+5,true);
         bt1.set(3*i+5);
         fb1.set(3*i+5);
+        s1.add(3*i+5);
         b2.add(6*i+5);
         bs2 = bs2.set(6*i+5,true);
         bt2.set(6*i+5);
         fb2.set(6*i+5);
+        s2.add(3*i+5);
     }
     if(bs1.cardinality() != b1.size() ) throw "something is off";
     if(bs1.cardinality() != bt1.cardinality() ) throw "something is off";
@@ -500,6 +537,9 @@ function DifferenceCardBench() {
     .add('FastBitSet (fast way)', function() {
         return b1.difference_size(b2);
     }  )
+    .add('Set', function() {
+        return genericSetDifferenceCard(s1,s2);
+    })
     // add listeners
     .on('cycle', function(event) {
         console.log(String(event.target));
@@ -522,15 +562,19 @@ function OrBench() {
     var bs2 = new BitSet();
     var bt2 = new tBitSet();
     var fb2 = new fBitSet(6*1024+5);
+    var s1 = new Set();
+    var s2 = new Set();
     for(var i = 0 ; i < 1024  ; i++) {
         b1.add(3*i+5);
         bs1 = bs1.set(3*i+5,true);
         bt1.set(3*i+5);
         fb1.set(3*i+5);
+        s1.add(3*i+5);
         b2.add(6*i+5);
         bs2 = bs2.set(6*i+5,true);
         bt2.set(6*i+5);
         fb2.set(6*i+5);
+        s2.add(3*i+5);
     }
     if(bs1.cardinality() != b1.size() ) throw "something is off";
     if(bs1.cardinality() != bt1.cardinality() ) throw "something is off";
@@ -555,6 +599,9 @@ function OrBench() {
     .add('mattkrick.fast-bitset', function() {
         return fb1.or(fb2);
     })
+    .add('Set', function() {
+        return genericSetUnion(s1,s2);
+    })
     // add listeners
     .on('cycle', function(event) {
         console.log(String(event.target));
@@ -576,15 +623,19 @@ function DifferenceBench() {
     var bs2 = new BitSet();
     var bt2 = new tBitSet();
     var fb2 = new fBitSet(6*1024+5);
+    var s1 = new Set();
+    var s2 = new Set();
     for(var i = 0 ; i < 1024  ; i++) {
         b1.add(3*i+5);
         bs1 = bs1.set(3*i+5,true);
         bt1.set(3*i+5);
         fb1.set(3*i+5);
+        s1.add(3*i+5);
         b2.add(6*i+5);
         bs2 = bs2.set(6*i+5,true);
         bt2.set(6*i+5);
         fb2.set(6*i+5);
+        s2.add(3*i+5);
     }
     if(bs1.cardinality() != b1.size() ) throw "something is off";
     if(bs1.cardinality() != bt1.cardinality() ) throw "something is off";
@@ -606,6 +657,9 @@ function DifferenceBench() {
     .add('FastBitSet (inplace)', function() {
         return b1.difference(b2);
     }  )*/
+    .add('Set', function() {
+        return genericSetDifference(s1,s2);
+    })
     // add listeners
     .on('cycle', function(event) {
         console.log(String(event.target));
