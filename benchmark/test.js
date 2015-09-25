@@ -314,6 +314,49 @@ function QueryBench() {
     .run({ 'async': false });
 }
 
+function CloneBench() {
+    console.log("starting clone benchmark");
+    var b = new FastBitSet();
+    var bs = new BitSet();
+    var bt = new tBitSet();
+    var fb = new fBitSet(3*1024+5);
+    var s = new Set();
+    for(var i = 0 ; i < 1024  ; i++) {
+        b.add(3*i+5);
+        bs = bs.set(3*i+5,true);
+        bt.set(3*i+5);
+        fb.set(3*i+5);
+        s.add(3*i+5);
+    }
+    if(bs.cardinality() != b.size() ) throw "something is off";
+    if(bs.cardinality() != bt.cardinality() ) throw "something is off";
+    if(bs.cardinality() != fb.getCardinality()) throw "something is off";
+    var suite = new Benchmark.Suite();
+    // add tests
+    var ms = suite.add('FastBitSet', function() {
+        return b.clone();
+    }  )
+    .add('infusion.BitSet.js', function() {
+        return bs.clone();
+    })
+    .add('mattkrick.fast-bitset', function() {
+        return fb.clone();
+    })
+    .add('Set', function() {
+        return new Set(s);
+    })
+    // add listeners
+    .on('cycle', function(event) {
+        console.log(String(event.target));
+    })
+    .on('complete', function() {
+        console.log('Fastest is ' + this.filter('fastest').pluck('name'));
+    })
+    // run async
+    .run({ 'async': false });
+}
+
+
 function AndBench() {
     console.log("starting intersection query benchmark");
     var b1 = new FastBitSet();
@@ -673,6 +716,7 @@ function DifferenceBench() {
 }
 
 var main = function() {
+  CloneBench();
     console.log("Benchmarking against:");
     console.log("infusion.BitSet.js from https://github.com/infusion/BitSet.js");
     console.log("tdegrunt.BitSet from https://github.com/tdegrunt/bitset");
@@ -705,6 +749,8 @@ var main = function() {
     OrCardBench();
     console.log("");
     ForEachBench();
+    CloneBench();
+    console.log("");
 }
 
 if (require.main === module) {

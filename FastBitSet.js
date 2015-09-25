@@ -188,6 +188,15 @@ FastBitSet.prototype.clone = function() {
     clone.words = new Uint32Array(this.words);
     return clone;
 };
+// Creates a copy of this bitmap
+FastBitSet.prototype.clone2 = function() {
+    var clone = new FastBitSet();
+//    var clone = Object.create(FastBitSet.prototype);
+    clone.count = this.count;
+    clone.words = new Uint32Array(this.words);
+    return clone;
+};
+
 
 // Computes the intersection between this bitset and another one,
 // the current bitmap is modified  (and returned by the function)
