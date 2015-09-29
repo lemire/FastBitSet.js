@@ -35,9 +35,9 @@
 
 function isIterable(obj) {
     if (obj == null) {
-        return false
+        return false;
     }
-    return obj[Symbol.iterator] !== undefined
+    return obj[Symbol.iterator] !== undefined;
 }
 // you can provide an iterable
 // an exception is thrown if typed arrays are not supported
@@ -71,7 +71,7 @@ FastBitSet.prototype.LOG_WORD_SIZE = 5|0;
 // Add the value (Set the bit at index to true)
 FastBitSet.prototype.add = function(index) {
     if((this.count << 5) <= index) {
-        this.resize(index)
+        this.resize(index);
     }
     this.words[index >> 5] |= 1 << index ;
 };
@@ -80,7 +80,7 @@ FastBitSet.prototype.add = function(index) {
 // If the value was not in the set, add it, otherwise remove it (flip bit at index)
 FastBitSet.prototype.flip = function(index) {
     if((this.count << 5) <= index) {
-        this.resize(index)
+        this.resize(index);
     }
     this.words[index >> 5] ^= 1 << index ;
 };
@@ -95,7 +95,7 @@ FastBitSet.prototype.clear = function() {
 // Set the bit at index to false
 FastBitSet.prototype.remove = function(index) {
     if((this.count  << 5) <= index) {
-        this.resize(index)
+        this.resize(index);
     }
     this.words[index  >> 5] &= ~(1 << index);
 };
@@ -103,7 +103,7 @@ FastBitSet.prototype.remove = function(index) {
 // Return true if no bit is set
 FastBitSet.prototype.isEmpty = function(index) {
     var c = this.count;
-    for( var  i = 0; i < c; i++) {
+    for(var  i = 0; i < c; i++) {
         if(this.words[i] !== 0) return false;
     }
     return true;
@@ -150,6 +150,7 @@ FastBitSet.prototype.size = function() {
     }
     return answer;
 };
+
 // Return an array with the set bit locations (values)
 FastBitSet.prototype.array = function() {
     var answer = new Array(this.size());
@@ -188,14 +189,6 @@ FastBitSet.prototype.clone = function() {
     clone.words = new Uint32Array(this.words);
     return clone;
 };
-// Creates a copy of this bitmap
-FastBitSet.prototype.clone2 = function() {
-    var clone = new FastBitSet();
-//    var clone = Object.create(FastBitSet.prototype);
-    clone.count = this.count;
-    clone.words = new Uint32Array(this.words);
-    return clone;
-};
 
 
 // Computes the intersection between this bitset and another one,
@@ -218,7 +211,6 @@ FastBitSet.prototype.intersection_size = function(otherbitmap) {
     var newcount = Math.min(this.count,otherbitmap.count);
     var answer = 0|0;
     for (var k = 0|0; k < newcount; ++k) {
-        // could run faster by inlining hamming_weight
         answer += this.hamming_weight(this.words[k] & otherbitmap.words[k]);
     }
     return answer;
@@ -302,7 +294,7 @@ FastBitSet.prototype.union = function(otherbitmap) {
         this.resize((otherbitmap.count  << 5) - 1);
         var c = otherbitmap.count;
         for (var k = mcount; k < c; ++k) {
-            this.words[k] = otherbitmap.words[k] ;
+            this.words[k] = otherbitmap.words[k];
         }
         this.count = otherbitmap.count;
     }
@@ -331,6 +323,7 @@ FastBitSet.prototype.new_union = function(otherbitmap) {
     return answer;
 };
 
+
 // Computes the difference between this bitset and another one,
 // a new bitmap is generated
 FastBitSet.prototype.new_difference = function(otherbitmap) {
@@ -343,7 +336,6 @@ FastBitSet.prototype.union_size = function(otherbitmap) {
     var mcount = Math.min(this.count,otherbitmap.count);
     var answer = 0|0;
     for (var k = 0|0; k < mcount; ++k) {
-        // could run faster by inlining hamming_weight
         answer += this.hamming_weight(this.words[k] | otherbitmap.words[k]);
     }
     if(this.count < otherbitmap.count) {
