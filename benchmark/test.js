@@ -716,7 +716,6 @@ function DifferenceBench() {
 }
 
 var main = function() {
-  CloneBench();
     console.log("Benchmarking against:");
     console.log("infusion.BitSet.js from https://github.com/infusion/BitSet.js");
     console.log("tdegrunt.BitSet from https://github.com/tdegrunt/bitset");
