@@ -59,12 +59,8 @@ function FastBitSet (iterable) {
         throw "Uint32Array unsupported";
     }
 }
-FastBitSet.prototype[Symbol.iterator] = 1;
 
 
-
-FastBitSet.prototype.WORD_SIZE = 32|0;
-FastBitSet.prototype.LOG_WORD_SIZE = 5|0;
 
 
 
