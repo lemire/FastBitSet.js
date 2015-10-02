@@ -160,4 +160,7 @@ Set x 35,978 ops/sec ±8.19% (100 runs sampled)
 Fastest is FastBitSet
 ```
 
+You might also like...
+===
 
+If you like this library, you might also like https://github.com/lemire/FastPriorityQueue.js
