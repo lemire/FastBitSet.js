@@ -11,7 +11,7 @@
  * like typed arrays.
  *
  * Simple usage :
- *
+ *  // var FastBitSet = require("fastbitset");// if you use node
  *  var b = new FastBitSet();// initially empty
  *         // will throw exception if typed arrays are not supported
  *  b.add(1);// add the value "1"
@@ -30,6 +30,9 @@
  * c = b.clone(); // create a (deep) copy of b and assign it to c.
  * c.equals(b); // check whether c and b are equal
  *
+ * 
+ * You can install the library under node with the command line
+ *   npm install fastbitset
  */
 "use strict";
 
