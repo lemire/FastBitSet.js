@@ -8,7 +8,7 @@ faster than a generic set implementation. In particular, a BitSet has fast suppo
 operations (union, difference, intersection).
 
 The FastBitSet.js implementation optimizes for speed, leveraging commonly available features
-like typed arrays. It can be several times faster than competitive alternatives. It should be supported by most of the modern browsers and JavaScript
+like typed arrays. It can be several times faster than competitive alternatives.It is also entirely dynamic, and has functions to minimize the memory usage. It should be supported by most of the modern browsers and JavaScript
 engines.  It is ideal for maintaining sets of integers when performance matters.
 
 License: Apache License 2.0
@@ -39,6 +39,7 @@ c.intersection(b); // c will only contain elements that are in both c and b
 c = b.clone(); // create a (deep) copy of b and assign it to c.
 c.equals(b); // checks whether c and b are equal
 c.forEach(fnc); // execute fnc on each value stored in c
+c.trim(); // reduce the memory usage of the bitmap if possible, the content remains the same 
 ```
 
 If you are using node.js, you need to import the module:

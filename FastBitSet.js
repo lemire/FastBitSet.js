@@ -111,6 +111,16 @@ FastBitSet.prototype.has = function(index) {
     return (this.words[index  >> 5] & (1 << index)) !== 0;
 };
 
+// Reduce the memory usage to a minimum
+FastBitSet.prototype.trim = function(index) {
+  while(this.count > 0) {
+    if(this.words[this.count - 1]===0)
+      this.count--;
+  }
+  this.words = this.words.subarray(0,this.count);
+}
+
+
 // Resize the bitset so that we can write a value at index
 FastBitSet.prototype.resize = function(index) {
     if((this.count  << 5) > index) {
