@@ -45,7 +45,7 @@ c.trim(); // reduce the memory usage of the bitmap if possible, the content rema
 If you are using node.js, you need to import the module:
 
 ```javascript
-var FastBitSet = require("FastBitSet");
+var FastBitSet = require("fastbitset");
 var b = new FastBitSet();// initially empty
          // will throw exception if typed arrays are not supported
 b.set(1);// add the value "1"
@@ -161,4 +161,7 @@ Set x 35,978 ops/sec ±8.19% (100 runs sampled)
 Fastest is FastBitSet
 ```
 
+You might also like...
+===
 
+If you like this library, you might also like https://github.com/lemire/FastPriorityQueue.js
