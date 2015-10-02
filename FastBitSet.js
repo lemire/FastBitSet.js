@@ -117,7 +117,7 @@ FastBitSet.prototype.trim = function(index) {
     if(this.words[this.count - 1]===0)
       this.count--;
   }
-  this.words = this.words.subarray(0,this.count);
+  this.words = this.words.slice(0,this.count);
 }
 
 
