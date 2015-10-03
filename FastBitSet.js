@@ -46,22 +46,13 @@ function isIterable(obj) {
 // you can provide an iterable
 // an exception is thrown if typed arrays are not supported
 function FastBitSet (iterable) {
-    if(typeof Uint32Array === 'function') {
         this.count = 0|0;
-        if(Number.isInteger(iterable)) {
-            this.words = new Uint32Array(iterable);
-        } else if(isIterable(iterable)) {
-            this.words = new Uint32Array(4);
+        this.words = new Uint32Array(8);
+        if(isIterable(iterable)) {
             for (var key of iterable) {
-                this.add(key);
+               this.add(key);
             }
-        } else {
-            this.words = new Uint32Array(0);
         }
-    } else {
-        console.log("Your JavaScript engine does not support typed arrays.");
-        throw "Uint32Array unsupported";
-    }
 }
 
 
@@ -132,12 +123,7 @@ FastBitSet.prototype.resize = function(index) {
     }
     this.count = (index + 32) >> 5;// just what is needed
     if((this.words.length  << 5) <= index) {
-        var newwords;
-        try {
-            newwords = new Uint32Array(this.count << 1); // we first try to allocate more
-        } catch(e) {
-            newwords = new Uint32Array(this.count); // if it fails, allocate just what is needed
-        }
+        var newwords = new Uint32Array(this.count << 1); 
         newwords.set(this.words);// hopefully, this copy is fast
         this.words = newwords;
     }

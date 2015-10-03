@@ -897,22 +897,22 @@ var main = function() {
     console.log(os.cpus()[0]["model"]);
     console.log("Node version "+process.versions.node+", v8 version "+process.versions.v8);
     console.log();
-    console.log("We start with the in-place logical operations: ");
-    console.log("");
-    OrInplaceBench();
-    console.log("");
-    AndInplaceBench();
-    console.log("");
-    AndNotInplaceBench();
-    console.log("");
-    console.log("Next, we proceed with the logical operations generating new bitmaps: ");
-    console.log("(Notice how much slower they are. This is partly due to the need to create new objects.)");
+    console.log("We proceed with the logical operations generating new bitmaps: ");
     console.log("");
     OrBench();
     console.log("");
     AndBench();
     console.log("");
     DifferenceBench();
+    console.log("");
+    console.log("We benchmark the in-place logical operations: ");
+    console.log("(Notice how much faster they are.)");
+    console.log("");
+    OrInplaceBench();
+    console.log("");
+    AndInplaceBench();
+    console.log("");
+    AndNotInplaceBench();
     console.log("");
     console.log("We benchmark the operations computing the set sizes: ");
     console.log("");
@@ -933,8 +933,8 @@ var main = function() {
     ArrayBench();
     console.log("");
     ForEachBench();
-    CloneBench();
     console.log("");
+    CloneBench();
 }
 
 if (require.main === module) {
