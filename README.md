@@ -1,5 +1,5 @@
 # FastBitSet.js : a speed-optimized BitSet implementation
-[![Build Status](https://travis-ci.org/lemire/FastBitSet.js.png)](https://travis-ci.org/lemire/FastBitSet.js) 
+[![Build Status](https://travis-ci.org/lemire/FastBitSet.js.png)](https://travis-ci.org/lemire/FastBitSet.js)
 
 
 A BitSet  (also called Bitmap or bit vector) is an ideal data structure to implement a
@@ -31,15 +31,16 @@ var c = new FastBitSet([1,2,3,10]); // create bitset initialized with values 1,2
 c.difference(b); // from c, remove elements that are in b
 var su = c.union_size(b);// compute the size of the union (bitsets are unchanged)
 c.union(b); // c will contain all elements that are in c and b
-var out1 = c.new_union(b); // creates a new bitmap that contains everything in c and b 
-var out2 = c.new_intersection(b); // creates a new bitmap that contains everything that is in both c and b 
+var out1 = c.new_union(b); // creates a new bitmap that contains everything in c and b
+var out2 = c.new_intersection(b); // creates a new bitmap that contains everything that is in both c and b
 var s1 = c.intersection_size(b);// compute the size of the intersection (bitsets are unchanged)
 var s3 = c.difference_size(b);// compute the size of the difference (bitsets are unchanged)
+c.intersects(b); // return true if c intersects with b
 c.intersection(b); // c will only contain elements that are in both c and b
 c = b.clone(); // create a (deep) copy of b and assign it to c.
 c.equals(b); // checks whether c and b are equal
 c.forEach(fnc); // execute fnc on each value stored in c
-c.trim(); // reduce the memory usage of the bitmap if possible, the content remains the same 
+c.trim(); // reduce the memory usage of the bitmap if possible, the content remains the same
 ```
 
 If you are using node.js, you need to import the module:
@@ -50,6 +51,16 @@ var b = new FastBitSet();// initially empty
          // will throw exception if typed arrays are not supported
 b.set(1);// add the value "1"
 ```
+
+
+Performance tip: in-place functions such as intersection, union and difference can be
+much faster than functions generating a new bitmap (new_intersection, new_union
+and new_difference) because they avoid creating a new object, a potentially
+expensive process in JavaScript. For faster code, use as few FastBitSet objects as
+you can.
+
+
+
 npm install
 ===
 

@@ -28,6 +28,15 @@ var genericSetIntersection = function (set1, set2) {
   return answer;
 }
 
+var genericInplaceSetIntersection = function (set1, set2) {
+    for (var j of set2) {
+      if(!set1.has(j)) {
+        set1.delete(j);
+      }
+    }
+    return set1;
+}
+
 var genericSetIntersectionCard = function (set1, set2) {
   var answer = 0;
   if(set2.length > set1.length) {
@@ -55,6 +64,12 @@ var genericSetUnion = function (set1, set2) {
   return answer;
 }
 
+var genericInplaceSetUnion = function (set1, set2) {
+  for(var j of set2) {
+        set1.add(j);
+  }
+  return set1;
+}
 var genericSetUnionCard = function (set1, set2) {
   return set1.size + set2.size - genericSetIntersectionCard(set1,set2)
 }
@@ -66,6 +81,13 @@ var genericSetDifference = function (set1, set2) {
         answer.delete(j);
   }
   return answer;
+}
+
+var genericInplaceSetDifference = function (set1, set2) {
+  for(var j of set2) {
+        set1.delete(j);
+  }
+  return set1;
 }
 
 var genericSetDifferenceCard = function (set1, set2) {
@@ -396,13 +418,7 @@ function AndBench() {
     .add('infusion.BitSet.js (creates new bitset)', function() {
         return bs1.and(bs2);
     })
-    /*.add('tdegrunt.BitSet (inplace)', function() {
-        return bt1.and(bt2);
-    })
-    .add('FastBitSet (inplace)', function() {
-        return b1.intersection(b2);
-    }  )*/
-    .add('mattkrick.fast-bitset', function() {
+    .add('mattkrick.fast-bitset  (creates new bitset)', function() {
         return fb1.and(fb2);
     })
     .add('Set', function() {
@@ -595,6 +611,171 @@ function DifferenceCardBench() {
     .run({ 'async': false });
 }
 
+function OrInplaceBench() {
+    console.log("starting inplace union  benchmark");
+    var b1 = new FastBitSet();
+    var bs1 = new BitSet();
+    var bt1 = new tBitSet();
+    var fb1 = new fBitSet(6*1024+5);
+    var b2 = new FastBitSet();
+    var bs2 = new BitSet();
+    var bt2 = new tBitSet();
+    var fb2 = new fBitSet(6*1024+5);
+    var s1 = new Set();
+    var s2 = new Set();
+    for(var i = 0 ; i < 1024  ; i++) {
+        b1.add(3*i+5);
+        bs1 = bs1.set(3*i+5,true);
+        bt1.set(3*i+5);
+        fb1.set(3*i+5);
+        s1.add(3*i+5);
+        b2.add(6*i+5);
+        bs2 = bs2.set(6*i+5,true);
+        bt2.set(6*i+5);
+        fb2.set(6*i+5);
+        s2.add(6*i+5);
+    }
+    if(bs1.cardinality() != b1.size() ) throw "something is off";
+    if(bs1.cardinality() != bt1.cardinality() ) throw "something is off";
+    if(bs1.cardinality() != fb1.getCardinality() ) throw "something is off";
+    if(bs2.cardinality() != b2.size() ) throw "something is off";
+    if(bs2.cardinality() != bt2.cardinality() ) throw "something is off";
+    if(bs2.cardinality() != fb2.getCardinality() ) throw "something is off";
+    b1.union(b2);
+    bt1.or(bt2);
+    genericInplaceSetUnion(s1,s2);
+    var suite = new Benchmark.Suite();
+    // add tests
+    var ms = suite.add('FastBitSet (inplace)', function() {
+        return b1.union(b2);
+    }  )
+    .add('tdegrunt.BitSet (inplace)', function() {
+        return bt1.or(bt2);
+    })
+    .add('Set (inplace)', function() {
+        return genericInplaceSetUnion(s1,s2);
+    })
+    // add listeners
+    .on('cycle', function(event) {
+        console.log(String(event.target));
+    })
+    .on('complete', function() {
+        console.log('Fastest is ' + this.filter('fastest').pluck('name'));
+    })
+    // run async
+    .run({ 'async': false });
+}
+
+function AndInplaceBench() {
+    console.log("starting inplace intersection  benchmark");
+    var b1 = new FastBitSet();
+    var bs1 = new BitSet();
+    var bt1 = new tBitSet();
+    var fb1 = new fBitSet(6*1024+5);
+    var b2 = new FastBitSet();
+    var bs2 = new BitSet();
+    var bt2 = new tBitSet();
+    var fb2 = new fBitSet(6*1024+5);
+    var s1 = new Set();
+    var s2 = new Set();
+    for(var i = 0 ; i < 1024  ; i++) {
+        b1.add(3*i+5);
+        bs1 = bs1.set(3*i+5,true);
+        bt1.set(3*i+5);
+        fb1.set(3*i+5);
+        s1.add(3*i+5);
+        b2.add(6*i+5);
+        bs2 = bs2.set(6*i+5,true);
+        bt2.set(6*i+5);
+        fb2.set(6*i+5);
+        s2.add(6*i+5);
+    }
+    if(bs1.cardinality() != b1.size() ) throw "something is off";
+    if(bs1.cardinality() != bt1.cardinality() ) throw "something is off";
+    if(bs1.cardinality() != fb1.getCardinality() ) throw "something is off";
+    if(bs2.cardinality() != b2.size() ) throw "something is off";
+    if(bs2.cardinality() != bt2.cardinality() ) throw "something is off";
+    if(bs2.cardinality() != fb2.getCardinality() ) throw "something is off";
+    b1.intersection(b2);
+    bt1.and(bt2);
+    genericInplaceSetIntersection(s1,s2);
+    var suite = new Benchmark.Suite();
+    // add tests
+    var ms = suite.add('FastBitSet (inplace)', function() {
+        return b1.intersection(b2);
+    }  )
+    .add('tdegrunt.BitSet (inplace)', function() {
+        return bt1.and(bt2);
+    })
+    .add('Set (inplace)', function() {
+        return genericInplaceSetIntersection(s1,s2);
+    })
+    // add listeners
+    .on('cycle', function(event) {
+        console.log(String(event.target));
+    })
+    .on('complete', function() {
+        console.log('Fastest is ' + this.filter('fastest').pluck('name'));
+    })
+    // run async
+    .run({ 'async': false });
+}
+
+function AndNotInplaceBench() {
+    console.log("starting inplace difference  benchmark");
+    var b1 = new FastBitSet();
+    var bs1 = new BitSet();
+    var bt1 = new tBitSet();
+    var fb1 = new fBitSet(6*1024+5);
+    var b2 = new FastBitSet();
+    var bs2 = new BitSet();
+    var bt2 = new tBitSet();
+    var fb2 = new fBitSet(6*1024+5);
+    var s1 = new Set();
+    var s2 = new Set();
+    for(var i = 0 ; i < 1024  ; i++) {
+        b1.add(3*i+5);
+        bs1 = bs1.set(3*i+5,true);
+        bt1.set(3*i+5);
+        fb1.set(3*i+5);
+        s1.add(3*i+5);
+        b2.add(6*i+5);
+        bs2 = bs2.set(6*i+5,true);
+        bt2.set(6*i+5);
+        fb2.set(6*i+5);
+        s2.add(6*i+5);
+    }
+    if(bs1.cardinality() != b1.size() ) throw "something is off";
+    if(bs1.cardinality() != bt1.cardinality() ) throw "something is off";
+    if(bs1.cardinality() != fb1.getCardinality() ) throw "something is off";
+    if(bs2.cardinality() != b2.size() ) throw "something is off";
+    if(bs2.cardinality() != bt2.cardinality() ) throw "something is off";
+    if(bs2.cardinality() != fb2.getCardinality() ) throw "something is off";
+    b1.difference(b2);
+    bt1.andNot(bt2);
+    genericInplaceSetDifference(s1,s2);
+    var suite = new Benchmark.Suite();
+    // add tests
+    var ms = suite.add('FastBitSet (inplace)', function() {
+        return b1.difference(b2);
+    }  )
+    .add('tdegrunt.BitSet (inplace)', function() {
+        return bt1.andNot(bt2);
+    })
+    .add('Set (inplace)', function() {
+        return genericInplaceSetDifference(s1,s2);
+    })
+    // add listeners
+    .on('cycle', function(event) {
+        console.log(String(event.target));
+    })
+    .on('complete', function() {
+        console.log('Fastest is ' + this.filter('fastest').pluck('name'));
+    })
+    // run async
+    .run({ 'async': false });
+}
+
 
 function OrBench() {
     console.log("starting union query benchmark");
@@ -634,13 +815,7 @@ function OrBench() {
     .add('infusion.BitSet.js (creates new bitset)', function() {
         return bs1.or(bs2);
     })
-    /*.add('tdegrunt.BitSet (inplace)', function() {
-        return bt1.or(bt2);
-    })
-    .add('FastBitSet (inplace)', function() {
-        return b1.union(b2);
-    }  )*/
-    .add('mattkrick.fast-bitset', function() {
+    .add('mattkrick.fast-bitset (creates new bitset)', function() {
         return fb1.or(fb2);
     })
     .add('Set', function() {
@@ -695,12 +870,6 @@ function DifferenceBench() {
     .add('infusion.BitSet.js (creates new bitset)', function() {
         return bs1.and(bs2.not());
     })
-    /*.add('tdegrunt.BitSet (inplace)', function() {
-        return bt1.andNot(bt2);
-    })
-    .add('FastBitSet (inplace)', function() {
-        return b1.difference(b2);
-    }  )*/
     .add('Set', function() {
         return genericSetDifference(s1,s2);
     })
@@ -719,33 +888,49 @@ var main = function() {
     console.log("Benchmarking against:");
     console.log("infusion.BitSet.js from https://github.com/infusion/BitSet.js");
     console.log("tdegrunt.BitSet from https://github.com/tdegrunt/bitset");
-    console.log("mattkrick.fast-bitset from https://github.com/mattkrick/fast-bitset")
-    console.log("standard Set object from JavaScript")
-    console.log("")
+    console.log("mattkrick.fast-bitset from https://github.com/mattkrick/fast-bitset");
+    console.log("standard Set object from JavaScript");
+    console.log("");
+    console.log("Not all libraries support all operations. We benchmark what is available.");
+    console.log("");
     console.log("Platform: "+process.platform+" "+os.release()+" "+process.arch);
     console.log(os.cpus()[0]["model"]);
     console.log("Node version "+process.versions.node+", v8 version "+process.versions.v8);
     console.log();
-
-    OrBench();
+    console.log("We start with the in-place logical operations: ");
     console.log("");
-    DifferenceBench();
+    OrInplaceBench();
+    console.log("");
+    AndInplaceBench();
+    console.log("");
+    AndNotInplaceBench();
+    console.log("");
+    console.log("Next, we proceed with the logical operations generating new bitmaps: ");
+    console.log("(Notice how much slower they are. This is partly due to the need to create new objects.)");
+    console.log("");
+    OrBench();
     console.log("");
     AndBench();
     console.log("");
+    DifferenceBench();
+    console.log("");
+    console.log("We benchmark the operations computing the set sizes: ");
+    console.log("");
     CardBench();
+    console.log("");
+    OrCardBench();
+    console.log("");
+    AndCardBench();
+    console.log("");
+    DifferenceCardBench();
+    console.log("");
+    console.log("We conclude with other benchmarks: ");
     console.log("");
     CreateBench();
     console.log("");
     QueryBench();
     console.log("");
     ArrayBench();
-    console.log("");
-    AndCardBench();
-    console.log("");
-    DifferenceCardBench();
-    console.log("");
-    OrCardBench();
     console.log("");
     ForEachBench();
     CloneBench();

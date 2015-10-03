@@ -30,7 +30,8 @@
  * c = b.clone(); // create a (deep) copy of b and assign it to c.
  * c.equals(b); // check whether c and b are equal
  *
- * 
+ *   See README.md file for a more complete description.
+ *
  * You can install the library under node with the command line
  *   npm install fastbitset
  */
@@ -200,11 +201,32 @@ FastBitSet.prototype.clone = function() {
 };
 
 
+// Check if this bitset intersects with another one,
+// no bitmap is modified
+FastBitSet.prototype.intersects = function(otherbitmap) {
+    var newcount = Math.min(this.count,otherbitmap.count);
+    for (var k = 0|0; k < newcount; ++k) {
+        if((this.words[k] & otherbitmap.words[k]) !== 0) return true;
+    }
+    return false;
+};
+
 // Computes the intersection between this bitset and another one,
 // the current bitmap is modified  (and returned by the function)
 FastBitSet.prototype.intersection = function(otherbitmap) {
     var newcount = Math.min(this.count,otherbitmap.count);
-    for (var k = 0|0; k < newcount; ++k) {
+    var k = 0|0;
+    for (; k + 7 < newcount; k += 8) {
+        this.words[k] &= otherbitmap.words[k];
+        this.words[k+1] &= otherbitmap.words[k+1];
+        this.words[k+2] &= otherbitmap.words[k+2];
+        this.words[k+3] &= otherbitmap.words[k+3];
+        this.words[k+4] &= otherbitmap.words[k+4];
+        this.words[k+5] &= otherbitmap.words[k+5];
+        this.words[k+6] &= otherbitmap.words[k+6];
+        this.words[k+7] &= otherbitmap.words[k+7];
+    }
+    for (; k < newcount; ++k) {
         this.words[k] &= otherbitmap.words[k];
     }
     var c = this.count;
@@ -214,6 +236,7 @@ FastBitSet.prototype.intersection = function(otherbitmap) {
     this.count = newcount;
     return this;
 };
+
 
 // Computes the size of the intersection between this bitset and another one
 FastBitSet.prototype.intersection_size = function(otherbitmap) {
@@ -264,7 +287,18 @@ FastBitSet.prototype.equals = function(otherbitmap) {
 // the current bitset is modified (and returned by the function)
 FastBitSet.prototype.difference = function(otherbitmap) {
     var newcount = Math.min(this.count,otherbitmap.count);
-    for (var k = 0|0; k < newcount; ++k) {
+    var k = 0|0;
+    for (; k + 7 < newcount; k += 8) {
+        this.words[k] &= ~otherbitmap.words[k];
+        this.words[k+1] &= ~otherbitmap.words[k+1];
+        this.words[k+2] &= ~otherbitmap.words[k+2];
+        this.words[k+3] &= ~otherbitmap.words[k+3];
+        this.words[k+4] &= ~otherbitmap.words[k+4];
+        this.words[k+5] &= ~otherbitmap.words[k+5];
+        this.words[k+6] &= ~otherbitmap.words[k+6];
+        this.words[k+7] &= ~otherbitmap.words[k+7];
+    }
+    for (; k < newcount; ++k) {
         this.words[k] &= ~otherbitmap.words[k];
     }
     return this;
@@ -296,7 +330,18 @@ FastBitSet.prototype.toString = function() {
 // the current bitset is modified  (and returned by the function)
 FastBitSet.prototype.union = function(otherbitmap) {
     var mcount = Math.min(this.count,otherbitmap.count);
-    for (var k = 0|0; k < mcount; ++k) {
+    var k = 0|0;
+    for (; k + 7  < mcount; k += 8) {
+        this.words[k] |= otherbitmap.words[k];
+        this.words[k+1] |= otherbitmap.words[k+1];
+        this.words[k+2] |= otherbitmap.words[k+2];
+        this.words[k+3] |= otherbitmap.words[k+3];
+        this.words[k+4] |= otherbitmap.words[k+4];
+        this.words[k+5] |= otherbitmap.words[k+5];
+        this.words[k+6] |= otherbitmap.words[k+6];
+        this.words[k+7] |= otherbitmap.words[k+7];
+    }
+    for (; k < mcount; ++k) {
         this.words[k] |= otherbitmap.words[k];
     }
     if(this.count < otherbitmap.count) {
@@ -331,7 +376,6 @@ FastBitSet.prototype.new_union = function(otherbitmap) {
     }
     return answer;
 };
-
 
 // Computes the difference between this bitset and another one,
 // a new bitmap is generated
