@@ -38,6 +38,18 @@ public class NaiveJavaVersion {
             long aft = System.nanoTime();
             System.out.println("clone (new bitset): "+ 1000* 1000 * 1000 * 1000.0/(aft-bef)+" ops/sec ");
         }
+        for(int z = 0; z < 5; ++z) {
+            System.gc();
+            ArrayList<BitSet > buffer = new ArrayList<BitSet >(1000);
+            long bef = System.nanoTime();
+            for(int k = 0; k <1000; ++k) {
+                b1.or(b2);
+                buffer.add(b1);
+            }
+            long aft = System.nanoTime();
+            System.out.println("inplace union (bogus): "+ 1000* 1000 * 1000 * 1000.0/(aft-bef)+" ops/sec ");
+        }
+
 
 
     }
