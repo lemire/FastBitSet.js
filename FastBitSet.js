@@ -60,7 +60,7 @@ FastBitSet.prototype.add = function(index) {
   if ((this.count << 5) <= index) {
     this.resize(index);
   }
-  this.words[index >> 5] |= 1 << index ;
+  this.words[index >>> 5] |= 1 << index ;
 };
 
 // If the value was not in the set, add it, otherwise remove it (flip bit at index)
@@ -68,7 +68,7 @@ FastBitSet.prototype.flip = function(index) {
   if ((this.count << 5) <= index) {
     this.resize(index);
   }
-  this.words[index >> 5] ^= 1 << index ;
+  this.words[index >>> 5] ^= 1 << index ;
 };
 
 // Remove all values, reset memory usage
@@ -82,7 +82,7 @@ FastBitSet.prototype.remove = function(index) {
   if ((this.count  << 5) <= index) {
     this.resize(index);
   }
-  this.words[index  >> 5] &= ~(1 << index);
+  this.words[index  >>> 5] &= ~(1 << index);
 };
 
 // Return true if no bit is set
@@ -96,7 +96,7 @@ FastBitSet.prototype.isEmpty = function(index) {
 
 // Is the value contained in the set? Is the bit at index true or false? Returns a boolean
 FastBitSet.prototype.has = function(index) {
-  return (this.words[index  >> 5] & (1 << index)) !== 0;
+  return (this.words[index  >>> 5] & (1 << index)) !== 0;
 };
 
 // Reduce the memory usage to a minimum
@@ -113,7 +113,7 @@ FastBitSet.prototype.resize = function(index) {
   if ((this.count  << 5) > index) {
     return; //nothing to do
   }
-  this.count = (index + 32) >> 5;// just what is needed
+  this.count = (index + 32) >>> 5;// just what is needed
   if ((this.words.length  << 5) <= index) {
     var newwords = new Uint32Array(this.count << 1);
     newwords.set(this.words);// hopefully, this copy is fast
@@ -123,10 +123,11 @@ FastBitSet.prototype.resize = function(index) {
 
 // fast function to compute the Hamming weight of a 32-bit unsigned integer
 FastBitSet.prototype.hammingWeight = function(v) {
-  v -= ((v >> 1) & 0x55555555);
-  v = (v & 0x33333333) + ((v >> 2) & 0x33333333);
-  return ((v + (v >> 4) & 0xF0F0F0F) * 0x1010101) >> 24;
+  v -= ((v >>> 1) & 0x55555555);// works with signed or unsigned shifts
+  v = (v & 0x33333333) + ((v >>> 2) & 0x33333333);
+  return ((v + (v >>> 4) & 0xF0F0F0F) * 0x1010101) >>> 24;
 };
+
 
 // How many values stored in the set? How many set bits?
 FastBitSet.prototype.size = function() {
@@ -153,6 +154,7 @@ FastBitSet.prototype.array = function() {
   }
   return answer;
 };
+
 
 // Return an array with the set bit locations (values)
 FastBitSet.prototype.forEach = function(fnc) {
@@ -373,5 +375,7 @@ FastBitSet.prototype.union_size = function(otherbitmap) {
   }
   return answer;
 };
+
+
 
 module.exports = FastBitSet;

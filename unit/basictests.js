@@ -48,6 +48,28 @@ describe('BitSet', function() {
     if (mb.size() != ai.length) throw 'bad init';
   });
 
+
+  it('Testing array', function() {
+      for(var i = 0; i < 1024; i++) {
+        for(var j = 0; i < i; i++) {
+          var ai = [j,i];
+          var mb = new FastBitSet(ai);
+          if (!arraysEquals(ai, mb.array())) throw 'bad array';
+        }
+      }
+  });
+
+  it('Testing card', function() {
+      for(var offset = 1; offset <32; offset++) {
+        var mb = new FastBitSet();
+        for(var i = 0; i < 1024; i++) {
+          mb.add(i * offset);
+          if(mb.size() != i+1) throw "bad card "+i+" offset = "+offset+" "+mb.size();
+        }
+      }
+  });
+
+
   it('Testing values', function() {
     var ai = [1,2,4,5,10];
     var mb = new FastBitSet(ai);
@@ -60,7 +82,7 @@ describe('BitSet', function() {
   });
 
   it('Testing clone', function() {
-    var ai = [1,2,4,5,10];
+    var ai = [1,2,4,5,10,31,32,63,64];
     var mb = new FastBitSet(ai);
     var mb2 = mb.clone();
     var a = mb2.array();
