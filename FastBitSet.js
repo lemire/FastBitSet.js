@@ -47,7 +47,10 @@ function isIterable(obj) {
 // an exception is thrown if typed arrays are not supported
 function FastBitSet (iterable) {
         this.count = 0|0;
-        this.words = new Uint32Array(8);
+        this.words = new Array(8);
+        for(var i = 0; i < this.words.length; i++) {
+          this.words[i] = 0;
+        }
         if(isIterable(iterable)) {
             for (var key of iterable) {
                this.add(key);
@@ -79,7 +82,7 @@ FastBitSet.prototype.flip = function(index) {
 // Remove all values, reset memory usage
 FastBitSet.prototype.clear = function() {
     this.count = 0|0;
-    this.words = new Uint32Array(count);
+    this.words = new Array(count);
 };
 
 
@@ -123,8 +126,15 @@ FastBitSet.prototype.resize = function(index) {
     }
     this.count = (index + 32) >> 5;// just what is needed
     if((this.words.length  << 5) <= index) {
-        var newwords = new Uint32Array(this.count << 1); 
-        newwords.set(this.words);// hopefully, this copy is fast
+        var newwords = new Array(this.count << 1);
+        var c = this.words.length;
+        for(var i = 0; i < c; i++) {
+          newwords[i] = this.words[i];
+        }
+        var c2 = this.count << 1;
+        for(var i = c; i < c2; i++) {
+          newwords[i] = 0;
+        }
         this.words = newwords;
     }
 };
@@ -182,7 +192,12 @@ FastBitSet.prototype.forEach = function(fnc) {
 FastBitSet.prototype.clone = function() {
     var clone = Object.create(FastBitSet.prototype);
     clone.count = this.count;
-    clone.words = new Uint32Array(this.words);
+    clone.words = this.words.slice(0,clone.count);
+    // new Array(clone.count);
+    //var c = clone.cone;
+    //for(var i = 0; i < c; i++) {
+    //  clone.words[i] = this.words[i];
+    //}
     return clone;
 };
 
@@ -239,7 +254,7 @@ FastBitSet.prototype.intersection_size = function(otherbitmap) {
 FastBitSet.prototype.new_intersection = function(otherbitmap) {
     var answer = Object.create(FastBitSet.prototype);
     answer.count = Math.min(this.count,otherbitmap.count);
-    answer.words = new Uint32Array(answer.count);
+    answer.words = new Array(answer.count);
     var c = answer.count;
     for (var k = 0|0; k < c; ++k) {
         answer.words[k] = this.words[k] & otherbitmap.words[k];
@@ -346,7 +361,7 @@ FastBitSet.prototype.union = function(otherbitmap) {
 FastBitSet.prototype.new_union = function(otherbitmap) {
     var answer = Object.create(FastBitSet.prototype);
     answer.count = Math.max(this.count,otherbitmap.count);
-    answer.words = new Uint32Array(answer.count);
+    answer.words = new Array(answer.count);
 
     var mcount = Math.min(this.count,otherbitmap.count)
     for (var k = 0; k < mcount; ++k) {
@@ -390,6 +405,5 @@ FastBitSet.prototype.union_size = function(otherbitmap) {
     }
     return answer;
 };
-
 
 module['exports'] = FastBitSet;
