@@ -142,9 +142,9 @@ FastBitSet.prototype.resize = function(index) {
 
 // fast function to compute the Hamming weight of a 32-bit unsigned integer
 FastBitSet.prototype.hamming_weight = function(v) {
-    v -= ((v >> 1) & 0x55555555);
-    v = (v & 0x33333333) + ((v >> 2) & 0x33333333);
-    return ((v + (v >> 4) & 0xF0F0F0F) * 0x1010101) >> 24;
+    v -= ((v >>> 1) & 0x55555555);
+    v = (v & 0x33333333) + ((v >>> 2) & 0x33333333);
+    return ((v + (v >>> 4) & 0xF0F0F0F) * 0x1010101) >>> 24;
 }
 
 // How many values stored in the set? How many set bits?
