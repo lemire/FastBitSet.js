@@ -21,7 +21,6 @@ Usage
 
 ```javascript
 var b = new FastBitSet();// initially empty
-         // will throw exception if typed arrays are not supported
 b.set(1);// add the value "1"
 b.has(1); // check that the value is present! (will return true)
 b.add(2);
@@ -49,7 +48,6 @@ If you are using node.js, you need to import the module:
 ```javascript
 var FastBitSet = require("fastbitset");
 var b = new FastBitSet();// initially empty
-         // will throw exception if typed arrays are not supported
 b.set(1);// add the value "1"
 ```
 
