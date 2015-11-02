@@ -151,7 +151,7 @@ FastBitSet.prototype.hammingWeight4 = function(v1,v2,v3,v4) {
   v2 = v2 + (v2 >>> 4) & 0xF0F0F0F;
   v3 = v3 + (v3 >>> 4) & 0xF0F0F0F;
   v4 = v4 + (v4 >>> 4) & 0xF0F0F0F;
-  return (( (v1 + v2+v3 + v4) * 0x1010101) >>> 24);
+  return (( (v1 + v2 + v3 + v4) * 0x1010101) >>> 24);
 };
 
 // How many values stored in the set? How many set bits?
@@ -160,9 +160,6 @@ FastBitSet.prototype.size = function() {
   var c = this.count;
   var w = this.words;
   var i = 0;
-  for (; i + 3 < c; i++) {
-    answer += this.hammingWeight4(w[i]);
-  }
   for (; i < c; i++) {
     answer += this.hammingWeight(w[i]);
   }
