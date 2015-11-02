@@ -135,12 +135,35 @@ FastBitSet.prototype.hammingWeight = function(v) {
 };
 
 
+// fast function to compute the Hamming weight of four 32-bit unsigned integers
+FastBitSet.prototype.hammingWeight4 = function(v1,v2,v3,v4) {
+  v1 -= ((v1 >>> 1) & 0x55555555);// works with signed or unsigned shifts
+  v2 -= ((v2 >>> 1) & 0x55555555);// works with signed or unsigned shifts
+  v3 -= ((v3 >>> 1) & 0x55555555);// works with signed or unsigned shifts
+  v4 -= ((v4 >>> 1) & 0x55555555);// works with signed or unsigned shifts
+
+  v1 = (v1 & 0x33333333) + ((v1 >>> 2) & 0x33333333);
+  v2 = (v2 & 0x33333333) + ((v2 >>> 2) & 0x33333333);
+  v3 = (v3 & 0x33333333) + ((v3 >>> 2) & 0x33333333);
+  v4 = (v4 & 0x33333333) + ((v4 >>> 2) & 0x33333333);
+
+  v1 = v1 + (v1 >>> 4) & 0xF0F0F0F;
+  v2 = v2 + (v2 >>> 4) & 0xF0F0F0F;
+  v3 = v3 + (v3 >>> 4) & 0xF0F0F0F;
+  v4 = v4 + (v4 >>> 4) & 0xF0F0F0F;
+  return (( (v1 + v2+v3 + v4) * 0x1010101) >>> 24);
+};
+
 // How many values stored in the set? How many set bits?
 FastBitSet.prototype.size = function() {
   var answer = 0;
   var c = this.count;
   var w = this.words;
-  for (var i = 0; i < c; i++) {
+  var i = 0;
+  for (; i + 3 < c; i++) {
+    answer += this.hammingWeight4(w[i]);
+  }
+  for (; i < c; i++) {
     answer += this.hammingWeight(w[i]);
   }
   return answer;
@@ -227,6 +250,7 @@ FastBitSet.prototype.intersection_size = function(otherbitmap) {
   for (var k = 0 | 0; k < newcount; ++k) {
     answer += this.hammingWeight(this.words[k] & otherbitmap.words[k]);
   }
+
   return answer;
 };
 
