@@ -2,11 +2,11 @@ Performance benchmarks
 ===
 
 You should have node.js and npm installed to run
-these benchmarks.
+these benchmarks. It assumes a recent version of node.js (4.0.0 or better).
 
-npm i --save benchmark
+npm install benchmark
 npm install microtime
 npm install bitset.js
-npm install bitset
+npm install --force bitset
 npm install fast-bitset
 nodejs test.js
