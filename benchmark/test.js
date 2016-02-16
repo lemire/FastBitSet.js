@@ -912,7 +912,6 @@ function DifferenceBench() {
 }
 
 var main = function() {
-  CardBench();
 
   console.log('Benchmarking against:');
   console.log('infusion.BitSet.js from https://github.com/infusion/BitSet.js');
