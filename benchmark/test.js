@@ -4,6 +4,8 @@
 'use strict';
 
 var FastBitSet = require('../FastBitSet.js');
+var TypedFastBitSet = require('../TypedFastBitSet.js');
+
 var BitSet = require('bitset.js');
 var Benchmark = require('benchmark');
 var tBitSet = require('bitset');
@@ -95,11 +97,13 @@ var genericSetDifferenceCard = function(set1, set2) {
 function CreateBench() {
   console.log('starting dynamic bitmap creation benchmark');
   var b = new FastBitSet();
+  var tyb = new FastBitSet();
   var bs = new BitSet();
   var bt = new tBitSet();
   var fb = new fBitSet(3 * 1024 + 5);
   for (var i = 0 ; i < 1024  ; i++) {
     b.add(3 * i + 5);
+    ty.add(3 * i + 5);
     bs = bs.set(3 * i + 5,true);
     bt.set(3 * i + 5);
     fb.set(3 * i + 5);
@@ -111,6 +115,12 @@ function CreateBench() {
   // add tests
   var ms = suite.add('FastBitSet', function() {
     var b = new FastBitSet();
+    for (var i = 0 ; i < 1024  ; i++) {
+      b.add(3 * i + 5);
+    }
+    return b;
+  }).add('TypedFastBitSet', function() {
+    var b = new TypedFastBitSet();
     for (var i = 0 ; i < 1024  ; i++) {
       b.add(3 * i + 5);
     }
@@ -151,11 +161,13 @@ function CreateBench() {
 function ArrayBench() {
   console.log('starting array extraction benchmark');
   var b = new FastBitSet();
+  var tyb = new FastBitSet();
   var bs = new BitSet();
   var bt = new tBitSet();
   var fb = new fBitSet(3 * 1024 + 5);
   for (var i = 0 ; i < 1024  ; i++) {
     b.add(3 * i + 5);
+    tyb.add(3 * i + 5);
     bs = bs.set(3 * i + 5,true);
     bt.set(3 * i + 5);
     fb.set(3 * i + 5);
@@ -165,8 +177,12 @@ function ArrayBench() {
   if (bs.cardinality() != fb.getCardinality()) throw 'something is off';
   var suite = new Benchmark.Suite();
   // add tests
-  var ms = suite.add('FastBitSet', function() {
+  var ms = suite
+  .add('FastBitSet', function() {
     return b.array();
+  })
+  .add('TypedFastBitSet', function() {
+    return tyb.array();
   })
     .add('mattkrick.fast-bitset', function() {
       return fb.getIndices();
@@ -250,11 +266,13 @@ function ForEachBench() {
 function CardBench() {
   console.log('starting cardinality benchmark');
   var b = new FastBitSet();
+  var tyb = new TypedFastBitSet();
   var bs = new BitSet();
   var bt = new tBitSet();
   var fb = new fBitSet(3 * 1024 + 5);
   for (var i = 0 ; i < 1024  ; i++) {
     b.add(3 * i + 5);
+    tyb.add(3 * i + 5)
     bs = bs.set(3 * i + 5,true);
     bt.set(3 * i + 5);
     fb.set(3 * i + 5);
@@ -266,6 +284,8 @@ function CardBench() {
   // add tests
   var ms = suite.add('FastBitSet', function() {
     return b.size();
+  }).add('TypedFastBitSet', function() {
+    return tyb.size();
   })
     .add('infusion.BitSet.js', function() {
       return bs.cardinality();
@@ -290,12 +310,14 @@ function CardBench() {
 function QueryBench() {
   console.log('starting query benchmark');
   var b = new FastBitSet();
+  var tyb = new TypedFastBitSet();
   var bs = new BitSet();
   var bt = new tBitSet();
   var fb = new fBitSet(3 * 1024 + 5);
   var s = new Set();
   for (var i = 0 ; i < 1024  ; i++) {
     b.add(3 * i + 5);
+    tyb.add(3 * i + 5);
     bs = bs.set(3 * i + 5,true);
     bt.set(3 * i + 5);
     fb.set(3 * i + 5);
@@ -308,6 +330,9 @@ function QueryBench() {
   // add tests
   var ms = suite.add('FastBitSet', function() {
     return b.has(122);
+  })
+  .add('TypedFastBitSet', function() {
+    return tyb.has(122);
   })
     .add('infusion.BitSet.js', function() {
       return bs.get(122);
@@ -377,10 +402,14 @@ function CloneBench() {
 function AndBench() {
   console.log('starting intersection query benchmark');
   var b1 = new FastBitSet();
+  var tyb1 = new TypedFastBitSet();
+
   var bs1 = new BitSet();
   var bt1 = new tBitSet();
   var fb1 = new fBitSet(6 * 1024 + 5);
   var b2 = new FastBitSet();
+  var tyb2 = new TypedFastBitSet();
+
   var bs2 = new BitSet();
   var bt2 = new tBitSet();
   var fb2 = new fBitSet(6 * 1024 + 5);
@@ -388,11 +417,13 @@ function AndBench() {
   var s2 = new Set();
   for (var i = 0 ; i < 1024  ; i++) {
     b1.add(3 * i + 5);
+    tyb1.add(3 * i + 5);
     bs1 = bs1.set(3 * i + 5,true);
     bt1.set(3 * i + 5);
     fb1.set(3 * i + 5);
     s1.add(3 * i + 5);
     b2.add(6 * i + 5);
+    tyb2.add(6 * i + 5);
     bs2 = bs2.set(6 * i + 5,true);
     bt2.set(6 * i + 5);
     fb2.set(6 * i + 5);
@@ -409,6 +440,9 @@ function AndBench() {
   // add tests
   var ms = suite.add('FastBitSet (creates new bitset)', function() {
     return b1.new_intersection(b2);
+  })
+  .add('TypedFastBitSet (creates new bitset)', function() {
+    return tyb1.new_intersection(tyb2);
   })
     .add('infusion.BitSet.js (creates new bitset)', function() {
       return bs1.and(bs2);

@@ -373,3 +373,5 @@ TypedFastBitSet.prototype.union_size = function(otherbitmap) {
   }
   return answer;
 };
+
+module.exports = TypedFastBitSet;
