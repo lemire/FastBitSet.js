@@ -807,10 +807,12 @@ function AndNotInplaceBench() {
 function OrBench() {
   console.log('starting union query benchmark');
   var b1 = new FastBitSet();
+  var tyb1 = new TypedFastBitSet();
   var bs1 = new BitSet();
   var bt1 = new tBitSet();
   var fb1 = new fBitSet(6 * 1024 + 5);
   var b2 = new FastBitSet();
+  var tyb2 = new TypedFastBitSet();
   var bs2 = new BitSet();
   var bt2 = new tBitSet();
   var fb2 = new fBitSet(6 * 1024 + 5);
@@ -818,11 +820,13 @@ function OrBench() {
   var s2 = new Set();
   for (var i = 0 ; i < 1024  ; i++) {
     b1.add(3 * i + 5);
+    tyb1.add(3 * i + 5);
     bs1 = bs1.set(3 * i + 5,true);
     bt1.set(3 * i + 5);
     fb1.set(3 * i + 5);
     s1.add(3 * i + 5);
     b2.add(6 * i + 5);
+    tyb2.add(6 * i + 5);
     bs2 = bs2.set(6 * i + 5,true);
     bt2.set(6 * i + 5);
     fb2.set(6 * i + 5);
@@ -838,6 +842,9 @@ function OrBench() {
   // add tests
   var ms = suite.add('FastBitSet (creates new bitset)', function() {
     return b1.new_union(b2);
+  })
+    .add('TypedFastBitSet (creates new bitset)', function() {
+    return tyb1.new_union(tyb2);
   })
     .add('infusion.BitSet.js (creates new bitset)', function() {
       return bs1.or(bs2);
