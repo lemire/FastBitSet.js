@@ -97,13 +97,13 @@ var genericSetDifferenceCard = function(set1, set2) {
 function CreateBench() {
   console.log('starting dynamic bitmap creation benchmark');
   var b = new FastBitSet();
-  var tyb = new FastBitSet();
+  var tyb = new TypedFastBitSet();
   var bs = new BitSet();
   var bt = new tBitSet();
   var fb = new fBitSet(3 * 1024 + 5);
   for (var i = 0 ; i < 1024  ; i++) {
     b.add(3 * i + 5);
-    ty.add(3 * i + 5);
+    tyb.add(3 * i + 5);
     bs = bs.set(3 * i + 5,true);
     bt.set(3 * i + 5);
     fb.set(3 * i + 5);
@@ -161,7 +161,7 @@ function CreateBench() {
 function ArrayBench() {
   console.log('starting array extraction benchmark');
   var b = new FastBitSet();
-  var tyb = new FastBitSet();
+  var tyb = new TypedFastBitSet();
   var bs = new BitSet();
   var bt = new tBitSet();
   var fb = new fBitSet(3 * 1024 + 5);
@@ -201,12 +201,14 @@ function ArrayBench() {
 function ForEachBench() {
   console.log('starting forEach benchmark');
   var b = new FastBitSet();
+  var tyb = new TypedFastBitSet();
   var bs = new BitSet();
   var bt = new tBitSet();
   var fb = new fBitSet(3 * 1024 + 5);
   var s = new Set();
   for (var i = 0 ; i < 1024  ; i++) {
     b.add(3 * i + 5);
+    tyb.add(3 * i + 5);
     bs = bs.set(3 * i + 5,true);
     bt.set(3 * i + 5);
     fb.set(3 * i + 5);
@@ -236,6 +238,21 @@ function ForEachBench() {
     }
     return card;
   })
+.add('TypedFastBitSet', function() {
+    var card = 0;
+    var inc = function() {
+      card++;
+    };
+    tyb.forEach(inc);
+    return card;
+  }).add('TypedFastBitSet (via array)', function() {
+    var card = 0;
+    for (var i in tyb.array()) {
+      card++;
+    }
+    return card;
+  })
+
     .add('mattkrick.fast-bitset', function() {
       var card = 0;
       var inc = function() {
@@ -360,12 +377,14 @@ function QueryBench() {
 function CloneBench() {
   console.log('starting clone benchmark');
   var b = new FastBitSet();
+  var tyb = new TypedFastBitSet();
   var bs = new BitSet();
   var bt = new tBitSet();
   var fb = new fBitSet(3 * 1024 + 5);
   var s = new Set();
   for (var i = 0 ; i < 1024  ; i++) {
     b.add(3 * i + 5);
+    tyb.add(3 * i + 5);
     bs = bs.set(3 * i + 5,true);
     bt.set(3 * i + 5);
     fb.set(3 * i + 5);
@@ -378,6 +397,9 @@ function CloneBench() {
   // add tests
   var ms = suite.add('FastBitSet', function() {
     return b.clone();
+  })
+.add('TypedFastBitSet', function() {
+    return tyb.clone();
   })
     .add('infusion.BitSet.js', function() {
       return bs.clone();
@@ -642,10 +664,12 @@ function DifferenceCardBench() {
 function OrInplaceBench() {
   console.log('starting inplace union  benchmark');
   var b1 = new FastBitSet();
+  var tyb1 = new TypedFastBitSet();
   var bs1 = new BitSet();
   var bt1 = new tBitSet();
   var fb1 = new fBitSet(6 * 1024 + 5);
   var b2 = new FastBitSet();
+  var tyb2 = new TypedFastBitSet();
   var bs2 = new BitSet();
   var bt2 = new tBitSet();
   var fb2 = new fBitSet(6 * 1024 + 5);
@@ -653,11 +677,13 @@ function OrInplaceBench() {
   var s2 = new Set();
   for (var i = 0 ; i < 1024  ; i++) {
     b1.add(3 * i + 5);
+    tyb1.add(3 * i + 5);
     bs1 = bs1.set(3 * i + 5,true);
     bt1.set(3 * i + 5);
     fb1.set(3 * i + 5);
     s1.add(3 * i + 5);
     b2.add(6 * i + 5);
+    tyb2.add(6 * i + 5);
     bs2 = bs2.set(6 * i + 5,true);
     bt2.set(6 * i + 5);
     fb2.set(6 * i + 5);
@@ -676,6 +702,9 @@ function OrInplaceBench() {
   // add tests
   var ms = suite.add('FastBitSet (inplace)', function() {
     return b1.union(b2);
+  })
+  .add('TypedFastBitSet (inplace)', function() {
+    return tyb1.union(tyb2);
   })
     .add('tdegrunt.BitSet (inplace)', function() {
       return bt1.or(bt2);
@@ -697,10 +726,12 @@ function OrInplaceBench() {
 function AndInplaceBench() {
   console.log('starting inplace intersection  benchmark');
   var b1 = new FastBitSet();
+  var tyb1 = new TypedFastBitSet();
   var bs1 = new BitSet();
   var bt1 = new tBitSet();
   var fb1 = new fBitSet(6 * 1024 + 5);
   var b2 = new FastBitSet();
+  var tyb2 = new TypedFastBitSet();
   var bs2 = new BitSet();
   var bt2 = new tBitSet();
   var fb2 = new fBitSet(6 * 1024 + 5);
@@ -708,11 +739,13 @@ function AndInplaceBench() {
   var s2 = new Set();
   for (var i = 0 ; i < 1024  ; i++) {
     b1.add(3 * i + 5);
+    tyb1.add(3 * i + 5);
     bs1 = bs1.set(3 * i + 5,true);
     bt1.set(3 * i + 5);
     fb1.set(3 * i + 5);
     s1.add(3 * i + 5);
     b2.add(6 * i + 5);
+    tyb2.add(6 * i + 5);
     bs2 = bs2.set(6 * i + 5,true);
     bt2.set(6 * i + 5);
     fb2.set(6 * i + 5);
@@ -731,6 +764,9 @@ function AndInplaceBench() {
   // add tests
   var ms = suite.add('FastBitSet (inplace)', function() {
     return b1.intersection(b2);
+  })
+  .add('TypedFastBitSet (inplace)', function() {
+    return tyb1.intersection(tyb2);
   })
     .add('tdegrunt.BitSet (inplace)', function() {
       return bt1.and(bt2);
@@ -752,10 +788,12 @@ function AndInplaceBench() {
 function AndNotInplaceBench() {
   console.log('starting inplace difference  benchmark');
   var b1 = new FastBitSet();
+  var tyb1 = new TypedFastBitSet();
   var bs1 = new BitSet();
   var bt1 = new tBitSet();
   var fb1 = new fBitSet(6 * 1024 + 5);
   var b2 = new FastBitSet();
+  var tyb2 = new TypedFastBitSet();
   var bs2 = new BitSet();
   var bt2 = new tBitSet();
   var fb2 = new fBitSet(6 * 1024 + 5);
@@ -763,11 +801,13 @@ function AndNotInplaceBench() {
   var s2 = new Set();
   for (var i = 0 ; i < 1024  ; i++) {
     b1.add(3 * i + 5);
+    tyb1.add(3 * i + 5);
     bs1 = bs1.set(3 * i + 5,true);
     bt1.set(3 * i + 5);
     fb1.set(3 * i + 5);
     s1.add(3 * i + 5);
     b2.add(6 * i + 5);
+    tyb2.add(6 * i + 5);
     bs2 = bs2.set(6 * i + 5,true);
     bt2.set(6 * i + 5);
     fb2.set(6 * i + 5);
@@ -786,6 +826,9 @@ function AndNotInplaceBench() {
   // add tests
   var ms = suite.add('FastBitSet (inplace)', function() {
     return b1.difference(b2);
+  })
+   .add('TypedFastBitSet (inplace)', function() {
+    return tyb1.difference(tyb2);
   })
     .add('tdegrunt.BitSet (inplace)', function() {
       return bt1.andNot(bt2);
@@ -869,10 +912,12 @@ function OrBench() {
 function DifferenceBench() {
   console.log('starting difference query benchmark');
   var b1 = new FastBitSet();
+  var tyb1 = new TypedFastBitSet();
   var bs1 = new BitSet();
   var bt1 = new tBitSet();
   var fb1 = new fBitSet(6 * 1024 + 5);
   var b2 = new FastBitSet();
+  var tyb2 = new TypedFastBitSet();
   var bs2 = new BitSet();
   var bt2 = new tBitSet();
   var fb2 = new fBitSet(6 * 1024 + 5);
@@ -880,11 +925,13 @@ function DifferenceBench() {
   var s2 = new Set();
   for (var i = 0 ; i < 1024  ; i++) {
     b1.add(3 * i + 5);
+    tyb1.add(3 * i + 5);
     bs1 = bs1.set(3 * i + 5,true);
     bt1.set(3 * i + 5);
     fb1.set(3 * i + 5);
     s1.add(3 * i + 5);
     b2.add(6 * i + 5);
+    tyb2.add(6 * i + 5);
     bs2 = bs2.set(6 * i + 5,true);
     bt2.set(6 * i + 5);
     fb2.set(6 * i + 5);
@@ -900,6 +947,9 @@ function DifferenceBench() {
   // add tests
   var ms = suite.add('FastBitSet (creates new bitset)', function() {
     return b1.clone().difference(b2);
+  })
+  .add('TypedFastBitSet (creates new bitset)', function() {
+    return tyb1.clone().difference(tyb2);
   })
     .add('infusion.BitSet.js (creates new bitset)', function() {
       return bs1.and(bs2.not());
@@ -932,6 +982,12 @@ var main = function() {
   console.log(os.cpus()[0]['model']);
   console.log('Node version ' + process.versions.node + ', v8 version ' + process.versions.v8);
   console.log();
+  console.log("create/query benchmarks");
+  console.log();
+  CreateBench();
+  console.log('');
+  QueryBench();
+  console.log('');
   console.log('We proceed with the logical operations generating new bitmaps: ');
   console.log('');
   OrBench();
@@ -960,10 +1016,6 @@ var main = function() {
   DifferenceCardBench();
   console.log('');
   console.log('We conclude with other benchmarks: ');
-  console.log('');
-  CreateBench();
-  console.log('');
-  QueryBench();
   console.log('');
   ArrayBench();
   console.log('');
