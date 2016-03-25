@@ -280,7 +280,7 @@ function ForEachBench() {
             var inc = function() {
                 card++;
             };
-            fb.forEach(inc);
+            s.forEach(inc);
             return card;
         })
         // add listeners
