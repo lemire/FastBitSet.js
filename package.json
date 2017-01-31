@@ -21,11 +21,10 @@
   },
   "homepage": "https://github.com/lemire/FastBitSet.js#readme",
   "dependencies": {
-    "benchmark": "~1.0.0",
-    "mocha": "^2.3.4"
   },
   "devDependencies": {
-    "mocha": "^2.3.2"
+    "benchmark": "~1.0.0",
+    "mocha": "^2.3.4"
   },
   "author": "Daniel Lemire <lemire@gmail.com> (http://lemire.me/en/)"
 }
