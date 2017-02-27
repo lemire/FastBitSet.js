@@ -162,7 +162,7 @@ TypedFastBitSet.prototype.forEach = function(fnc) {
     var w =  this.words[k];
     while (w != 0) {
       var t = w & -w;
-      fnc((k << 5) + this.hammingWeight((t - 1) | 0));
+      fnc.call((k << 5) + this.hammingWeight(t - 1));
       w ^= t;
     }
   }
@@ -373,3 +373,5 @@ TypedFastBitSet.prototype.union_size = function(otherbitmap) {
   }
   return answer;
 };
+
+module.exports = TypedFastBitSet;

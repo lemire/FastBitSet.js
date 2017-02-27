@@ -51,7 +51,7 @@ describe('BitSet', function() {
 
   it('Testing array', function() {
       for(var i = 0; i < 1024; i++) {
-        for(var j = 0; i < i; i++) {
+        for(var j = 0; j < i; j++) {
           var ai = [j,i];
           var mb = new FastBitSet(ai);
           if (!arraysEquals(ai, mb.array())) throw 'bad array';
