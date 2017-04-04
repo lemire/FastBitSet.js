@@ -196,3 +196,4 @@ You might also like...
 If you like this library, you might also like 
 - https://github.com/lemire/FastPriorityQueue.js
 - https://github.com/lemire/StablePriorityQueue.js
+- https://github.com/lemire/FastIntegerCompression.js
