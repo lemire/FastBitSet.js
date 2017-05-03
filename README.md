@@ -21,7 +21,7 @@ Usage
 
 ```javascript
 var b = new FastBitSet();// initially empty
-b.set(1);// add the value "1"
+b.add(1);// add the value "1"
 b.has(1); // check that the value is present! (will return true)
 b.add(2);
 console.log(""+b);// should display {1,2}
