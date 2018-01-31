@@ -97,7 +97,7 @@ FastBitSet.prototype.checkedAdd = function(index) {
   var word = this.words[index  >>> 5]
   var newword = word | (1 << index)
   this.words[index >>> 5] = newword
-  return (newword ^ word) >> index
+  return (newword ^ word) >>> index
 };
 
 
