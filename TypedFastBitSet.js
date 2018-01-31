@@ -93,6 +93,16 @@ TypedFastBitSet.prototype.isEmpty = function(index) {
   return true;
 };
 
+// Tries to add the value (Set the bit at index to true), return 1 if the
+// value was added, return 0 if the value was already present
+FastBitSet.prototype.checkedAdd = function(index) {
+  this.resize(index);
+  var word = this.words[index  >>> 5]
+  var newword = word | (1 << index)
+  this.words[index >>> 5] = newword
+  return (newword ^ word) >> index
+};
+
 // Is the value contained in the set? Is the bit at index true or false? Returns a boolean
 TypedFastBitSet.prototype.has = function(index) {
   return (this.words[index  >>> 5] & (1 << index)) !== 0;
