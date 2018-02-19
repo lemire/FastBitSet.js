@@ -104,12 +104,12 @@ FastBitSet.prototype.checkedAdd = function(index) {
 // Reduce the memory usage to a minimum
 FastBitSet.prototype.trim = function(index) {
   var nl = this.words.length
-  while (nl > 0) {
-    if (this.words[nl - 1] === 0)
+  while ((nl > 0) && (this.words[nl - 1] === 0)) {
       nl--;
   }
   this.words = this.words.slice(0,nl);
 };
+
 
 // Resize the bitset so that we can write a value at index
 FastBitSet.prototype.resize = function(index) {

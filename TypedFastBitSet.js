@@ -110,10 +110,11 @@ TypedFastBitSet.prototype.has = function(index) {
 
 // Reduce the memory usage to a minimum
 TypedFastBitSet.prototype.trim = function(index) {
-  while (this.count > 0) {
-    if (this.words[this.count - 1] === 0)
-      this.count--;
+  var nl = this.words.length
+  while ((nl > 0) && (this.words[nl - 1] === 0)) {
+      nl--;
   }
+  this.count = nl
   this.words = this.words.slice(0,this.count);
 };
 

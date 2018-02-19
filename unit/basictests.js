@@ -89,6 +89,15 @@ describe('BitSet', function() {
     if (!arraysEquals(a, ai)) throw 'bad values';
     if (!mb.equals(mb2)) throw 'bad clone';
   });
+  it('Testing trim', function() {
+    var ai = [1,2,4,5,10,31,32,63,64,127,2030];
+    var mb = new FastBitSet(ai);
+    var mb2 = mb.clone();
+    mb2.trim();
+    var a = mb2.array();
+    if (!arraysEquals(a, ai)) throw 'bad values';
+    if (!mb.equals(mb2)) throw 'bad trim/clone';
+  });
 
   it('Testing intersection', function() {
     var a1 = [1,2,4,5,10];
