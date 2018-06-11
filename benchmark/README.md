@@ -9,4 +9,5 @@ npm install microtime
 npm install bitset.js
 npm install --force bitset
 npm install fast-bitset
+npm install roaring
 nodejs test.js

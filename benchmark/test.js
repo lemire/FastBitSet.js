@@ -8,6 +8,7 @@ var BitSet = require('bitset.js');
 var Benchmark = require('benchmark');
 var tBitSet = require('bitset');
 var fBitSet = require('fast-bitset');
+var roaring = require('roaring');
 var os = require('os');
 
 var genericSetIntersection = function(set1, set2) {
@@ -364,6 +365,8 @@ function AndBench() {
   var b1 = new FastBitSet();
   var bs1 = new BitSet();
   var bt1 = new tBitSet();
+  var r1 = new roaring.RoaringBitmap32();
+  var r2 = new roaring.RoaringBitmap32();
   var fb1 = new fBitSet(6 * 1024 + 5);
   var b2 = new FastBitSet();
   var bs2 = new BitSet();
@@ -377,6 +380,8 @@ function AndBench() {
     bt1.set(3 * i + 5);
     fb1.set(3 * i + 5);
     s1.add(3 * i + 5);
+    r1.add(3 * i + 5);
+    r2.add(6 * i + 5);
     b2.add(6 * i + 5);
     bs2 = bs2.set(6 * i + 5,true);
     bt2.set(6 * i + 5);
@@ -398,6 +403,9 @@ function AndBench() {
     .add('mattkrick.fast-bitset  (creates new bitset)', function() {
       return fb1.and(fb2);
     })
+    .add('roaring', function() {
+      return roaring.RoaringBitmap32.and(r1,r2);
+    })
     .add('Set', function() {
       return genericSetIntersection(s1,s2);
     })
@@ -414,6 +422,8 @@ function AndCardBench() {
   var b1 = new FastBitSet();
   var bs1 = new BitSet();
   var bt1 = new tBitSet();
+  var r1 = new roaring.RoaringBitmap32();
+  var r2 = new roaring.RoaringBitmap32();
   var fb1 = new fBitSet(6 * 1024 + 5);
   var b2 = new FastBitSet();
   var bs2 = new BitSet();
@@ -427,6 +437,8 @@ function AndCardBench() {
     bt1.set(3 * i + 5);
     fb1.set(3 * i + 5);
     s1.add(3 * i + 5);
+    r1.add(3 * i + 5);
+    r2.add(6 * i + 5);
     b2.add(6 * i + 5);
     bs2 = bs2.set(6 * i + 5,true);
     bt2.set(6 * i + 5);
@@ -449,6 +461,9 @@ function AndCardBench() {
     .add('FastBitSet (fast way)', function() {
       return b1.intersection_size(b2);
     })
+        .add('roaring', function() {
+          return r1.andCardinality(r2);
+        })
     .add('mattkrick.fast-bitset (creates new bitset)', function() {
       return fb1.and(fb2).getCardinality();
     })
@@ -468,6 +483,8 @@ function OrCardBench() {
   var b1 = new FastBitSet();
   var bs1 = new BitSet();
   var bt1 = new tBitSet();
+  var r1 = new roaring.RoaringBitmap32();
+  var r2 = new roaring.RoaringBitmap32();
   var fb1 = new fBitSet(6 * 1024 + 5);
   var b2 = new FastBitSet();
   var bs2 = new BitSet();
@@ -481,6 +498,8 @@ function OrCardBench() {
     bt1.set(3 * i + 5);
     fb1.set(3 * i + 5);
     s1.add(3 * i + 5);
+    r1.add(3 * i + 5);
+    r2.add(6 * i + 5);
     b2.add(6 * i + 5);
     bs2 = bs2.set(6 * i + 5,true);
     bt2.set(6 * i + 5);
@@ -502,6 +521,9 @@ function OrCardBench() {
     .add('FastBitSet (fast way)', function() {
       return b1.union_size(b2);
     })
+        .add('roaring', function() {
+          return r1.orCardinality(r2);
+        })
     .add('mattkrick.fast-bitset (creates new bitset)', function() {
       return fb1.or(fb2).getCardinality();
     })
@@ -521,6 +543,8 @@ function DifferenceCardBench() {
   var b1 = new FastBitSet();
   var bs1 = new BitSet();
   var bt1 = new tBitSet();
+  var r1 = new roaring.RoaringBitmap32();
+  var r2 = new roaring.RoaringBitmap32();
   var fb1 = new fBitSet(6 * 1024 + 5);
   var b2 = new FastBitSet();
   var bs2 = new BitSet();
@@ -534,6 +558,8 @@ function DifferenceCardBench() {
     bt1.set(3 * i + 5);
     fb1.set(3 * i + 5);
     s1.add(3 * i + 5);
+    r1.add(3 * i + 5);
+    r2.add(6 * i + 5);
     b2.add(6 * i + 5);
     bs2 = bs2.set(6 * i + 5,true);
     bt2.set(6 * i + 5);
@@ -555,6 +581,9 @@ function DifferenceCardBench() {
     .add('FastBitSet (fast way)', function() {
       return b1.difference_size(b2);
     })
+        .add('roaring', function() {
+          return r1.andNotCardinality(r2);
+        })
     .add('Set', function() {
       return genericSetDifferenceCard(s1,s2);
     })
@@ -571,6 +600,8 @@ function OrInplaceBench() {
   var b1 = new FastBitSet();
   var bs1 = new BitSet();
   var bt1 = new tBitSet();
+  var r1 = new roaring.RoaringBitmap32();
+  var r2 = new roaring.RoaringBitmap32();
   var fb1 = new fBitSet(6 * 1024 + 5);
   var b2 = new FastBitSet();
   var bs2 = new BitSet();
@@ -584,6 +615,8 @@ function OrInplaceBench() {
     bt1.set(3 * i + 5);
     fb1.set(3 * i + 5);
     s1.add(3 * i + 5);
+    r1.add(3 * i + 5);
+    r2.add(6 * i + 5);
     b2.add(6 * i + 5);
     bs2 = bs2.set(6 * i + 5,true);
     bt2.set(6 * i + 5);
@@ -596,9 +629,7 @@ function OrInplaceBench() {
   if (bs2.cardinality() != b2.size()) throw 'something is off';
   if (bs2.cardinality() != bt2.cardinality()) throw 'something is off';
   if (bs2.cardinality() != fb2.getCardinality()) throw 'something is off';
-  b1.union(b2);
-  bt1.or(bt2);
-  genericInplaceSetUnion(s1,s2);
+
   var suite = new Benchmark.Suite();
   // add tests
   var ms = suite.add('FastBitSet (inplace)', function() {
@@ -609,6 +640,9 @@ function OrInplaceBench() {
     })
      .add('tdegrunt.BitSet (inplace)', function() {
       return bt1.or(bt2);
+    })
+    .add('roaring', function() {
+          return r1.orInPlace(r2);
     })
     .add('Set (inplace)', function() {
       return genericInplaceSetUnion(s1,s2);
@@ -626,6 +660,8 @@ function AndInplaceBench() {
   var b1 = new FastBitSet();
   var bs1 = new BitSet();
   var bt1 = new tBitSet();
+  var r1 = new roaring.RoaringBitmap32();
+  var r2 = new roaring.RoaringBitmap32();
   var fb1 = new fBitSet(6 * 1024 + 5);
   var b2 = new FastBitSet();
   var bs2 = new BitSet();
@@ -639,6 +675,8 @@ function AndInplaceBench() {
     bt1.set(3 * i + 5);
     fb1.set(3 * i + 5);
     s1.add(3 * i + 5);
+    r1.add(3 * i + 5);
+    r2.add(6 * i + 5);
     b2.add(6 * i + 5);
     bs2 = bs2.set(6 * i + 5,true);
     bt2.set(6 * i + 5);
@@ -665,6 +703,9 @@ function AndInplaceBench() {
      .add('tdegrunt.BitSet (inplace)', function() {
       return bt1.and(bt2);
     })
+    .add('roaring', function() {
+          return r1.andInPlace(r2);
+    })
     .add('Set (inplace)', function() {
       return genericInplaceSetIntersection(s1,s2);
     })
@@ -681,6 +722,8 @@ function AndNotInplaceBench() {
   var b1 = new FastBitSet();
   var bs1 = new BitSet();
   var bt1 = new tBitSet();
+  var r1 = new roaring.RoaringBitmap32();
+  var r2 = new roaring.RoaringBitmap32();
   var fb1 = new fBitSet(6 * 1024 + 5);
   var b2 = new FastBitSet();
   var bs2 = new BitSet();
@@ -694,6 +737,8 @@ function AndNotInplaceBench() {
     bt1.set(3 * i + 5);
     fb1.set(3 * i + 5);
     s1.add(3 * i + 5);
+    r1.add(3 * i + 5);
+    r2.add(6 * i + 5);
     b2.add(6 * i + 5);
     bs2 = bs2.set(6 * i + 5,true);
     bt2.set(6 * i + 5);
@@ -720,6 +765,9 @@ function AndNotInplaceBench() {
     .add('tdegrunt.BitSet (inplace)', function() {
       return bt1.andNot(bt2);
     })
+        .add('roaring', function() {
+          return r1.andNotInPlace(r2);
+        })
     .add('Set (inplace)', function() {
       return genericInplaceSetDifference(s1,s2);
     })
@@ -736,6 +784,8 @@ function OrBench() {
   var b1 = new FastBitSet();
   var bs1 = new BitSet();
   var bt1 = new tBitSet();
+  var r1 = new roaring.RoaringBitmap32();
+  var r2 = new roaring.RoaringBitmap32();
   var fb1 = new fBitSet(6 * 1024 + 5);
   var b2 = new FastBitSet();
   var bs2 = new BitSet();
@@ -749,6 +799,8 @@ function OrBench() {
     bt1.set(3 * i + 5);
     fb1.set(3 * i + 5);
     s1.add(3 * i + 5);
+    r1.add(3 * i + 5);
+    r2.add(6 * i + 5);
     b2.add(6 * i + 5);
     bs2 = bs2.set(6 * i + 5,true);
     bt2.set(6 * i + 5);
@@ -761,6 +813,7 @@ function OrBench() {
   if (bs2.cardinality() != b2.size()) throw 'something is off';
   if (bs2.cardinality() != bt2.cardinality()) throw 'something is off';
   if (bs2.cardinality() != fb2.getCardinality()) throw 'something is off';
+  roaring.RoaringBitmap32.or(r1,r2);
   var suite = new Benchmark.Suite();
   // add tests
   var ms = suite.add('FastBitSet (creates new bitset)', function() {
@@ -768,6 +821,9 @@ function OrBench() {
   })
     .add('mattkrick.fast-bitset (creates new bitset)', function() {
       return fb1.or(fb2);
+    })
+    .add('roaring', function() {
+      return roaring.RoaringBitmap32.or(r1,r2);
     })
     .add('Set', function() {
       return genericSetUnion(s1,s2);
@@ -785,6 +841,8 @@ function DifferenceBench() {
   var b1 = new FastBitSet();
   var bs1 = new BitSet();
   var bt1 = new tBitSet();
+  var r1 = new roaring.RoaringBitmap32();
+  var r2 = new roaring.RoaringBitmap32();
   var fb1 = new fBitSet(6 * 1024 + 5);
   var b2 = new FastBitSet();
   var bs2 = new BitSet();
@@ -798,6 +856,8 @@ function DifferenceBench() {
     bt1.set(3 * i + 5);
     fb1.set(3 * i + 5);
     s1.add(3 * i + 5);
+    r1.add(3 * i + 5);
+    r2.add(6 * i + 5);
     b2.add(6 * i + 5);
     bs2 = bs2.set(6 * i + 5,true);
     bt2.set(6 * i + 5);
@@ -817,6 +877,9 @@ function DifferenceBench() {
   })
     .add('Set', function() {
       return genericSetDifference(s1,s2);
+    })
+    .add('roaring', function() {
+          return roaring.RoaringBitmap32.andNot(r1,r2);
     })
     // add listeners
     .on('cycle', function(event) {
