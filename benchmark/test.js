@@ -93,13 +93,15 @@ var genericSetDifferenceCard = function(set1, set2) {
   return set1.size - genericSetIntersectionCard(set1,set2);
 };
 
+const N = 1024 * 1024;
+
 function CreateBench() {
   console.log('starting dynamic bitmap creation benchmark');
   var b = new FastBitSet();
   var bs = new BitSet();
   var bt = new tBitSet();
-  var fb = new fBitSet(3 * 1024 + 5);
-  for (var i = 0 ; i < 1024  ; i++) {
+  var fb = new fBitSet(3 * N + 5);
+  for (var i = 0 ; i < N  ; i++) {
     b.add(3 * i + 5);
     bs = bs.set(3 * i + 5,true);
     bt.set(3 * i + 5);
@@ -112,28 +114,28 @@ function CreateBench() {
   // add tests
   var ms = suite.add('FastBitSet', function() {
     var b = new FastBitSet();
-    for (var i = 0 ; i < 1024  ; i++) {
+    for (var i = 0 ; i < N  ; i++) {
       b.add(3 * i + 5);
     }
     return b;
   })
     .add('infusion.BitSet.js', function() {
       var bs = new BitSet();
-      for (var i = 0 ; i < 1024  ; i++) {
+      for (var i = 0 ; i < N  ; i++) {
         bs = bs.set(3 * i + 5,true);
       }
       return bs;
     })
     .add('tdegrunt.BitSet', function() {
       var bt = new tBitSet();
-      for (var i = 0 ; i < 1024  ; i++) {
+      for (var i = 0 ; i < N  ; i++) {
         bt.set(3 * i + 5);
       }
       return bt;
     })
     .add('Set', function() {
       var bt = new Set();
-      for (var i = 0 ; i < 1024  ; i++) {
+      for (var i = 0 ; i < N  ; i++) {
         bt.add(3 * i + 5);
       }
       return bt;
@@ -151,8 +153,8 @@ function ArrayBench() {
   var b = new FastBitSet();
   var bs = new BitSet();
   var bt = new tBitSet();
-  var fb = new fBitSet(3 * 1024 + 5);
-  for (var i = 0 ; i < 1024  ; i++) {
+  var fb = new fBitSet(3 * N + 5);
+  for (var i = 0 ; i < N  ; i++) {
     b.add(3 * i + 5);
     bs = bs.set(3 * i + 5,true);
     bt.set(3 * i + 5);
@@ -185,9 +187,9 @@ function ForEachBench() {
   var b = new FastBitSet();
   var bs = new BitSet();
   var bt = new tBitSet();
-  var fb = new fBitSet(3 * 1024 + 5);
+  var fb = new fBitSet(3 * N + 5);
   var s = new Set();
-  for (var i = 0 ; i < 1024  ; i++) {
+  for (var i = 0 ; i < N  ; i++) {
     b.add(3 * i + 5);
     bs = bs.set(3 * i + 5,true);
     bt.set(3 * i + 5);
@@ -247,8 +249,8 @@ function CardBench() {
   var b = new FastBitSet();
   var bs = new BitSet();
   var bt = new tBitSet();
-  var fb = new fBitSet(3 * 1024 + 5);
-  for (var i = 0 ; i < 1024  ; i++) {
+  var fb = new fBitSet(3 * N + 5);
+  for (var i = 0 ; i < N  ; i++) {
     b.add(3 * i + 5);
     bs = bs.set(3 * i + 5,true);
     bt.set(3 * i + 5);
@@ -284,9 +286,9 @@ function QueryBench() {
   var b = new FastBitSet();
   var bs = new BitSet();
   var bt = new tBitSet();
-  var fb = new fBitSet(3 * 1024 + 5);
+  var fb = new fBitSet(3 * N + 5);
   var s = new Set();
-  for (var i = 0 ; i < 1024  ; i++) {
+  for (var i = 0 ; i < N  ; i++) {
     b.add(3 * i + 5);
     bs = bs.set(3 * i + 5,true);
     bt.set(3 * i + 5);
@@ -326,9 +328,9 @@ function CloneBench() {
   var b = new FastBitSet();
   var bs = new BitSet();
   var bt = new tBitSet();
-  var fb = new fBitSet(3 * 1024  + 5);
+  var fb = new fBitSet(3 * N  + 5);
   var s = new Set();
-  for (var i = 0 ; i < 1024  ; i++) {
+  for (var i = 0 ; i < N  ; i++) {
     b.add(3 * i + 5);
     bs = bs.set(3 * i + 5,true);
     bt.set(3 * i + 5);
@@ -367,14 +369,14 @@ function AndBench() {
   var bt1 = new tBitSet();
   var r1 = new roaring.RoaringBitmap32();
   var r2 = new roaring.RoaringBitmap32();
-  var fb1 = new fBitSet(6 * 1024 + 5);
+  var fb1 = new fBitSet(6 * N + 5);
   var b2 = new FastBitSet();
   var bs2 = new BitSet();
   var bt2 = new tBitSet();
-  var fb2 = new fBitSet(6 * 1024 + 5);
+  var fb2 = new fBitSet(6 * N + 5);
   var s1 = new Set();
   var s2 = new Set();
-  for (var i = 0 ; i < 1024  ; i++) {
+  for (var i = 0 ; i < N  ; i++) {
     b1.add(3 * i + 5);
     bs1 = bs1.set(3 * i + 5,true);
     bt1.set(3 * i + 5);
@@ -424,14 +426,14 @@ function AndCardBench() {
   var bt1 = new tBitSet();
   var r1 = new roaring.RoaringBitmap32();
   var r2 = new roaring.RoaringBitmap32();
-  var fb1 = new fBitSet(6 * 1024 + 5);
+  var fb1 = new fBitSet(6 * N + 5);
   var b2 = new FastBitSet();
   var bs2 = new BitSet();
   var bt2 = new tBitSet();
-  var fb2 = new fBitSet(6 * 1024 + 5);
+  var fb2 = new fBitSet(6 * N + 5);
   var s1 = new Set();
   var s2 = new Set();
-  for (var i = 0 ; i < 1024  ; i++) {
+  for (var i = 0 ; i < N  ; i++) {
     b1.add(3 * i + 5);
     bs1 = bs1.set(3 * i + 5,true);
     bt1.set(3 * i + 5);
@@ -485,14 +487,14 @@ function OrCardBench() {
   var bt1 = new tBitSet();
   var r1 = new roaring.RoaringBitmap32();
   var r2 = new roaring.RoaringBitmap32();
-  var fb1 = new fBitSet(6 * 1024 + 5);
+  var fb1 = new fBitSet(6 * N + 5);
   var b2 = new FastBitSet();
   var bs2 = new BitSet();
   var bt2 = new tBitSet();
-  var fb2 = new fBitSet(6 * 1024 + 5);
+  var fb2 = new fBitSet(6 * N + 5);
   var s1 = new Set();
   var s2 = new Set();
-  for (var i = 0 ; i < 1024  ; i++) {
+  for (var i = 0 ; i < N  ; i++) {
     b1.add(3 * i + 5);
     bs1 = bs1.set(3 * i + 5,true);
     bt1.set(3 * i + 5);
@@ -545,14 +547,14 @@ function DifferenceCardBench() {
   var bt1 = new tBitSet();
   var r1 = new roaring.RoaringBitmap32();
   var r2 = new roaring.RoaringBitmap32();
-  var fb1 = new fBitSet(6 * 1024 + 5);
+  var fb1 = new fBitSet(6 * N + 5);
   var b2 = new FastBitSet();
   var bs2 = new BitSet();
   var bt2 = new tBitSet();
-  var fb2 = new fBitSet(6 * 1024 + 5);
+  var fb2 = new fBitSet(6 * N + 5);
   var s1 = new Set();
   var s2 = new Set();
-  for (var i = 0 ; i < 1024  ; i++) {
+  for (var i = 0 ; i < N  ; i++) {
     b1.add(3 * i + 5);
     bs1 = bs1.set(3 * i + 5,true);
     bt1.set(3 * i + 5);
@@ -602,14 +604,14 @@ function OrInplaceBench() {
   var bt1 = new tBitSet();
   var r1 = new roaring.RoaringBitmap32();
   var r2 = new roaring.RoaringBitmap32();
-  var fb1 = new fBitSet(6 * 1024 + 5);
+  var fb1 = new fBitSet(6 * N + 5);
   var b2 = new FastBitSet();
   var bs2 = new BitSet();
   var bt2 = new tBitSet();
-  var fb2 = new fBitSet(6 * 1024 + 5);
+  var fb2 = new fBitSet(6 * N + 5);
   var s1 = new Set();
   var s2 = new Set();
-  for (var i = 0 ; i < 1024  ; i++) {
+  for (var i = 0 ; i < N  ; i++) {
     b1.add(3 * i + 5);
     bs1 = bs1.set(3 * i + 5,true);
     bt1.set(3 * i + 5);
@@ -662,14 +664,14 @@ function AndInplaceBench() {
   var bt1 = new tBitSet();
   var r1 = new roaring.RoaringBitmap32();
   var r2 = new roaring.RoaringBitmap32();
-  var fb1 = new fBitSet(6 * 1024 + 5);
+  var fb1 = new fBitSet(6 * N + 5);
   var b2 = new FastBitSet();
   var bs2 = new BitSet();
   var bt2 = new tBitSet();
-  var fb2 = new fBitSet(6 * 1024 + 5);
+  var fb2 = new fBitSet(6 * N + 5);
   var s1 = new Set();
   var s2 = new Set();
-  for (var i = 0 ; i < 1024  ; i++) {
+  for (var i = 0 ; i < N  ; i++) {
     b1.add(3 * i + 5);
     bs1 = bs1.set(3 * i + 5,true);
     bt1.set(3 * i + 5);
@@ -724,14 +726,14 @@ function AndNotInplaceBench() {
   var bt1 = new tBitSet();
   var r1 = new roaring.RoaringBitmap32();
   var r2 = new roaring.RoaringBitmap32();
-  var fb1 = new fBitSet(6 * 1024 + 5);
+  var fb1 = new fBitSet(6 * N + 5);
   var b2 = new FastBitSet();
   var bs2 = new BitSet();
   var bt2 = new tBitSet();
-  var fb2 = new fBitSet(6 * 1024 + 5);
+  var fb2 = new fBitSet(6 * N + 5);
   var s1 = new Set();
   var s2 = new Set();
-  for (var i = 0 ; i < 1024  ; i++) {
+  for (var i = 0 ; i < N  ; i++) {
     b1.add(3 * i + 5);
     bs1 = bs1.set(3 * i + 5,true);
     bt1.set(3 * i + 5);
@@ -786,14 +788,14 @@ function OrBench() {
   var bt1 = new tBitSet();
   var r1 = new roaring.RoaringBitmap32();
   var r2 = new roaring.RoaringBitmap32();
-  var fb1 = new fBitSet(6 * 1024 + 5);
+  var fb1 = new fBitSet(6 * N + 5);
   var b2 = new FastBitSet();
   var bs2 = new BitSet();
   var bt2 = new tBitSet();
-  var fb2 = new fBitSet(6 * 1024 + 5);
+  var fb2 = new fBitSet(6 * N + 5);
   var s1 = new Set();
   var s2 = new Set();
-  for (var i = 0 ; i < 1024  ; i++) {
+  for (var i = 0 ; i < N  ; i++) {
     b1.add(3 * i + 5);
     bs1 = bs1.set(3 * i + 5,true);
     bt1.set(3 * i + 5);
@@ -816,16 +818,17 @@ function OrBench() {
   roaring.RoaringBitmap32.or(r1,r2);
   var suite = new Benchmark.Suite();
   // add tests
-  var ms = suite.add('FastBitSet (creates new bitset)', function() {
-    return b1.new_union(b2);
-  })
-    .add('mattkrick.fast-bitset (creates new bitset)', function() {
-      return fb1.or(fb2);
-    })
+  var ms = suite
     .add('roaring', function() {
       return roaring.RoaringBitmap32.or(r1,r2);
     })
-    .add('Set', function() {
+   .add('FastBitSet (creates new bitset)', function() {
+     return b1.new_union(b2);
+   })
+   .add('mattkrick.fast-bitset (creates new bitset)', function() {
+      return fb1.or(fb2);
+   })
+   .add('Set', function() {
       return genericSetUnion(s1,s2);
     })
     // add listeners
@@ -843,14 +846,14 @@ function DifferenceBench() {
   var bt1 = new tBitSet();
   var r1 = new roaring.RoaringBitmap32();
   var r2 = new roaring.RoaringBitmap32();
-  var fb1 = new fBitSet(6 * 1024 + 5);
+  var fb1 = new fBitSet(6 * N + 5);
   var b2 = new FastBitSet();
   var bs2 = new BitSet();
   var bt2 = new tBitSet();
-  var fb2 = new fBitSet(6 * 1024 + 5);
+  var fb2 = new fBitSet(6 * N + 5);
   var s1 = new Set();
   var s2 = new Set();
-  for (var i = 0 ; i < 1024  ; i++) {
+  for (var i = 0 ; i < N  ; i++) {
     b1.add(3 * i + 5);
     bs1 = bs1.set(3 * i + 5,true);
     bt1.set(3 * i + 5);
