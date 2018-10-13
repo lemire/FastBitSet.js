@@ -4,6 +4,7 @@
 'use strict';
 
 var FastBitSet = require('../FastBitSet.js');
+var TypedFastBitSet = require('typedfastbitset');
 var BitSet = require('bitset.js');
 var Benchmark = require('benchmark');
 var tBitSet = require('bitset');
@@ -98,6 +99,8 @@ const N = 1024 * 1024;
 function CreateBench() {
   console.log('starting dynamic bitmap creation benchmark');
   var b = new FastBitSet();
+  var tb = new TypedFastBitSet();
+
   var bs = new BitSet();
   var bt = new tBitSet();
   var fb = new fBitSet(3 * N + 5);
@@ -114,6 +117,13 @@ function CreateBench() {
   // add tests
   var ms = suite.add('FastBitSet', function() {
     var b = new FastBitSet();
+    for (var i = 0 ; i < N  ; i++) {
+      b.add(3 * i + 5);
+    }
+    return b;
+  })
+  .add('TypedFastBitSet', function() {
+    var b = new TypedFastBitSet();
     for (var i = 0 ; i < N  ; i++) {
       b.add(3 * i + 5);
     }
@@ -151,11 +161,13 @@ function CreateBench() {
 function ArrayBench() {
   console.log('starting array extraction benchmark');
   var b = new FastBitSet();
+  var tb = new TypedFastBitSet();
   var bs = new BitSet();
   var bt = new tBitSet();
   var fb = new fBitSet(3 * N + 5);
   for (var i = 0 ; i < N  ; i++) {
     b.add(3 * i + 5);
+    tb.add(3 * i + 5);
     bs = bs.set(3 * i + 5,true);
     bt.set(3 * i + 5);
     fb.set(3 * i + 5);
@@ -167,6 +179,9 @@ function ArrayBench() {
   // add tests
   var ms = suite.add('FastBitSet', function() {
     return b.array();
+  })
+  .add('TypedFastBitSet', function() {
+    return tb.array();
   })
     .add('infusion.BitSet.js', function() {
       return bs.toArray();
@@ -185,12 +200,15 @@ function ArrayBench() {
 function ForEachBench() {
   console.log('starting forEach benchmark');
   var b = new FastBitSet();
+  var tb = new TypedFastBitSet();
+
   var bs = new BitSet();
   var bt = new tBitSet();
   var fb = new fBitSet(3 * N + 5);
   var s = new Set();
   for (var i = 0 ; i < N  ; i++) {
     b.add(3 * i + 5);
+    tb.add(3 * i + 5);
     bs = bs.set(3 * i + 5,true);
     bt.set(3 * i + 5);
     fb.set(3 * i + 5);
@@ -213,9 +231,23 @@ function ForEachBench() {
     };
     b.forEach(inc);
     return card;
+  }).add('TypedFastBitSet', function() {
+    var card = 0;
+    var inc = function() {
+      card++;
+    };
+    tb.forEach(inc);
+    return card;
   }).add('FastBitSet (via array)', function() {
     var card = 0;
     for (var i in b.array()) {
+      card++;
+    }
+    return card;
+  })
+  .add('TypedFastBitSet (via array)', function() {
+    var card = 0;
+    for (var i in tb.array()) {
       card++;
     }
     return card;
@@ -247,11 +279,13 @@ function ForEachBench() {
 function CardBench() {
   console.log('starting cardinality benchmark');
   var b = new FastBitSet();
+  var tb = new TypedFastBitSet();
   var bs = new BitSet();
   var bt = new tBitSet();
   var fb = new fBitSet(3 * N + 5);
   for (var i = 0 ; i < N  ; i++) {
     b.add(3 * i + 5);
+    tb.add(3 * i + 5);
     bs = bs.set(3 * i + 5,true);
     bt.set(3 * i + 5);
     fb.set(3 * i + 5);
@@ -262,6 +296,8 @@ function CardBench() {
   var suite = new Benchmark.Suite();
   // add tests
   var ms = suite.add('FastBitSet', function() {
+    return b.size();
+  }).add('TypedFastBitSet', function() {
     return b.size();
   })
     .add('infusion.BitSet.js', function() {
@@ -284,12 +320,14 @@ function CardBench() {
 function QueryBench() {
   console.log('starting query benchmark');
   var b = new FastBitSet();
+  var tb = new TypedFastBitSet();
   var bs = new BitSet();
   var bt = new tBitSet();
   var fb = new fBitSet(3 * N + 5);
   var s = new Set();
   for (var i = 0 ; i < N  ; i++) {
     b.add(3 * i + 5);
+    tb.add(3 * i + 5);
     bs = bs.set(3 * i + 5,true);
     bt.set(3 * i + 5);
     fb.set(3 * i + 5);
@@ -302,6 +340,9 @@ function QueryBench() {
   // add tests
   var ms = suite.add('FastBitSet', function() {
     return b.has(122);
+  })
+  .add('TypedFastBitSet', function() {
+    return tb.has(122);
   })
     .add('infusion.BitSet.js', function() {
       return bs.get(122);
@@ -326,12 +367,14 @@ function QueryBench() {
 function CloneBench() {
   console.log('starting clone benchmark');
   var b = new FastBitSet();
+  var tb = new TypedFastBitSet();
   var bs = new BitSet();
   var bt = new tBitSet();
   var fb = new fBitSet(3 * N  + 5);
   var s = new Set();
   for (var i = 0 ; i < N  ; i++) {
     b.add(3 * i + 5);
+    tb.add(3 * i + 5);
     bs = bs.set(3 * i + 5,true);
     bt.set(3 * i + 5);
     fb.set(3 * i + 5);
@@ -344,6 +387,8 @@ function CloneBench() {
   // add tests
   var ms = suite.add('FastBitSet', function() {
     return b.clone();
+  }).add('TypedFastBitSet', function() {
+    return tb.clone();
   })
     .add('infusion.BitSet.js', function() {
       return bs.clone();
@@ -365,12 +410,14 @@ function CloneBench() {
 function AndBench() {
   console.log('starting intersection query benchmark');
   var b1 = new FastBitSet();
+  var tb1 = new TypedFastBitSet();
   var bs1 = new BitSet();
   var bt1 = new tBitSet();
   var r1 = new roaring.RoaringBitmap32();
   var r2 = new roaring.RoaringBitmap32();
   var fb1 = new fBitSet(6 * N + 5);
   var b2 = new FastBitSet();
+  var tb2 = new TypedFastBitSet();
   var bs2 = new BitSet();
   var bt2 = new tBitSet();
   var fb2 = new fBitSet(6 * N + 5);
@@ -378,6 +425,7 @@ function AndBench() {
   var s2 = new Set();
   for (var i = 0 ; i < N  ; i++) {
     b1.add(3 * i + 5);
+    tb1.add(3 * i + 5);
     bs1 = bs1.set(3 * i + 5,true);
     bt1.set(3 * i + 5);
     fb1.set(3 * i + 5);
@@ -385,6 +433,7 @@ function AndBench() {
     r1.add(3 * i + 5);
     r2.add(6 * i + 5);
     b2.add(6 * i + 5);
+    tb2.add(6 * i + 5);
     bs2 = bs2.set(6 * i + 5,true);
     bt2.set(6 * i + 5);
     fb2.set(6 * i + 5);
@@ -402,9 +451,13 @@ function AndBench() {
   var ms = suite.add('FastBitSet (creates new bitset)', function() {
     return b1.new_intersection(b2);
   })
+  .add('TypedFastBitSet (creates new bitset)', function() {
+    return tb1.new_intersection(tb2);
+  })
     .add('mattkrick.fast-bitset  (creates new bitset)', function() {
       return fb1.and(fb2);
     })
+    
     .add('roaring', function() {
       return roaring.RoaringBitmap32.and(r1,r2);
     })
@@ -422,12 +475,14 @@ function AndBench() {
 function AndCardBench() {
   console.log('starting intersection cardinality query benchmark');
   var b1 = new FastBitSet();
+  var tb1 = new TypedFastBitSet();
   var bs1 = new BitSet();
   var bt1 = new tBitSet();
   var r1 = new roaring.RoaringBitmap32();
   var r2 = new roaring.RoaringBitmap32();
   var fb1 = new fBitSet(6 * N + 5);
   var b2 = new FastBitSet();
+  var tb2 = new TypedFastBitSet();
   var bs2 = new BitSet();
   var bt2 = new tBitSet();
   var fb2 = new fBitSet(6 * N + 5);
@@ -435,6 +490,7 @@ function AndCardBench() {
   var s2 = new Set();
   for (var i = 0 ; i < N  ; i++) {
     b1.add(3 * i + 5);
+    tb1.add(3 * i + 5);
     bs1 = bs1.set(3 * i + 5,true);
     bt1.set(3 * i + 5);
     fb1.set(3 * i + 5);
@@ -442,6 +498,7 @@ function AndCardBench() {
     r1.add(3 * i + 5);
     r2.add(6 * i + 5);
     b2.add(6 * i + 5);
+    tb2.add(6 * i + 5);
     bs2 = bs2.set(6 * i + 5,true);
     bt2.set(6 * i + 5);
     fb2.set(6 * i + 5);
@@ -463,6 +520,12 @@ function AndCardBench() {
     .add('FastBitSet (fast way)', function() {
       return b1.intersection_size(b2);
     })
+    .add('TypedFastBitSet (creates new bitset)', function() {
+      return tb1.new_intersection(tb2).size();
+    })
+      .add('TypedFastBitSet (fast way)', function() {
+        return tb1.intersection_size(tb2);
+      })
         .add('roaring', function() {
           return r1.andCardinality(r2);
         })
@@ -483,12 +546,14 @@ function AndCardBench() {
 function OrCardBench() {
   console.log('starting union cardinality query benchmark');
   var b1 = new FastBitSet();
+  var tb1 = new TypedFastBitSet();
   var bs1 = new BitSet();
   var bt1 = new tBitSet();
   var r1 = new roaring.RoaringBitmap32();
   var r2 = new roaring.RoaringBitmap32();
   var fb1 = new fBitSet(6 * N + 5);
   var b2 = new FastBitSet();
+  var tb2 = new TypedFastBitSet();
   var bs2 = new BitSet();
   var bt2 = new tBitSet();
   var fb2 = new fBitSet(6 * N + 5);
@@ -496,6 +561,7 @@ function OrCardBench() {
   var s2 = new Set();
   for (var i = 0 ; i < N  ; i++) {
     b1.add(3 * i + 5);
+    tb1.add(3 * i + 5);
     bs1 = bs1.set(3 * i + 5,true);
     bt1.set(3 * i + 5);
     fb1.set(3 * i + 5);
@@ -503,6 +569,7 @@ function OrCardBench() {
     r1.add(3 * i + 5);
     r2.add(6 * i + 5);
     b2.add(6 * i + 5);
+    tb2.add(6 * i + 5);
     bs2 = bs2.set(6 * i + 5,true);
     bt2.set(6 * i + 5);
     fb2.set(6 * i + 5);
@@ -523,6 +590,12 @@ function OrCardBench() {
     .add('FastBitSet (fast way)', function() {
       return b1.union_size(b2);
     })
+    .add('TypedFastBitSet (creates new bitset)', function() {
+      return tb1.new_union(tb2).size();
+    })
+      .add('TypedFastBitSet (fast way)', function() {
+        return tb1.union_size(tb2);
+      })
         .add('roaring', function() {
           return r1.orCardinality(r2);
         })
@@ -543,12 +616,14 @@ function OrCardBench() {
 function DifferenceCardBench() {
   console.log('starting difference cardinality query benchmark');
   var b1 = new FastBitSet();
+  var tb1 = new TypedFastBitSet();
   var bs1 = new BitSet();
   var bt1 = new tBitSet();
   var r1 = new roaring.RoaringBitmap32();
   var r2 = new roaring.RoaringBitmap32();
   var fb1 = new fBitSet(6 * N + 5);
   var b2 = new FastBitSet();
+  var tb2 = new TypedFastBitSet();
   var bs2 = new BitSet();
   var bt2 = new tBitSet();
   var fb2 = new fBitSet(6 * N + 5);
@@ -556,6 +631,7 @@ function DifferenceCardBench() {
   var s2 = new Set();
   for (var i = 0 ; i < N  ; i++) {
     b1.add(3 * i + 5);
+    tb1.add(3 * i + 5);
     bs1 = bs1.set(3 * i + 5,true);
     bt1.set(3 * i + 5);
     fb1.set(3 * i + 5);
@@ -563,6 +639,7 @@ function DifferenceCardBench() {
     r1.add(3 * i + 5);
     r2.add(6 * i + 5);
     b2.add(6 * i + 5);
+    tb2.add(6 * i + 5);
     bs2 = bs2.set(6 * i + 5,true);
     bt2.set(6 * i + 5);
     fb2.set(6 * i + 5);
@@ -583,6 +660,12 @@ function DifferenceCardBench() {
     .add('FastBitSet (fast way)', function() {
       return b1.difference_size(b2);
     })
+    .add('TypedFastBitSet (creates new bitset)', function() {
+      return tb1.new_union(tb2).size();
+    })
+      .add('TypedFastBitSet (fast way)', function() {
+        return tb1.difference_size(tb2);
+      })
         .add('roaring', function() {
           return r1.andNotCardinality(r2);
         })
@@ -600,12 +683,14 @@ function DifferenceCardBench() {
 function OrInplaceBench() {
   console.log('starting inplace union  benchmark');
   var b1 = new FastBitSet();
+  var tb1 = new TypedFastBitSet();
   var bs1 = new BitSet();
   var bt1 = new tBitSet();
   var r1 = new roaring.RoaringBitmap32();
   var r2 = new roaring.RoaringBitmap32();
   var fb1 = new fBitSet(6 * N + 5);
   var b2 = new FastBitSet();
+  var tb2 = new TypedFastBitSet();
   var bs2 = new BitSet();
   var bt2 = new tBitSet();
   var fb2 = new fBitSet(6 * N + 5);
@@ -613,6 +698,7 @@ function OrInplaceBench() {
   var s2 = new Set();
   for (var i = 0 ; i < N  ; i++) {
     b1.add(3 * i + 5);
+    tb1.add(3 * i + 5);
     bs1 = bs1.set(3 * i + 5,true);
     bt1.set(3 * i + 5);
     fb1.set(3 * i + 5);
@@ -620,6 +706,7 @@ function OrInplaceBench() {
     r1.add(3 * i + 5);
     r2.add(6 * i + 5);
     b2.add(6 * i + 5);
+    tb2.add(6 * i + 5);
     bs2 = bs2.set(6 * i + 5,true);
     bt2.set(6 * i + 5);
     fb2.set(6 * i + 5);
@@ -636,6 +723,9 @@ function OrInplaceBench() {
   // add tests
   var ms = suite.add('FastBitSet (inplace)', function() {
     return b1.union(b2);
+  })
+  .add('TypedFastBitSet (inplace)', function() {
+    return tb1.union(tb2);
   })
     .add('infusion.BitSet.js (inplace)', function() {
       return bs1.or(bs2);
@@ -660,12 +750,14 @@ function OrInplaceBench() {
 function AndInplaceBench() {
   console.log('starting inplace intersection  benchmark');
   var b1 = new FastBitSet();
+  var tb1 = new TypedFastBitSet();
   var bs1 = new BitSet();
   var bt1 = new tBitSet();
   var r1 = new roaring.RoaringBitmap32();
   var r2 = new roaring.RoaringBitmap32();
   var fb1 = new fBitSet(6 * N + 5);
   var b2 = new FastBitSet();
+  var tb2 = new TypedFastBitSet();
   var bs2 = new BitSet();
   var bt2 = new tBitSet();
   var fb2 = new fBitSet(6 * N + 5);
@@ -673,6 +765,7 @@ function AndInplaceBench() {
   var s2 = new Set();
   for (var i = 0 ; i < N  ; i++) {
     b1.add(3 * i + 5);
+    tb1.add(3 * i + 5);
     bs1 = bs1.set(3 * i + 5,true);
     bt1.set(3 * i + 5);
     fb1.set(3 * i + 5);
@@ -680,6 +773,7 @@ function AndInplaceBench() {
     r1.add(3 * i + 5);
     r2.add(6 * i + 5);
     b2.add(6 * i + 5);
+    tb2.add(6 * i + 5);
     bs2 = bs2.set(6 * i + 5,true);
     bt2.set(6 * i + 5);
     fb2.set(6 * i + 5);
@@ -698,6 +792,9 @@ function AndInplaceBench() {
   // add tests
   var ms = suite.add('FastBitSet (inplace)', function() {
     return b1.intersection(b2);
+  })
+  .add('TypedFastBitSet (inplace)', function() {
+    return tb1.intersection(tb2);
   })
     .add('infusion.BitSet.js (inplace)', function() {
       return bs1.and(bs2);
@@ -722,12 +819,14 @@ function AndInplaceBench() {
 function AndNotInplaceBench() {
   console.log('starting inplace difference  benchmark');
   var b1 = new FastBitSet();
+  var tb1 = new TypedFastBitSet();
   var bs1 = new BitSet();
   var bt1 = new tBitSet();
   var r1 = new roaring.RoaringBitmap32();
   var r2 = new roaring.RoaringBitmap32();
   var fb1 = new fBitSet(6 * N + 5);
   var b2 = new FastBitSet();
+  var tb2 = new TypedFastBitSet();
   var bs2 = new BitSet();
   var bt2 = new tBitSet();
   var fb2 = new fBitSet(6 * N + 5);
@@ -735,6 +834,7 @@ function AndNotInplaceBench() {
   var s2 = new Set();
   for (var i = 0 ; i < N  ; i++) {
     b1.add(3 * i + 5);
+    tb1.add(3 * i + 5);
     bs1 = bs1.set(3 * i + 5,true);
     bt1.set(3 * i + 5);
     fb1.set(3 * i + 5);
@@ -742,6 +842,7 @@ function AndNotInplaceBench() {
     r1.add(3 * i + 5);
     r2.add(6 * i + 5);
     b2.add(6 * i + 5);
+    tb2.add(6 * i + 5);
     bs2 = bs2.set(6 * i + 5,true);
     bt2.set(6 * i + 5);
     fb2.set(6 * i + 5);
@@ -760,6 +861,9 @@ function AndNotInplaceBench() {
   // add tests
   var ms = suite.add('FastBitSet (inplace)', function() {
     return b1.difference(b2);
+  })
+  .add('TypedFastBitSet (inplace)', function() {
+    return tb1.difference(tb2);
   })
     .add('infusion.BitSet.js (inplace)', function() {
       return bs1.andNot(bs2);
@@ -784,12 +888,14 @@ function AndNotInplaceBench() {
 function OrBench() {
   console.log('starting union query benchmark');
   var b1 = new FastBitSet();
+  var tb1 = new TypedFastBitSet();
   var bs1 = new BitSet();
   var bt1 = new tBitSet();
   var r1 = new roaring.RoaringBitmap32();
   var r2 = new roaring.RoaringBitmap32();
   var fb1 = new fBitSet(6 * N + 5);
   var b2 = new FastBitSet();
+  var tb2 = new TypedFastBitSet();
   var bs2 = new BitSet();
   var bt2 = new tBitSet();
   var fb2 = new fBitSet(6 * N + 5);
@@ -797,6 +903,7 @@ function OrBench() {
   var s2 = new Set();
   for (var i = 0 ; i < N  ; i++) {
     b1.add(3 * i + 5);
+    tb1.add(3 * i + 5);
     bs1 = bs1.set(3 * i + 5,true);
     bt1.set(3 * i + 5);
     fb1.set(3 * i + 5);
@@ -804,6 +911,7 @@ function OrBench() {
     r1.add(3 * i + 5);
     r2.add(6 * i + 5);
     b2.add(6 * i + 5);
+    tb2.add(6 * i + 5);
     bs2 = bs2.set(6 * i + 5,true);
     bt2.set(6 * i + 5);
     fb2.set(6 * i + 5);
@@ -825,6 +933,9 @@ function OrBench() {
    .add('FastBitSet (creates new bitset)', function() {
      return b1.new_union(b2);
    })
+   .add('TypedFastBitSet (creates new bitset)', function() {
+    return tb1.new_union(tb2);
+  })
    .add('mattkrick.fast-bitset (creates new bitset)', function() {
       return fb1.or(fb2);
    })
@@ -842,12 +953,14 @@ function OrBench() {
 function DifferenceBench() {
   console.log('starting difference query benchmark');
   var b1 = new FastBitSet();
+  var tb1 = new TypedFastBitSet();
   var bs1 = new BitSet();
   var bt1 = new tBitSet();
   var r1 = new roaring.RoaringBitmap32();
   var r2 = new roaring.RoaringBitmap32();
   var fb1 = new fBitSet(6 * N + 5);
   var b2 = new FastBitSet();
+  var tb2 = new TypedFastBitSet();
   var bs2 = new BitSet();
   var bt2 = new tBitSet();
   var fb2 = new fBitSet(6 * N + 5);
@@ -855,6 +968,7 @@ function DifferenceBench() {
   var s2 = new Set();
   for (var i = 0 ; i < N  ; i++) {
     b1.add(3 * i + 5);
+    tb1.add(3 * i + 5);
     bs1 = bs1.set(3 * i + 5,true);
     bt1.set(3 * i + 5);
     fb1.set(3 * i + 5);
@@ -862,6 +976,7 @@ function DifferenceBench() {
     r1.add(3 * i + 5);
     r2.add(6 * i + 5);
     b2.add(6 * i + 5);
+    tb2.add(6 * i + 5);
     bs2 = bs2.set(6 * i + 5,true);
     bt2.set(6 * i + 5);
     fb2.set(6 * i + 5);
@@ -877,6 +992,9 @@ function DifferenceBench() {
   // add tests
   var ms = suite.add('FastBitSet (creates new bitset)', function() {
     return b1.clone().difference(b2);
+  })
+  .add('TypedFastBitSet (creates new bitset)', function() {
+    return tb1.clone().difference(tb2);
   })
     .add('Set', function() {
       return genericSetDifference(s1,s2);
