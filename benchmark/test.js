@@ -999,9 +999,9 @@ function DifferenceBench() {
     .add('Set', function() {
       return genericSetDifference(s1,s2);
     })
-    .add('roaring', function() {
-          return roaring.RoaringBitmap32.andNot(r1,r2);
-    })
+    //.add('roaring', function() {
+   //       return roaring.RoaringBitmap32.andNot(r1,r2);
+   // })
     // add listeners
     .on('cycle', function(event) {
       console.log(String(event.target));
@@ -1012,6 +1012,8 @@ function DifferenceBench() {
 
 var main = function() {
   console.log('Benchmarking against:');
+  console.log('TypedFastBitSet.js: https://github.com/lemire/TypedFastBitSet.js');
+  console.log('roaring: https://www.npmjs.com/package/roaring');
   console.log('infusion.BitSet.js from https://github.com/infusion/BitSet.js', require("bitset.js/package.json").version);
   console.log('tdegrunt.BitSet from https://github.com/tdegrunt/bitset', require("bitset/package.json").version);
   console.log('mattkrick.fast-bitset from https://github.com/mattkrick/fast-bitset', require("fast-bitset/package.json").version);

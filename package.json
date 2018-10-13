@@ -23,7 +23,11 @@
   "dependencies": {},
   "devDependencies": {
     "benchmark": "~1.0.0",
-    "mocha": "^5.2.0"
+    "bitset.js": "^5.0.0",
+    "fast-bitset": "^1.3.2",
+    "mocha": "^5.2.0",
+    "roaring": "^1.0.0",
+    "typedfastbitset": "0.0.1"
   },
   "author": "Daniel Lemire <lemire@gmail.com> (http://lemire.me/en/)"
 }
