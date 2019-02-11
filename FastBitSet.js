@@ -36,19 +36,22 @@
  */
 'use strict';
 
-function isIterable(obj) {
-  if (obj == null) {
-    return false;
-  }
-  return obj[Symbol.iterator] !== undefined;
-}
-
 // you can provide an iterable
 function FastBitSet(iterable) {
   this.words = []
-  if (isIterable(iterable)) {
-    for (var key of iterable) {
-      this.add(key);
+
+  if (iterable) {
+    if (Symbol && Symbol.iterator && iterable[Symbol.iterator] !== undefined) {
+      var iterator = iterable[Symbol.iterator]();
+      var current = iterator.next();
+      while(!current.done) {
+        this.add(current.value);
+        current = iterator.next();
+      }
+    } else {
+      for (var i=0;i<iterable.length;i++) {
+        this.add(iterable[i]);
+      }
     }
   }
 }
