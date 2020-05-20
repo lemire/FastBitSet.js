@@ -12,6 +12,9 @@ var fBitSet = require('fast-bitset');
 var roaring = require('roaring');
 var os = require('os');
 
+var smallgap = 3
+var largegap = 210
+
 var genericSetIntersection = function(set1, set2) {
   var answer = new Set();
   if (set2.length > set1.length) {
@@ -103,12 +106,12 @@ function CreateBench() {
 
   var bs = new BitSet();
   var bt = new tBitSet();
-  var fb = new fBitSet(3 * N + 5);
+  var fb = new fBitSet(smallgap * N + 5);
   for (var i = 0 ; i < N  ; i++) {
-    b.add(3 * i + 5);
-    bs = bs.set(3 * i + 5,true);
-    bt.set(3 * i + 5);
-    fb.set(3 * i + 5);
+    b.add(smallgap * i + 5);
+    bs = bs.set(smallgap * i + 5,true);
+    bt.set(smallgap * i + 5);
+    fb.set(smallgap * i + 5);
   }
   if (bs.cardinality() != b.size()) throw 'something is off';
   if (bs.cardinality() != bt.cardinality()) throw 'something is off';
@@ -118,35 +121,35 @@ function CreateBench() {
   var ms = suite.add('FastBitSet', function() {
     var b = new FastBitSet();
     for (var i = 0 ; i < N  ; i++) {
-      b.add(3 * i + 5);
+      b.add(smallgap * i + 5);
     }
     return b;
   })
   .add('TypedFastBitSet', function() {
     var b = new TypedFastBitSet();
     for (var i = 0 ; i < N  ; i++) {
-      b.add(3 * i + 5);
+      b.add(smallgap * i + 5);
     }
     return b;
   })
     .add('infusion.BitSet.js', function() {
       var bs = new BitSet();
       for (var i = 0 ; i < N  ; i++) {
-        bs = bs.set(3 * i + 5,true);
+        bs = bs.set(smallgap * i + 5,true);
       }
       return bs;
     })
     .add('tdegrunt.BitSet', function() {
       var bt = new tBitSet();
       for (var i = 0 ; i < N  ; i++) {
-        bt.set(3 * i + 5);
+        bt.set(smallgap * i + 5);
       }
       return bt;
     })
     .add('Set', function() {
       var bt = new Set();
       for (var i = 0 ; i < N  ; i++) {
-        bt.add(3 * i + 5);
+        bt.add(smallgap * i + 5);
       }
       return bt;
     })
@@ -164,13 +167,13 @@ function ArrayBench() {
   var tb = new TypedFastBitSet();
   var bs = new BitSet();
   var bt = new tBitSet();
-  var fb = new fBitSet(3 * N + 5);
+  var fb = new fBitSet(smallgap * N + 5);
   for (var i = 0 ; i < N  ; i++) {
-    b.add(3 * i + 5);
-    tb.add(3 * i + 5);
-    bs = bs.set(3 * i + 5,true);
-    bt.set(3 * i + 5);
-    fb.set(3 * i + 5);
+    b.add(smallgap * i + 5);
+    tb.add(smallgap * i + 5);
+    bs = bs.set(smallgap * i + 5,true);
+    bt.set(smallgap * i + 5);
+    fb.set(smallgap * i + 5);
   }
   if (bs.cardinality() != b.size()) throw 'something is off';
   if (bs.cardinality() != bt.cardinality()) throw 'something is off';
@@ -204,15 +207,15 @@ function ForEachBench() {
 
   var bs = new BitSet();
   var bt = new tBitSet();
-  var fb = new fBitSet(3 * N + 5);
+  var fb = new fBitSet(smallgap * N + 5);
   var s = new Set();
   for (var i = 0 ; i < N  ; i++) {
-    b.add(3 * i + 5);
-    tb.add(3 * i + 5);
-    bs = bs.set(3 * i + 5,true);
-    bt.set(3 * i + 5);
-    fb.set(3 * i + 5);
-    s.add(3 * i + 5);
+    b.add(smallgap * i + 5);
+    tb.add(smallgap * i + 5);
+    bs = bs.set(smallgap * i + 5,true);
+    bt.set(smallgap * i + 5);
+    fb.set(smallgap * i + 5);
+    s.add(smallgap * i + 5);
   }
   var card = 0;
   for (var i in b.array()) {
@@ -282,13 +285,13 @@ function CardBench() {
   var tb = new TypedFastBitSet();
   var bs = new BitSet();
   var bt = new tBitSet();
-  var fb = new fBitSet(3 * N + 5);
+  var fb = new fBitSet(smallgap * N + 5);
   for (var i = 0 ; i < N  ; i++) {
-    b.add(3 * i + 5);
-    tb.add(3 * i + 5);
-    bs = bs.set(3 * i + 5,true);
-    bt.set(3 * i + 5);
-    fb.set(3 * i + 5);
+    b.add(smallgap * i + 5);
+    tb.add(smallgap * i + 5);
+    bs = bs.set(smallgap * i + 5,true);
+    bt.set(smallgap * i + 5);
+    fb.set(smallgap * i + 5);
   }
   if (bs.cardinality() != b.size()) throw 'something is off';
   if (bs.cardinality() != bt.cardinality()) throw 'something is off';
@@ -323,15 +326,15 @@ function QueryBench() {
   var tb = new TypedFastBitSet();
   var bs = new BitSet();
   var bt = new tBitSet();
-  var fb = new fBitSet(3 * N + 5);
+  var fb = new fBitSet(smallgap * N + 5);
   var s = new Set();
   for (var i = 0 ; i < N  ; i++) {
-    b.add(3 * i + 5);
-    tb.add(3 * i + 5);
-    bs = bs.set(3 * i + 5,true);
-    bt.set(3 * i + 5);
-    fb.set(3 * i + 5);
-    s.add(3 * i + 5);
+    b.add(smallgap * i + 5);
+    tb.add(smallgap * i + 5);
+    bs = bs.set(smallgap * i + 5,true);
+    bt.set(smallgap * i + 5);
+    fb.set(smallgap * i + 5);
+    s.add(smallgap * i + 5);
   }
   if (bs.cardinality() != b.size()) throw 'something is off';
   if (bs.cardinality() != bt.cardinality()) throw 'something is off';
@@ -370,15 +373,15 @@ function CloneBench() {
   var tb = new TypedFastBitSet();
   var bs = new BitSet();
   var bt = new tBitSet();
-  var fb = new fBitSet(3 * N  + 5);
+  var fb = new fBitSet(smallgap * N  + 5);
   var s = new Set();
   for (var i = 0 ; i < N  ; i++) {
-    b.add(3 * i + 5);
-    tb.add(3 * i + 5);
-    bs = bs.set(3 * i + 5,true);
-    bt.set(3 * i + 5);
-    fb.set(3 * i + 5);
-    s.add(3 * i + 5);
+    b.add(smallgap * i + 5);
+    tb.add(smallgap * i + 5);
+    bs = bs.set(smallgap * i + 5,true);
+    bt.set(smallgap * i + 5);
+    fb.set(smallgap * i + 5);
+    s.add(smallgap * i + 5);
   }
   if (bs.cardinality() != b.size()) throw 'something is off';
   if (bs.cardinality() != bt.cardinality()) throw 'something is off';
@@ -415,29 +418,29 @@ function AndBench() {
   var bt1 = new tBitSet();
   var r1 = new roaring.RoaringBitmap32();
   var r2 = new roaring.RoaringBitmap32();
-  var fb1 = new fBitSet(6 * N + 5);
+  var fb1 = new fBitSet(largegap * N + 5);
   var b2 = new FastBitSet();
   var tb2 = new TypedFastBitSet();
   var bs2 = new BitSet();
   var bt2 = new tBitSet();
-  var fb2 = new fBitSet(6 * N + 5);
+  var fb2 = new fBitSet(largegap * N + 5);
   var s1 = new Set();
   var s2 = new Set();
   for (var i = 0 ; i < N  ; i++) {
-    b1.add(3 * i + 5);
-    tb1.add(3 * i + 5);
-    bs1 = bs1.set(3 * i + 5,true);
-    bt1.set(3 * i + 5);
-    fb1.set(3 * i + 5);
-    s1.add(3 * i + 5);
-    r1.add(3 * i + 5);
-    r2.add(6 * i + 5);
-    b2.add(6 * i + 5);
-    tb2.add(6 * i + 5);
-    bs2 = bs2.set(6 * i + 5,true);
-    bt2.set(6 * i + 5);
-    fb2.set(6 * i + 5);
-    s2.add(6 * i + 5);
+    b1.add(smallgap * i + 5);
+    tb1.add(smallgap * i + 5);
+    bs1 = bs1.set(smallgap * i + 5,true);
+    bt1.set(smallgap * i + 5);
+    fb1.set(smallgap * i + 5);
+    s1.add(smallgap * i + 5);
+    r1.add(smallgap * i + 5);
+    r2.add(largegap * i + 5);
+    b2.add(largegap * i + 5);
+    tb2.add(largegap * i + 5);
+    bs2 = bs2.set(largegap * i + 5,true);
+    bt2.set(largegap * i + 5);
+    fb2.set(largegap * i + 5);
+    s2.add(largegap * i + 5);
   }
   if (bs1.cardinality() != b1.size()) throw 'something is off';
   if (bs1.cardinality() != bt1.cardinality()) throw 'something is off';
@@ -457,7 +460,7 @@ function AndBench() {
     .add('mattkrick.fast-bitset  (creates new bitset)', function() {
       return fb1.and(fb2);
     })
-    
+
     .add('roaring', function() {
       return roaring.RoaringBitmap32.and(r1,r2);
     })
@@ -480,29 +483,29 @@ function AndCardBench() {
   var bt1 = new tBitSet();
   var r1 = new roaring.RoaringBitmap32();
   var r2 = new roaring.RoaringBitmap32();
-  var fb1 = new fBitSet(6 * N + 5);
+  var fb1 = new fBitSet(largegap * N + 5);
   var b2 = new FastBitSet();
   var tb2 = new TypedFastBitSet();
   var bs2 = new BitSet();
   var bt2 = new tBitSet();
-  var fb2 = new fBitSet(6 * N + 5);
+  var fb2 = new fBitSet(largegap * N + 5);
   var s1 = new Set();
   var s2 = new Set();
   for (var i = 0 ; i < N  ; i++) {
-    b1.add(3 * i + 5);
-    tb1.add(3 * i + 5);
-    bs1 = bs1.set(3 * i + 5,true);
-    bt1.set(3 * i + 5);
-    fb1.set(3 * i + 5);
-    s1.add(3 * i + 5);
-    r1.add(3 * i + 5);
-    r2.add(6 * i + 5);
-    b2.add(6 * i + 5);
-    tb2.add(6 * i + 5);
-    bs2 = bs2.set(6 * i + 5,true);
-    bt2.set(6 * i + 5);
-    fb2.set(6 * i + 5);
-    s2.add(6 * i + 5);
+    b1.add(smallgap * i + 5);
+    tb1.add(smallgap * i + 5);
+    bs1 = bs1.set(smallgap * i + 5,true);
+    bt1.set(smallgap * i + 5);
+    fb1.set(smallgap * i + 5);
+    s1.add(smallgap * i + 5);
+    r1.add(smallgap * i + 5);
+    r2.add(largegap * i + 5);
+    b2.add(largegap * i + 5);
+    tb2.add(largegap * i + 5);
+    bs2 = bs2.set(largegap * i + 5,true);
+    bt2.set(largegap * i + 5);
+    fb2.set(largegap * i + 5);
+    s2.add(largegap * i + 5);
   }
   if (genericSetIntersectionCard(s1,s2) != b1.intersection_size(b2)) throw 'potential bug';
   if (bs1.cardinality() != b1.size()) throw 'something is off';
@@ -551,29 +554,29 @@ function OrCardBench() {
   var bt1 = new tBitSet();
   var r1 = new roaring.RoaringBitmap32();
   var r2 = new roaring.RoaringBitmap32();
-  var fb1 = new fBitSet(6 * N + 5);
+  var fb1 = new fBitSet(largegap * N + 5);
   var b2 = new FastBitSet();
   var tb2 = new TypedFastBitSet();
   var bs2 = new BitSet();
   var bt2 = new tBitSet();
-  var fb2 = new fBitSet(6 * N + 5);
+  var fb2 = new fBitSet(largegap * N + 5);
   var s1 = new Set();
   var s2 = new Set();
   for (var i = 0 ; i < N  ; i++) {
-    b1.add(3 * i + 5);
-    tb1.add(3 * i + 5);
-    bs1 = bs1.set(3 * i + 5,true);
-    bt1.set(3 * i + 5);
-    fb1.set(3 * i + 5);
-    s1.add(3 * i + 5);
-    r1.add(3 * i + 5);
-    r2.add(6 * i + 5);
-    b2.add(6 * i + 5);
-    tb2.add(6 * i + 5);
-    bs2 = bs2.set(6 * i + 5,true);
-    bt2.set(6 * i + 5);
-    fb2.set(6 * i + 5);
-    s2.add(6 * i + 5);
+    b1.add(smallgap * i + 5);
+    tb1.add(smallgap * i + 5);
+    bs1 = bs1.set(smallgap * i + 5,true);
+    bt1.set(smallgap * i + 5);
+    fb1.set(smallgap * i + 5);
+    s1.add(smallgap * i + 5);
+    r1.add(smallgap * i + 5);
+    r2.add(largegap * i + 5);
+    b2.add(largegap * i + 5);
+    tb2.add(largegap * i + 5);
+    bs2 = bs2.set(largegap * i + 5,true);
+    bt2.set(largegap * i + 5);
+    fb2.set(largegap * i + 5);
+    s2.add(largegap * i + 5);
   }
   if (bs1.cardinality() != b1.size()) throw 'something is off';
   if (bs1.cardinality() != bt1.cardinality()) throw 'something is off';
@@ -621,29 +624,29 @@ function DifferenceCardBench() {
   var bt1 = new tBitSet();
   var r1 = new roaring.RoaringBitmap32();
   var r2 = new roaring.RoaringBitmap32();
-  var fb1 = new fBitSet(6 * N + 5);
+  var fb1 = new fBitSet(largegap * N + 5);
   var b2 = new FastBitSet();
   var tb2 = new TypedFastBitSet();
   var bs2 = new BitSet();
   var bt2 = new tBitSet();
-  var fb2 = new fBitSet(6 * N + 5);
+  var fb2 = new fBitSet(largegap * N + 5);
   var s1 = new Set();
   var s2 = new Set();
   for (var i = 0 ; i < N  ; i++) {
-    b1.add(3 * i + 5);
-    tb1.add(3 * i + 5);
-    bs1 = bs1.set(3 * i + 5,true);
-    bt1.set(3 * i + 5);
-    fb1.set(3 * i + 5);
-    s1.add(3 * i + 5);
-    r1.add(3 * i + 5);
-    r2.add(6 * i + 5);
-    b2.add(6 * i + 5);
-    tb2.add(6 * i + 5);
-    bs2 = bs2.set(6 * i + 5,true);
-    bt2.set(6 * i + 5);
-    fb2.set(6 * i + 5);
-    s2.add(6 * i + 5);
+    b1.add(smallgap * i + 5);
+    tb1.add(smallgap * i + 5);
+    bs1 = bs1.set(smallgap * i + 5,true);
+    bt1.set(smallgap * i + 5);
+    fb1.set(smallgap * i + 5);
+    s1.add(smallgap * i + 5);
+    r1.add(smallgap * i + 5);
+    r2.add(largegap * i + 5);
+    b2.add(largegap * i + 5);
+    tb2.add(largegap * i + 5);
+    bs2 = bs2.set(largegap * i + 5,true);
+    bt2.set(largegap * i + 5);
+    fb2.set(largegap * i + 5);
+    s2.add(largegap * i + 5);
   }
   if (bs1.cardinality() != b1.size()) throw 'something is off';
   if (bs1.cardinality() != bt1.cardinality()) throw 'something is off';
@@ -688,29 +691,29 @@ function OrInplaceBench() {
   var bt1 = new tBitSet();
   var r1 = new roaring.RoaringBitmap32();
   var r2 = new roaring.RoaringBitmap32();
-  var fb1 = new fBitSet(6 * N + 5);
+  var fb1 = new fBitSet(largegap * N + 5);
   var b2 = new FastBitSet();
   var tb2 = new TypedFastBitSet();
   var bs2 = new BitSet();
   var bt2 = new tBitSet();
-  var fb2 = new fBitSet(6 * N + 5);
+  var fb2 = new fBitSet(largegap * N + 5);
   var s1 = new Set();
   var s2 = new Set();
   for (var i = 0 ; i < N  ; i++) {
-    b1.add(3 * i + 5);
-    tb1.add(3 * i + 5);
-    bs1 = bs1.set(3 * i + 5,true);
-    bt1.set(3 * i + 5);
-    fb1.set(3 * i + 5);
-    s1.add(3 * i + 5);
-    r1.add(3 * i + 5);
-    r2.add(6 * i + 5);
-    b2.add(6 * i + 5);
-    tb2.add(6 * i + 5);
-    bs2 = bs2.set(6 * i + 5,true);
-    bt2.set(6 * i + 5);
-    fb2.set(6 * i + 5);
-    s2.add(6 * i + 5);
+    b1.add(smallgap * i + 5);
+    tb1.add(smallgap * i + 5);
+    bs1 = bs1.set(smallgap * i + 5,true);
+    bt1.set(smallgap * i + 5);
+    fb1.set(smallgap * i + 5);
+    s1.add(smallgap * i + 5);
+    r1.add(smallgap * i + 5);
+    r2.add(largegap * i + 5);
+    b2.add(largegap * i + 5);
+    tb2.add(largegap * i + 5);
+    bs2 = bs2.set(largegap * i + 5,true);
+    bt2.set(largegap * i + 5);
+    fb2.set(largegap * i + 5);
+    s2.add(largegap * i + 5);
   }
   if (bs1.cardinality() != b1.size()) throw 'something is off';
   if (bs1.cardinality() != bt1.cardinality()) throw 'something is off';
@@ -755,29 +758,29 @@ function AndInplaceBench() {
   var bt1 = new tBitSet();
   var r1 = new roaring.RoaringBitmap32();
   var r2 = new roaring.RoaringBitmap32();
-  var fb1 = new fBitSet(6 * N + 5);
+  var fb1 = new fBitSet(largegap * N + 5);
   var b2 = new FastBitSet();
   var tb2 = new TypedFastBitSet();
   var bs2 = new BitSet();
   var bt2 = new tBitSet();
-  var fb2 = new fBitSet(6 * N + 5);
+  var fb2 = new fBitSet(largegap * N + 5);
   var s1 = new Set();
   var s2 = new Set();
   for (var i = 0 ; i < N  ; i++) {
-    b1.add(3 * i + 5);
-    tb1.add(3 * i + 5);
-    bs1 = bs1.set(3 * i + 5,true);
-    bt1.set(3 * i + 5);
-    fb1.set(3 * i + 5);
-    s1.add(3 * i + 5);
-    r1.add(3 * i + 5);
-    r2.add(6 * i + 5);
-    b2.add(6 * i + 5);
-    tb2.add(6 * i + 5);
-    bs2 = bs2.set(6 * i + 5,true);
-    bt2.set(6 * i + 5);
-    fb2.set(6 * i + 5);
-    s2.add(6 * i + 5);
+    b1.add(smallgap * i + 5);
+    tb1.add(smallgap * i + 5);
+    bs1 = bs1.set(smallgap * i + 5,true);
+    bt1.set(smallgap * i + 5);
+    fb1.set(smallgap * i + 5);
+    s1.add(smallgap * i + 5);
+    r1.add(smallgap * i + 5);
+    r2.add(largegap * i + 5);
+    b2.add(largegap * i + 5);
+    tb2.add(largegap * i + 5);
+    bs2 = bs2.set(largegap * i + 5,true);
+    bt2.set(largegap * i + 5);
+    fb2.set(largegap * i + 5);
+    s2.add(largegap * i + 5);
   }
   if (bs1.cardinality() != b1.size()) throw 'something is off';
   if (bs1.cardinality() != bt1.cardinality()) throw 'something is off';
@@ -824,29 +827,29 @@ function AndNotInplaceBench() {
   var bt1 = new tBitSet();
   var r1 = new roaring.RoaringBitmap32();
   var r2 = new roaring.RoaringBitmap32();
-  var fb1 = new fBitSet(6 * N + 5);
+  var fb1 = new fBitSet(largegap * N + 5);
   var b2 = new FastBitSet();
   var tb2 = new TypedFastBitSet();
   var bs2 = new BitSet();
   var bt2 = new tBitSet();
-  var fb2 = new fBitSet(6 * N + 5);
+  var fb2 = new fBitSet(largegap * N + 5);
   var s1 = new Set();
   var s2 = new Set();
   for (var i = 0 ; i < N  ; i++) {
-    b1.add(3 * i + 5);
-    tb1.add(3 * i + 5);
-    bs1 = bs1.set(3 * i + 5,true);
-    bt1.set(3 * i + 5);
-    fb1.set(3 * i + 5);
-    s1.add(3 * i + 5);
-    r1.add(3 * i + 5);
-    r2.add(6 * i + 5);
-    b2.add(6 * i + 5);
-    tb2.add(6 * i + 5);
-    bs2 = bs2.set(6 * i + 5,true);
-    bt2.set(6 * i + 5);
-    fb2.set(6 * i + 5);
-    s2.add(6 * i + 5);
+    b1.add(smallgap * i + 5);
+    tb1.add(smallgap * i + 5);
+    bs1 = bs1.set(smallgap * i + 5,true);
+    bt1.set(smallgap * i + 5);
+    fb1.set(smallgap * i + 5);
+    s1.add(smallgap * i + 5);
+    r1.add(smallgap * i + 5);
+    r2.add(largegap * i + 5);
+    b2.add(largegap * i + 5);
+    tb2.add(largegap * i + 5);
+    bs2 = bs2.set(largegap * i + 5,true);
+    bt2.set(largegap * i + 5);
+    fb2.set(largegap * i + 5);
+    s2.add(largegap * i + 5);
   }
   if (bs1.cardinality() != b1.size()) throw 'something is off';
   if (bs1.cardinality() != bt1.cardinality()) throw 'something is off';
@@ -893,29 +896,29 @@ function OrBench() {
   var bt1 = new tBitSet();
   var r1 = new roaring.RoaringBitmap32();
   var r2 = new roaring.RoaringBitmap32();
-  var fb1 = new fBitSet(6 * N + 5);
+  var fb1 = new fBitSet(largegap * N + 5);
   var b2 = new FastBitSet();
   var tb2 = new TypedFastBitSet();
   var bs2 = new BitSet();
   var bt2 = new tBitSet();
-  var fb2 = new fBitSet(6 * N + 5);
+  var fb2 = new fBitSet(largegap * N + 5);
   var s1 = new Set();
   var s2 = new Set();
   for (var i = 0 ; i < N  ; i++) {
-    b1.add(3 * i + 5);
-    tb1.add(3 * i + 5);
-    bs1 = bs1.set(3 * i + 5,true);
-    bt1.set(3 * i + 5);
-    fb1.set(3 * i + 5);
-    s1.add(3 * i + 5);
-    r1.add(3 * i + 5);
-    r2.add(6 * i + 5);
-    b2.add(6 * i + 5);
-    tb2.add(6 * i + 5);
-    bs2 = bs2.set(6 * i + 5,true);
-    bt2.set(6 * i + 5);
-    fb2.set(6 * i + 5);
-    s2.add(6 * i + 5);
+    b1.add(smallgap * i + 5);
+    tb1.add(smallgap * i + 5);
+    bs1 = bs1.set(smallgap * i + 5,true);
+    bt1.set(smallgap * i + 5);
+    fb1.set(smallgap * i + 5);
+    s1.add(smallgap * i + 5);
+    r1.add(smallgap * i + 5);
+    r2.add(largegap * i + 5);
+    b2.add(largegap * i + 5);
+    tb2.add(largegap * i + 5);
+    bs2 = bs2.set(largegap * i + 5,true);
+    bt2.set(largegap * i + 5);
+    fb2.set(largegap * i + 5);
+    s2.add(largegap * i + 5);
   }
   if (bs1.cardinality() != b1.size()) throw 'something is off';
   if (bs1.cardinality() != bt1.cardinality()) throw 'something is off';
@@ -958,29 +961,29 @@ function DifferenceBench() {
   var bt1 = new tBitSet();
   var r1 = new roaring.RoaringBitmap32();
   var r2 = new roaring.RoaringBitmap32();
-  var fb1 = new fBitSet(6 * N + 5);
+  var fb1 = new fBitSet(largegap * N + 5);
   var b2 = new FastBitSet();
   var tb2 = new TypedFastBitSet();
   var bs2 = new BitSet();
   var bt2 = new tBitSet();
-  var fb2 = new fBitSet(6 * N + 5);
+  var fb2 = new fBitSet(largegap * N + 5);
   var s1 = new Set();
   var s2 = new Set();
   for (var i = 0 ; i < N  ; i++) {
-    b1.add(3 * i + 5);
-    tb1.add(3 * i + 5);
-    bs1 = bs1.set(3 * i + 5,true);
-    bt1.set(3 * i + 5);
-    fb1.set(3 * i + 5);
-    s1.add(3 * i + 5);
-    r1.add(3 * i + 5);
-    r2.add(6 * i + 5);
-    b2.add(6 * i + 5);
-    tb2.add(6 * i + 5);
-    bs2 = bs2.set(6 * i + 5,true);
-    bt2.set(6 * i + 5);
-    fb2.set(6 * i + 5);
-    s2.add(6 * i + 5);
+    b1.add(smallgap * i + 5);
+    tb1.add(smallgap * i + 5);
+    bs1 = bs1.set(smallgap * i + 5,true);
+    bt1.set(smallgap * i + 5);
+    fb1.set(smallgap * i + 5);
+    s1.add(smallgap * i + 5);
+    r1.add(smallgap * i + 5);
+    r2.add(largegap * i + 5);
+    b2.add(largegap * i + 5);
+    tb2.add(largegap * i + 5);
+    bs2 = bs2.set(largegap * i + 5,true);
+    bt2.set(largegap * i + 5);
+    fb2.set(largegap * i + 5);
+    s2.add(largegap * i + 5);
   }
   if (bs1.cardinality() != b1.size()) throw 'something is off';
   if (bs1.cardinality() != bt1.cardinality()) throw 'something is off';
