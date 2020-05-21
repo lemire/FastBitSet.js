@@ -11,6 +11,9 @@ The FastBitSet.js implementation optimizes for speed. It can be several times fa
 dynamic, and has functions to minimize the memory usage. It should be supported by most of the modern 
 browsers and JavaScript engines.  It is ideal for maintaining sets of integers when performance matters.
 
+
+Note that the nearly equivalent [TypedFastBitSet](https://github.com/lemire/TypedFastBitSet.js) library should use less memory in practice and should be prefered is memory usage is a concern.
+
 License: Apache License 2.0
 
 
