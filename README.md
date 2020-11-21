@@ -8,7 +8,7 @@ faster than a generic set implementation. In particular, a BitSet has fast suppo
 operations (union, difference, intersection).
 
 The FastBitSet.js implementation optimizes for speed. It can be several times faster than competitive alternatives. It is also entirely
-dynamic, and has functions to minimize the memory usage. It should be supported by most of the modern 
+dynamic, and has functions to minimize the memory usage. It should be supported by most of the modern
 browsers and JavaScript engines.  It is ideal for maintaining sets of integers when performance matters.
 
 
@@ -42,6 +42,7 @@ c.intersection(b); // c will only contain elements that are in both c and b
 c = b.clone(); // create a (deep) copy of b and assign it to c.
 c.equals(b); // checks whether c and b are equal
 c.forEach(fnc); // execute fnc on each value stored in c
+for (const x of c) fnc(c); // execute fnc on each value stored in c (allows early exit with break)
 c.trim(); // reduce the memory usage of the bitmap if possible, the content remains the same
 ```
 
@@ -203,7 +204,7 @@ Set x 76,784,958 ops/sec ±0.01% (104 runs sampled)
 You might also like...
 ===
 
-If you like this library, you might also like 
+If you like this library, you might also like
 - https://github.com/lemire/TypedFastBitSet.js
 - https://github.com/lemire/FastPriorityQueue.js
 - https://github.com/lemire/StablePriorityQueue.js

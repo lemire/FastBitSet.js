@@ -189,6 +189,19 @@ FastBitSet.prototype.forEach = function(fnc) {
   }
 };
 
+// Returns an iterator of set bit locations (values)
+FastBitSet.prototype[Symbol.iterator] = function* () {
+  var c = this.words.length;
+  for (var k = 0; k < c; ++k) {
+    var w =  this.words[k];
+    while (w != 0) {
+      var t = w & -w;
+      yield (k << 5) + this.hammingWeight((t - 1) | 0);
+      w ^= t;
+    }
+  }
+};
+
 // Creates a copy of this bitmap
 FastBitSet.prototype.clone = function() {
   var clone = Object.create(FastBitSet.prototype);
@@ -413,9 +426,6 @@ FastBitSet.prototype.union_size = function(otherbitmap) {
   }
   return answer;
 };
-
-
-
 
 ///////////////
 
