@@ -42,7 +42,7 @@ c.intersection(b); // c will only contain elements that are in both c and b
 c = b.clone(); // create a (deep) copy of b and assign it to c.
 c.equals(b); // checks whether c and b are equal
 c.forEach(fnc); // execute fnc on each value stored in c
-for (const x of c) fnc(c); // execute fnc on each value stored in c (allows early exit with break)
+for (const x of c) fnc(x); // execute fnc on each value stored in c (allows early exit with break)
 c.trim(); // reduce the memory usage of the bitmap if possible, the content remains the same
 ```
 
