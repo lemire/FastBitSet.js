@@ -54,7 +54,7 @@ If you are using node.js, you need to import the module:
 ```javascript
 var FastBitSet = require("fastbitset");
 var b = new FastBitSet();// initially empty
-b.set(1);// add the value "1"
+b.add(1);// add the value "1"
 ```
 
 
