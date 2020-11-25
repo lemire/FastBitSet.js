@@ -1,5 +1,4 @@
-/**
- * FastBitSet.js : a fast bit set implementation in JavaScript.
+/* FastBitSet.js : a fast bit set implementation in JavaScript.
  * (c) the authors
  * Licensed under the Apache License, Version 2.0.
  *
@@ -35,6 +34,7 @@
  * You can install the library under node with the command line
  *   npm install fastbitset
  */
+
 "use strict";
 
 // you can provide an iterable
@@ -342,9 +342,9 @@ FastBitSet.prototype.difference_size = function (otherbitmap) {
 // Computes the changed elements (XOR) between this bitset and another one,
 // the current bitset is modified (and returned by the function)
 FastBitSet.prototype.change = function (otherbitmap) {
-  var newcount = Math.min(this.words.length, otherbitmap.words.length);
+  var mincount = Math.min(this.words.length, otherbitmap.words.length);
   var k = 0 | 0;
-  for (; k + 7 < newcount; k += 8) {
+  for (; k + 7 < mincount; k += 8) {
     this.words[k] ^= otherbitmap.words[k];
     this.words[k + 1] ^= otherbitmap.words[k + 1];
     this.words[k + 2] ^= otherbitmap.words[k + 2];
@@ -354,8 +354,16 @@ FastBitSet.prototype.change = function (otherbitmap) {
     this.words[k + 6] ^= otherbitmap.words[k + 6];
     this.words[k + 7] ^= otherbitmap.words[k + 7];
   }
-  for (; k < newcount; ++k) {
+  for (; k < mincount; ++k) {
     this.words[k] ^= otherbitmap.words[k];
+  }
+  // remaining words are all part of change
+  if (otherbitmap.words.length > this.words.length) {
+    // this.words = this.words.concat(otherbitmap.words.slice(k));
+    var maxcount = otherbitmap.words.length;
+    for (; k < maxcount; ++k) {
+      this.words[k] = otherbitmap.words[k];
+    }
   }
   return this;
 };
@@ -363,20 +371,26 @@ FastBitSet.prototype.change = function (otherbitmap) {
 // Computes the change between this bitset and another one,
 // a new bitmap is generated
 FastBitSet.prototype.new_change = function (otherbitmap) {
-  return this.clone().change(otherbitmap); // should be fast enough
+  if (otherbitmap.words.length > this.words.length) {
+    return this.clone().change(otherbitmap);
+  } else {
+    return otherbitmap.clone().change(this);
+  }
 };
 
 // Computes the number of changed elements between this bitset and another one
 FastBitSet.prototype.change_size = function (otherbitmap) {
-  var newcount = Math.min(this.words.length, otherbitmap.words.length);
+  var mincount = Math.min(this.words.length, otherbitmap.words.length);
   var answer = 0 | 0;
   var k = 0 | 0;
-  for (; k < newcount; ++k) {
+  for (; k < mincount; ++k) {
     answer += this.hammingWeight(this.words[k] ^ otherbitmap.words[k]);
   }
-  var c = this.words.length;
+  var longer =
+    this.words.length > otherbitmap.words.length ? this : otherbitmap;
+  var c = longer.words.length;
   for (; k < c; ++k) {
-    answer += this.hammingWeight(this.words[k]);
+    answer += this.hammingWeight(longer.words[k]);
   }
   return answer;
 };
