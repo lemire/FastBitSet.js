@@ -20,12 +20,15 @@
     "url": "https://github.com/lemire/FastBitSet.js/issues"
   },
   "homepage": "https://github.com/lemire/FastBitSet.js#readme",
-  "dependencies": {},
+  "dependencies": {
+    "bl": "^4.0.3",
+    "minimist": "^1.2.5"
+  },
   "devDependencies": {
     "benchmark": "~1.0.0",
     "bitset.js": "^5.0.0",
     "fast-bitset": "^1.3.2",
-    "mocha": "^5.2.0",
+    "mocha": "^8.2.1",
     "roaring": "^1.0.6",
     "typedfastbitset": "0.0.1"
   },
