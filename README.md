@@ -8,7 +8,7 @@ faster than a generic set implementation. In particular, a BitSet has fast suppo
 operations (union, difference, intersection).
 
 The FastBitSet.js implementation optimizes for speed. It can be several times faster than competitive alternatives. It is also entirely
-dynamic, and has functions to minimize the memory usage. It should be supported by most of the modern 
+dynamic, and has functions to minimize the memory usage. It should be supported by most of the modern
 browsers and JavaScript engines.  It is ideal for maintaining sets of integers when performance matters.
 
 
@@ -31,17 +31,21 @@ b.add(10);
 b.array(); // would return [1,2,10]
 var c = new FastBitSet([1,2,3,10]); // create bitset initialized with values 1,2,3,10
 c.difference(b); // from c, remove elements that are in b
+c.change(b); // c will contain all elements that are in b or in c, but not both (elements that changed)
 var su = c.union_size(b);// compute the size of the union (bitsets are unchanged)
 c.union(b); // c will contain all elements that are in c and b
 var out1 = c.new_union(b); // creates a new bitmap that contains everything in c and b
 var out2 = c.new_intersection(b); // creates a new bitmap that contains everything that is in both c and b
+var out3 = c.new_change(b); // creates a new bitmap that contains everything in b or in c, but not both
 var s1 = c.intersection_size(b);// compute the size of the intersection (bitsets are unchanged)
-var s3 = c.difference_size(b);// compute the size of the difference (bitsets are unchanged)
+var s2 = c.difference_size(b);// compute the size of the difference (bitsets are unchanged)
+var s3 = c.change_size(b); // compute the number of elements that are in b but not c, or vice versa
 c.intersects(b); // return true if c intersects with b
 c.intersection(b); // c will only contain elements that are in both c and b
 c = b.clone(); // create a (deep) copy of b and assign it to c.
 c.equals(b); // checks whether c and b are equal
 c.forEach(fnc); // execute fnc on each value stored in c
+for (const x of c) fnc(x); // execute fnc on each value stored in c (allows early exit with break)
 c.trim(); // reduce the memory usage of the bitmap if possible, the content remains the same
 ```
 
@@ -50,7 +54,7 @@ If you are using node.js, you need to import the module:
 ```javascript
 var FastBitSet = require("fastbitset");
 var b = new FastBitSet();// initially empty
-b.set(1);// add the value "1"
+b.add(1);// add the value "1"
 ```
 
 
@@ -203,7 +207,7 @@ Set x 76,784,958 ops/sec ±0.01% (104 runs sampled)
 You might also like...
 ===
 
-If you like this library, you might also like 
+If you like this library, you might also like
 - https://github.com/lemire/TypedFastBitSet.js
 - https://github.com/lemire/FastPriorityQueue.js
 - https://github.com/lemire/StablePriorityQueue.js
