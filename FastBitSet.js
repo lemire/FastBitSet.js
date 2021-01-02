@@ -324,6 +324,27 @@ FastBitSet.prototype.difference = function (otherbitmap) {
 };
 
 // Computes the difference between this bitset and another one,
+// the current bitset is modified (and returned by the function)
+FastBitSet.prototype.difference2 = function (otherbitmap) {
+  const newcount = Math.min(this.words.length, otherbitmap.words.length);
+  let k = 0 | 0;
+  for (; k + 7 < newcount; k += 8) {
+    otherbitmap.words[k] = this.words[k] & ~otherbitmap.words[k];
+    otherbitmap.words[k + 1] = this.words[k + 1] & ~otherbitmap.words[k + 1];
+    otherbitmap.words[k + 2] = this.words[k + 2] & ~otherbitmap.words[k + 2];
+    otherbitmap.words[k + 3] = this.words[k + 3] & ~otherbitmap.words[k + 3];
+    otherbitmap.words[k + 4] = this.words[k + 4] & ~otherbitmap.words[k + 4];
+    otherbitmap.words[k + 5] = this.words[k + 5] & ~otherbitmap.words[k + 5];
+    otherbitmap.words[k + 6] = this.words[k + 6] & ~otherbitmap.words[k + 6];
+    otherbitmap.words[k + 7] = this.words[k + 7] & ~otherbitmap.words[k + 7];
+  }
+  for (; k < newcount; ++k) {
+    otherbitmap.words[k] = this.words[k] & ~otherbitmap.words[k];
+  }
+  return otherbitmap;
+};
+
+// Computes the difference between this bitset and another one,
 // a new bitmap is generated
 FastBitSet.prototype.new_difference = function (otherbitmap) {
   return this.clone().difference(otherbitmap); // should be fast enough
