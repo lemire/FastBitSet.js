@@ -13,7 +13,8 @@
   },
   "main": "FastBitSet.js",
   "scripts": {
-    "test": "mocha unit/basictests.js"
+    "test": "mocha unit/basictests.js",
+    "benchmark": "nodejs benchmark/test.js"
   },
   "license": "Apache-2.0",
   "bugs": {

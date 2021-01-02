@@ -15,6 +15,42 @@ const os = require("os");
 const smallgap = 3;
 const largegap = 210;
 
+const genericSetChange = function (set1, set2) {
+  const answer = new Set();
+  if (set2.length > set1.length) {
+    for (const j of set2) {
+      if (!set1.has(j)) {
+        answer.add(j);
+      }
+    }
+  } else {
+    for (const j of set1) {
+      if (!set2.has(j)) {
+        answer.add(j);
+      }
+    }
+  }
+  return answer;
+};
+
+const genericInplaceSetChange = function (set1, set2) {
+  if (set2.length > set1.length) {
+    for (const j of set2) {
+      if (set1.has(j)) {
+        set2.delete(j);
+      }
+    }
+    return set2;
+  } else {
+    for (const j of set1) {
+      if (set2.has(j)) {
+        set1.delete(j);
+      }
+    }
+    return set1;
+  }
+};
+
 const genericSetIntersection = function (set1, set2) {
   const answer = new Set();
   if (set2.length > set1.length) {
@@ -840,7 +876,7 @@ function AndInplaceBench() {
 }
 
 function AndNotInplaceBench() {
-  console.log("starting inplace difference  benchmark");
+  console.log("starting inplace difference benchmark");
   const b1 = new FastBitSet();
   const bb1 = new FastBitSet();
   const tb1 = new TypedFastBitSet();
@@ -1046,6 +1082,141 @@ function DifferenceBench() {
     .run({ async: false });
 }
 
+function XORInplaceBench() {
+  console.log("starting inplace change (XOR) benchmark");
+  const b1 = new FastBitSet();
+  const tb1 = new TypedFastBitSet();
+  let bs1 = new BitSet();
+  const bt1 = new tBitSet();
+  const r1 = new roaring.RoaringBitmap32();
+  const r2 = new roaring.RoaringBitmap32();
+  const fb1 = new fBitSet(largegap * N + 5);
+  const b2 = new FastBitSet();
+  const tb2 = new TypedFastBitSet();
+  let bs2 = new BitSet();
+  const bt2 = new tBitSet();
+  const fb2 = new fBitSet(largegap * N + 5);
+  const s1 = new Set();
+  const s2 = new Set();
+  for (let i = 0; i < N; i++) {
+    b1.add(smallgap * i + 5);
+    tb1.add(smallgap * i + 5);
+    bs1 = bs1.set(smallgap * i + 5, true);
+    bt1.set(smallgap * i + 5);
+    fb1.set(smallgap * i + 5);
+    s1.add(smallgap * i + 5);
+    r1.add(smallgap * i + 5);
+    r2.add(largegap * i + 5);
+    b2.add(largegap * i + 5);
+    tb2.add(largegap * i + 5);
+    bs2 = bs2.set(largegap * i + 5, true);
+    bt2.set(largegap * i + 5);
+    fb2.set(largegap * i + 5);
+    s2.add(largegap * i + 5);
+  }
+  if (bs1.cardinality() != b1.size()) throw "something is off";
+  if (bs1.cardinality() != bt1.cardinality()) throw "something is off";
+  if (bs1.cardinality() != fb1.getCardinality()) throw "something is off";
+  if (bs2.cardinality() != b2.size()) throw "something is off";
+  if (bs2.cardinality() != bt2.cardinality()) throw "something is off";
+  if (bs2.cardinality() != fb2.getCardinality()) throw "something is off";
+  b1.change(b2);
+  bt1.xor(bt2);
+  genericInplaceSetChange(s1, s2);
+  const suite = new Benchmark.Suite();
+  // add tests
+  const ms = suite
+    .add("FastBitSet (inplace)", function () {
+      return b1.change(b2);
+    })
+    // .add("TypedFastBitSet (inplace)", function () {
+    // return tb1.intersection(tb2);
+    // })
+    .add("infusion.BitSet.js (inplace)", function () {
+      return bs1.xor(bs2);
+    })
+    .add("tdegrunt.BitSet (inplace)", function () {
+      return bt1.xor(bt2);
+    })
+    .add("roaring", function () {
+      return r1.xorInPlace(r2);
+    })
+    .add("Set (inplace)", function () {
+      return genericInplaceSetChange(s1, s2);
+    })
+    // add listeners
+    .on("cycle", function (event) {
+      console.log(String(event.target));
+    })
+    // run async
+    .run({ async: false });
+}
+
+function XORBench() {
+  console.log("starting change (XOR) query benchmark");
+  const b1 = new FastBitSet();
+  const tb1 = new TypedFastBitSet();
+  let bs1 = new BitSet();
+  const bt1 = new tBitSet();
+  const r1 = new roaring.RoaringBitmap32();
+  const r2 = new roaring.RoaringBitmap32();
+  const fb1 = new fBitSet(largegap * N + 5);
+  const b2 = new FastBitSet();
+  const tb2 = new TypedFastBitSet();
+  let bs2 = new BitSet();
+  const bt2 = new tBitSet();
+  const fb2 = new fBitSet(largegap * N + 5);
+  const s1 = new Set();
+  const s2 = new Set();
+  for (let i = 0; i < N; i++) {
+    b1.add(smallgap * i + 5);
+    tb1.add(smallgap * i + 5);
+    bs1 = bs1.set(smallgap * i + 5, true);
+    bt1.set(smallgap * i + 5);
+    fb1.set(smallgap * i + 5);
+    s1.add(smallgap * i + 5);
+    r1.add(smallgap * i + 5);
+    r2.add(largegap * i + 5);
+    b2.add(largegap * i + 5);
+    tb2.add(largegap * i + 5);
+    bs2 = bs2.set(largegap * i + 5, true);
+    bt2.set(largegap * i + 5);
+    fb2.set(largegap * i + 5);
+    s2.add(largegap * i + 5);
+  }
+  if (bs1.cardinality() != b1.size()) throw "something is off";
+  if (bs1.cardinality() != bt1.cardinality()) throw "something is off";
+  if (bs1.cardinality() != fb1.getCardinality()) throw "something is off";
+  if (bs2.cardinality() != b2.size()) throw "something is off";
+  if (bs2.cardinality() != bt2.cardinality()) throw "something is off";
+  if (bs2.cardinality() != fb2.getCardinality()) throw "something is off";
+  roaring.RoaringBitmap32.xor(r1, r2);
+  const suite = new Benchmark.Suite();
+  // add tests
+  const ms = suite
+    .add("roaring", function () {
+      return roaring.RoaringBitmap32.xor(r1, r2);
+    })
+    .add("FastBitSet (creates new bitset)", function () {
+      return b1.new_change(b2);
+    })
+    // .add("TypedFastBitSet (creates new bitset)", function () {
+    // return tb1.new_union(tb2);
+    // })
+    .add("mattkrick.fast-bitset (creates new bitset)", function () {
+      return fb1.xor(fb2);
+    })
+    .add("Set", function () {
+      return genericSetChange(s1, s2);
+    })
+    // add listeners
+    .on("cycle", function (event) {
+      console.log(String(event.target));
+    })
+    // run async
+    .run({ async: false });
+}
+
 const main = function () {
   console.log("Benchmarking against:");
   console.log(
@@ -1087,12 +1258,16 @@ const main = function () {
   console.log("");
   OrBench();
   console.log("");
+  XORBench();
+  console.log("");
   AndBench();
   console.log("");
   DifferenceBench();
   console.log("");
   console.log("We benchmark the in-place logical operations: ");
   console.log("(Notice how much faster they are.)");
+  console.log("");
+  XORInplaceBench();
   console.log("");
   OrInplaceBench();
   console.log("");

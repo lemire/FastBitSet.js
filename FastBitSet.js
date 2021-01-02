@@ -20,7 +20,8 @@
  *  b.array(); // would return [1,2,10]
  *
  *  let c = new FastBitSet([1,2,3,10]); // create bitset initialized with values 1,2,3,10
- *  c.difference(b); // from c, remove elements that are in b
+ *  c.difference(b); // from c, remove elements that are in b (modifies c)
+ *  c.difference2(b); // from c, remove elements that are in b (modifies b)
  *  c.change(b); // c will contain elements that are in b or in c, but not both
  *  const su = c.union_size(b);// compute the size of the union (bitsets are unchanged)
  *  c.union(b); // c will contain all elements that are in c and b
@@ -304,6 +305,8 @@ FastBitSet.prototype.equals = function (otherbitmap) {
 
 // Computes the difference between this bitset and another one,
 // the current bitset is modified (and returned by the function)
+// (for this set A and other set B,
+//   this computes A = A - B  and returns A)
 FastBitSet.prototype.difference = function (otherbitmap) {
   const newcount = Math.min(this.words.length, otherbitmap.words.length);
   let k = 0 | 0;
@@ -324,7 +327,9 @@ FastBitSet.prototype.difference = function (otherbitmap) {
 };
 
 // Computes the difference between this bitset and another one,
-// the current bitset is modified (and returned by the function)
+// the other bitset is modified (and returned by the function)
+// (for this set A and other set B,
+//   this computes B = A - B  and returns B)
 FastBitSet.prototype.difference2 = function (otherbitmap) {
   const newcount = Math.min(this.words.length, otherbitmap.words.length);
   let k = 0 | 0;
