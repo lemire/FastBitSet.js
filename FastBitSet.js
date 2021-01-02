@@ -79,7 +79,7 @@ FastBitSet.prototype.flip = function (index) {
 
 // Remove all values, reset memory usage
 FastBitSet.prototype.clear = function () {
-  this.words = [];
+  this.words.length = 0;
 };
 
 // Set the bit at index to false
