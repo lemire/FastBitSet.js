@@ -331,9 +331,9 @@ FastBitSet.prototype.difference = function (otherbitmap) {
 // (for this set A and other set B,
 //   this computes B = A - B  and returns B)
 FastBitSet.prototype.difference2 = function (otherbitmap) {
-  const newcount = Math.min(this.words.length, otherbitmap.words.length);
+  const mincount = Math.min(this.words.length, otherbitmap.words.length);
   let k = 0 | 0;
-  for (; k + 7 < newcount; k += 8) {
+  for (; k + 7 < mincount; k += 8) {
     otherbitmap.words[k] = this.words[k] & ~otherbitmap.words[k];
     otherbitmap.words[k + 1] = this.words[k + 1] & ~otherbitmap.words[k + 1];
     otherbitmap.words[k + 2] = this.words[k + 2] & ~otherbitmap.words[k + 2];
@@ -343,9 +343,14 @@ FastBitSet.prototype.difference2 = function (otherbitmap) {
     otherbitmap.words[k + 6] = this.words[k + 6] & ~otherbitmap.words[k + 6];
     otherbitmap.words[k + 7] = this.words[k + 7] & ~otherbitmap.words[k + 7];
   }
-  for (; k < newcount; ++k) {
+  for (; k < mincount; ++k) {
     otherbitmap.words[k] = this.words[k] & ~otherbitmap.words[k];
   }
+  // remaining words are all part of difference
+  for (k = this.words.length - 1; k >= mincount; --k) {
+    otherbitmap.words[k] = this.words[k];
+  }
+  otherbitmap.words = otherbitmap.words.slice(0, this.words.length);
   return otherbitmap;
 };
 

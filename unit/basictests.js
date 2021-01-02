@@ -135,6 +135,19 @@ describe("BitSet", function () {
     if (mb2.size() != 2) throw "bad diff";
   });
 
+  it("Testing difference2", function () {
+    const a1 = [1, 2, 4, 5, 10];
+    const a2 = [1, 2, 4, 5, 10, 100, 1000];
+    let mb1 = new FastBitSet(a1);
+    let mb2 = new FastBitSet(a2);
+    mb1.difference2(mb2);
+    if (!mb2.isEmpty()) throw "bad diff1";
+    mb1 = new FastBitSet(a1);
+    mb2 = new FastBitSet(a2);
+    mb2.difference2(mb1);
+    if (mb1.size() != 2) throw "bad diff2";
+  });
+
   it("Testing union", function () {
     const a1 = [1, 2, 4, 5, 10];
     const a2 = [1, 2, 4, 5, 10, 100, 1000];
