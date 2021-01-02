@@ -10,8 +10,8 @@
  * like typed arrays.
  *
  * Simple usage :
- *  // var FastBitSet = require("fastbitset");// if you use node
- *  var b = new FastBitSet();// initially empty
+ *  // const FastBitSet = require("fastbitset");// if you use node
+ *  const b = new FastBitSet();// initially empty
  *  b.add(1);// add the value "1"
  *  b.has(1); // check that the value is present! (will return true)
  *  b.add(2);
@@ -19,12 +19,13 @@
  *  b.add(10);
  *  b.array(); // would return [1,2,10]
  *
- *  var c = new FastBitSet([1,2,3,10]); // create bitset initialized with values 1,2,3,10
- *  c.difference(b); // from c, remove elements that are in b
+ *  let c = new FastBitSet([1,2,3,10]); // create bitset initialized with values 1,2,3,10
+ *  c.difference(b); // from c, remove elements that are in b (modifies c)
+ *  c.difference2(b); // from c, remove elements that are in b (modifies b)
  *  c.change(b); // c will contain elements that are in b or in c, but not both
- *  var su = c.union_size(b);// compute the size of the union (bitsets are unchanged)
+ *  const su = c.union_size(b);// compute the size of the union (bitsets are unchanged)
  *  c.union(b); // c will contain all elements that are in c and b
- *  var s1 = c.intersection_size(b);// compute the size of the intersection (bitsets are unchanged)
+ *  const s1 = c.intersection_size(b);// compute the size of the intersection (bitsets are unchanged)
  *  c.intersection(b); // c will only contain elements that are in both c and b
  *  c = b.clone(); // create a (deep) copy of b and assign it to c.
  *  c.equals(b); // check whether c and b are equal
@@ -43,19 +44,26 @@ function FastBitSet(iterable) {
 
   if (iterable) {
     if (Symbol && Symbol.iterator && iterable[Symbol.iterator] !== undefined) {
-      var iterator = iterable[Symbol.iterator]();
-      var current = iterator.next();
+      const iterator = iterable[Symbol.iterator]();
+      let current = iterator.next();
       while (!current.done) {
         this.add(current.value);
         current = iterator.next();
       }
     } else {
-      for (var i = 0; i < iterable.length; i++) {
+      for (let i = 0; i < iterable.length; i++) {
         this.add(iterable[i]);
       }
     }
   }
 }
+
+// Creates a bitmap from words
+FastBitSet.prototype.fromWords = function (words) {
+  const bitSet = Object.create(FastBitSet.prototype);
+  bitSet.words = words;
+  return bitSet;
+};
 
 // Add the value (Set the bit at index to true)
 FastBitSet.prototype.add = function (index) {
@@ -71,7 +79,7 @@ FastBitSet.prototype.flip = function (index) {
 
 // Remove all values, reset memory usage
 FastBitSet.prototype.clear = function () {
-  this.words = [];
+  this.words.length = 0;
 };
 
 // Set the bit at index to false
@@ -82,8 +90,8 @@ FastBitSet.prototype.remove = function (index) {
 
 // Return true if no bit is set
 FastBitSet.prototype.isEmpty = function (index) {
-  var c = this.words.length;
-  for (var i = 0; i < c; i++) {
+  const c = this.words.length;
+  for (let i = 0; i < c; i++) {
     if (this.words[i] !== 0) return false;
   }
   return true;
@@ -98,15 +106,15 @@ FastBitSet.prototype.has = function (index) {
 // value was added, return 0 if the value was already present
 FastBitSet.prototype.checkedAdd = function (index) {
   this.resize(index);
-  var word = this.words[index >>> 5];
-  var newword = word | (1 << index);
+  const word = this.words[index >>> 5];
+  const newword = word | (1 << index);
   this.words[index >>> 5] = newword;
   return (newword ^ word) >>> index;
 };
 
 // Reduce the memory usage to a minimum
 FastBitSet.prototype.trim = function (index) {
-  var nl = this.words.length;
+  let nl = this.words.length;
   while (nl > 0 && this.words[nl - 1] === 0) {
     nl--;
   }
@@ -115,8 +123,8 @@ FastBitSet.prototype.trim = function (index) {
 
 // Resize the bitset so that we can write a value at index
 FastBitSet.prototype.resize = function (index) {
-  var count = (index + 32) >>> 5; // just what is needed
-  for (var i = this.words.length; i < count; i++) this.words[i] = 0;
+  const count = (index + 32) >>> 5; // just what is needed
+  for (let i = this.words.length; i < count; i++) this.words[i] = 0;
 };
 
 // fast function to compute the Hamming weight of a 32-bit unsigned integer
@@ -147,11 +155,10 @@ FastBitSet.prototype.hammingWeight4 = function (v1, v2, v3, v4) {
 
 // How many values stored in the set? How many set bits?
 FastBitSet.prototype.size = function () {
-  var answer = 0;
-  var c = this.words.length;
-  var w = this.words;
-  var i = 0;
-  for (; i < c; i++) {
+  let answer = 0;
+  const c = this.words.length;
+  const w = this.words;
+  for (let i = 0; i < c; i++) {
     answer += this.hammingWeight(w[i]);
   }
   return answer;
@@ -159,13 +166,13 @@ FastBitSet.prototype.size = function () {
 
 // Return an array with the set bit locations (values)
 FastBitSet.prototype.array = function () {
-  var answer = new Array(this.size());
-  var pos = 0 | 0;
-  var c = this.words.length;
-  for (var k = 0; k < c; ++k) {
-    var w = this.words[k];
+  const answer = new Array(this.size());
+  let pos = 0 | 0;
+  const c = this.words.length;
+  for (let k = 0; k < c; ++k) {
+    let w = this.words[k];
     while (w != 0) {
-      var t = w & -w;
+      const t = w & -w;
       answer[pos++] = (k << 5) + this.hammingWeight((t - 1) | 0);
       w ^= t;
     }
@@ -175,11 +182,11 @@ FastBitSet.prototype.array = function () {
 
 // Return an array with the set bit locations (values)
 FastBitSet.prototype.forEach = function (fnc) {
-  var c = this.words.length;
-  for (var k = 0; k < c; ++k) {
-    var w = this.words[k];
+  const c = this.words.length;
+  for (let k = 0; k < c; ++k) {
+    let w = this.words[k];
     while (w != 0) {
-      var t = w & -w;
+      const t = w & -w;
       fnc((k << 5) + this.hammingWeight((t - 1) | 0));
       w ^= t;
     }
@@ -188,11 +195,11 @@ FastBitSet.prototype.forEach = function (fnc) {
 
 // Returns an iterator of set bit locations (values)
 FastBitSet.prototype[Symbol.iterator] = function* () {
-  var c = this.words.length;
-  for (var k = 0; k < c; ++k) {
-    var w = this.words[k];
+  const c = this.words.length;
+  for (let k = 0; k < c; ++k) {
+    let w = this.words[k];
     while (w != 0) {
-      var t = w & -w;
+      const t = w & -w;
       yield (k << 5) + this.hammingWeight((t - 1) | 0);
       w ^= t;
     }
@@ -201,7 +208,7 @@ FastBitSet.prototype[Symbol.iterator] = function* () {
 
 // Creates a copy of this bitmap
 FastBitSet.prototype.clone = function () {
-  var clone = Object.create(FastBitSet.prototype);
+  const clone = Object.create(FastBitSet.prototype);
   clone.words = this.words.slice();
   return clone;
 };
@@ -209,8 +216,8 @@ FastBitSet.prototype.clone = function () {
 // Check if this bitset intersects with another one,
 // no bitmap is modified
 FastBitSet.prototype.intersects = function (otherbitmap) {
-  var newcount = Math.min(this.words.length, otherbitmap.words.length);
-  for (var k = 0 | 0; k < newcount; ++k) {
+  const newcount = Math.min(this.words.length, otherbitmap.words.length);
+  for (let k = 0 | 0; k < newcount; ++k) {
     if ((this.words[k] & otherbitmap.words[k]) !== 0) return true;
   }
   return false;
@@ -219,8 +226,8 @@ FastBitSet.prototype.intersects = function (otherbitmap) {
 // Computes the intersection between this bitset and another one,
 // the current bitmap is modified  (and returned by the function)
 FastBitSet.prototype.intersection = function (otherbitmap) {
-  var newcount = Math.min(this.words.length, otherbitmap.words.length);
-  var k = 0 | 0;
+  const newcount = Math.min(this.words.length, otherbitmap.words.length);
+  let k = 0 | 0;
   for (; k + 7 < newcount; k += 8) {
     this.words[k] &= otherbitmap.words[k];
     this.words[k + 1] &= otherbitmap.words[k + 1];
@@ -234,8 +241,8 @@ FastBitSet.prototype.intersection = function (otherbitmap) {
   for (; k < newcount; ++k) {
     this.words[k] &= otherbitmap.words[k];
   }
-  var c = this.words.length;
-  for (var k = newcount; k < c; ++k) {
+  const c = this.words.length;
+  for (k = newcount; k < c; ++k) {
     this.words[k] = 0;
   }
   return this;
@@ -243,9 +250,9 @@ FastBitSet.prototype.intersection = function (otherbitmap) {
 
 // Computes the size of the intersection between this bitset and another one
 FastBitSet.prototype.intersection_size = function (otherbitmap) {
-  var newcount = Math.min(this.words.length, otherbitmap.words.length);
-  var answer = 0 | 0;
-  for (var k = 0 | 0; k < newcount; ++k) {
+  const newcount = Math.min(this.words.length, otherbitmap.words.length);
+  let answer = 0 | 0;
+  for (let k = 0 | 0; k < newcount; ++k) {
     answer += this.hammingWeight(this.words[k] & otherbitmap.words[k]);
   }
 
@@ -255,12 +262,11 @@ FastBitSet.prototype.intersection_size = function (otherbitmap) {
 // Computes the intersection between this bitset and another one,
 // a new bitmap is generated
 FastBitSet.prototype.new_intersection = function (otherbitmap) {
-  var answer = Object.create(FastBitSet.prototype);
-  var count = Math.min(this.words.length, otherbitmap.words.length);
+  const answer = Object.create(FastBitSet.prototype);
+  const count = Math.min(this.words.length, otherbitmap.words.length);
   answer.words = new Array(count);
-  var c = count;
-  var k = 0 | 0;
-  for (; k + 7 < c; k += 8) {
+  let k = 0 | 0;
+  for (; k + 7 < count; k += 8) {
     answer.words[k] = this.words[k] & otherbitmap.words[k];
     answer.words[k + 1] = this.words[k + 1] & otherbitmap.words[k + 1];
     answer.words[k + 2] = this.words[k + 2] & otherbitmap.words[k + 2];
@@ -270,7 +276,7 @@ FastBitSet.prototype.new_intersection = function (otherbitmap) {
     answer.words[k + 6] = this.words[k + 6] & otherbitmap.words[k + 6];
     answer.words[k + 7] = this.words[k + 7] & otherbitmap.words[k + 7];
   }
-  for (; k < c; ++k) {
+  for (; k < count; ++k) {
     answer.words[k] = this.words[k] & otherbitmap.words[k];
   }
   return answer;
@@ -279,18 +285,18 @@ FastBitSet.prototype.new_intersection = function (otherbitmap) {
 // Computes the intersection between this bitset and another one,
 // the current bitmap is modified
 FastBitSet.prototype.equals = function (otherbitmap) {
-  var mcount = Math.min(this.words.length, otherbitmap.words.length);
-  for (var k = 0 | 0; k < mcount; ++k) {
+  const mcount = Math.min(this.words.length, otherbitmap.words.length);
+  for (let k = 0 | 0; k < mcount; ++k) {
     if (this.words[k] != otherbitmap.words[k]) return false;
   }
   if (this.words.length < otherbitmap.words.length) {
-    var c = otherbitmap.words.length;
-    for (var k = this.words.length; k < c; ++k) {
+    const c = otherbitmap.words.length;
+    for (let k = this.words.length; k < c; ++k) {
       if (otherbitmap.words[k] != 0) return false;
     }
   } else if (otherbitmap.words.length < this.words.length) {
-    var c = this.words.length;
-    for (var k = otherbitmap.words.length; k < c; ++k) {
+    const c = this.words.length;
+    for (let k = otherbitmap.words.length; k < c; ++k) {
       if (this.words[k] != 0) return false;
     }
   }
@@ -299,9 +305,11 @@ FastBitSet.prototype.equals = function (otherbitmap) {
 
 // Computes the difference between this bitset and another one,
 // the current bitset is modified (and returned by the function)
+// (for this set A and other set B,
+//   this computes A = A - B  and returns A)
 FastBitSet.prototype.difference = function (otherbitmap) {
-  var newcount = Math.min(this.words.length, otherbitmap.words.length);
-  var k = 0 | 0;
+  const newcount = Math.min(this.words.length, otherbitmap.words.length);
+  let k = 0 | 0;
   for (; k + 7 < newcount; k += 8) {
     this.words[k] &= ~otherbitmap.words[k];
     this.words[k + 1] &= ~otherbitmap.words[k + 1];
@@ -319,6 +327,34 @@ FastBitSet.prototype.difference = function (otherbitmap) {
 };
 
 // Computes the difference between this bitset and another one,
+// the other bitset is modified (and returned by the function)
+// (for this set A and other set B,
+//   this computes B = A - B  and returns B)
+FastBitSet.prototype.difference2 = function (otherbitmap) {
+  const mincount = Math.min(this.words.length, otherbitmap.words.length);
+  let k = 0 | 0;
+  for (; k + 7 < mincount; k += 8) {
+    otherbitmap.words[k] = this.words[k] & ~otherbitmap.words[k];
+    otherbitmap.words[k + 1] = this.words[k + 1] & ~otherbitmap.words[k + 1];
+    otherbitmap.words[k + 2] = this.words[k + 2] & ~otherbitmap.words[k + 2];
+    otherbitmap.words[k + 3] = this.words[k + 3] & ~otherbitmap.words[k + 3];
+    otherbitmap.words[k + 4] = this.words[k + 4] & ~otherbitmap.words[k + 4];
+    otherbitmap.words[k + 5] = this.words[k + 5] & ~otherbitmap.words[k + 5];
+    otherbitmap.words[k + 6] = this.words[k + 6] & ~otherbitmap.words[k + 6];
+    otherbitmap.words[k + 7] = this.words[k + 7] & ~otherbitmap.words[k + 7];
+  }
+  for (; k < mincount; ++k) {
+    otherbitmap.words[k] = this.words[k] & ~otherbitmap.words[k];
+  }
+  // remaining words are all part of difference
+  for (k = this.words.length - 1; k >= mincount; --k) {
+    otherbitmap.words[k] = this.words[k];
+  }
+  otherbitmap.words = otherbitmap.words.slice(0, this.words.length);
+  return otherbitmap;
+};
+
+// Computes the difference between this bitset and another one,
 // a new bitmap is generated
 FastBitSet.prototype.new_difference = function (otherbitmap) {
   return this.clone().difference(otherbitmap); // should be fast enough
@@ -326,13 +362,13 @@ FastBitSet.prototype.new_difference = function (otherbitmap) {
 
 // Computes the size of the difference between this bitset and another one
 FastBitSet.prototype.difference_size = function (otherbitmap) {
-  var newcount = Math.min(this.words.length, otherbitmap.words.length);
-  var answer = 0 | 0;
-  var k = 0 | 0;
+  const newcount = Math.min(this.words.length, otherbitmap.words.length);
+  let answer = 0 | 0;
+  let k = 0 | 0;
   for (; k < newcount; ++k) {
     answer += this.hammingWeight(this.words[k] & ~otherbitmap.words[k]);
   }
-  var c = this.words.length;
+  const c = this.words.length;
   for (; k < c; ++k) {
     answer += this.hammingWeight(this.words[k]);
   }
@@ -342,8 +378,8 @@ FastBitSet.prototype.difference_size = function (otherbitmap) {
 // Computes the changed elements (XOR) between this bitset and another one,
 // the current bitset is modified (and returned by the function)
 FastBitSet.prototype.change = function (otherbitmap) {
-  var mincount = Math.min(this.words.length, otherbitmap.words.length);
-  var k = 0 | 0;
+  const mincount = Math.min(this.words.length, otherbitmap.words.length);
+  let k = 0 | 0;
   for (; k + 7 < mincount; k += 8) {
     this.words[k] ^= otherbitmap.words[k];
     this.words[k + 1] ^= otherbitmap.words[k + 1];
@@ -358,12 +394,8 @@ FastBitSet.prototype.change = function (otherbitmap) {
     this.words[k] ^= otherbitmap.words[k];
   }
   // remaining words are all part of change
-  if (otherbitmap.words.length > this.words.length) {
-    // this.words = this.words.concat(otherbitmap.words.slice(k));
-    var maxcount = otherbitmap.words.length;
-    for (; k < maxcount; ++k) {
-      this.words[k] = otherbitmap.words[k];
-    }
+  for (k = otherbitmap.words.length - 1; k >= mincount; --k) {
+    this.words[k] = otherbitmap.words[k];
   }
   return this;
 };
@@ -371,24 +403,47 @@ FastBitSet.prototype.change = function (otherbitmap) {
 // Computes the change between this bitset and another one,
 // a new bitmap is generated
 FastBitSet.prototype.new_change = function (otherbitmap) {
-  if (otherbitmap.words.length > this.words.length) {
-    return this.clone().change(otherbitmap);
-  } else {
-    return otherbitmap.clone().change(this);
+  const answer = Object.create(FastBitSet.prototype);
+  const count = Math.max(this.words.length, otherbitmap.words.length);
+  answer.words = new Array(count);
+  const mcount = Math.min(this.words.length, otherbitmap.words.length);
+  let k = 0;
+  for (; k + 7 < mcount; k += 8) {
+    answer.words[k] = this.words[k] ^ otherbitmap.words[k];
+    answer.words[k + 1] = this.words[k + 1] ^ otherbitmap.words[k + 1];
+    answer.words[k + 2] = this.words[k + 2] ^ otherbitmap.words[k + 2];
+    answer.words[k + 3] = this.words[k + 3] ^ otherbitmap.words[k + 3];
+    answer.words[k + 4] = this.words[k + 4] ^ otherbitmap.words[k + 4];
+    answer.words[k + 5] = this.words[k + 5] ^ otherbitmap.words[k + 5];
+    answer.words[k + 6] = this.words[k + 6] ^ otherbitmap.words[k + 6];
+    answer.words[k + 7] = this.words[k + 7] ^ otherbitmap.words[k + 7];
   }
+  for (; k < mcount; ++k) {
+    answer.words[k] = this.words[k] ^ otherbitmap.words[k];
+  }
+
+  const c = this.words.length;
+  for (k = mcount; k < c; ++k) {
+    answer.words[k] = this.words[k];
+  }
+  const c2 = otherbitmap.words.length;
+  for (k = mcount; k < c2; ++k) {
+    answer.words[k] = otherbitmap.words[k];
+  }
+  return answer;
 };
 
 // Computes the number of changed elements between this bitset and another one
 FastBitSet.prototype.change_size = function (otherbitmap) {
-  var mincount = Math.min(this.words.length, otherbitmap.words.length);
-  var answer = 0 | 0;
-  var k = 0 | 0;
+  const mincount = Math.min(this.words.length, otherbitmap.words.length);
+  let answer = 0 | 0;
+  let k = 0 | 0;
   for (; k < mincount; ++k) {
     answer += this.hammingWeight(this.words[k] ^ otherbitmap.words[k]);
   }
-  var longer =
+  const longer =
     this.words.length > otherbitmap.words.length ? this : otherbitmap;
-  var c = longer.words.length;
+  const c = longer.words.length;
   for (; k < c; ++k) {
     answer += this.hammingWeight(longer.words[k]);
   }
@@ -403,8 +458,8 @@ FastBitSet.prototype.toString = function () {
 // Computes the union between this bitset and another one,
 // the current bitset is modified  (and returned by the function)
 FastBitSet.prototype.union = function (otherbitmap) {
-  var mcount = Math.min(this.words.length, otherbitmap.words.length);
-  var k = 0 | 0;
+  const mcount = Math.min(this.words.length, otherbitmap.words.length);
+  let k = 0 | 0;
   for (; k + 7 < mcount; k += 8) {
     this.words[k] |= otherbitmap.words[k];
     this.words[k + 1] |= otherbitmap.words[k + 1];
@@ -420,8 +475,8 @@ FastBitSet.prototype.union = function (otherbitmap) {
   }
   if (this.words.length < otherbitmap.words.length) {
     this.resize((otherbitmap.words.length << 5) - 1);
-    var c = otherbitmap.words.length;
-    for (var k = mcount; k < c; ++k) {
+    const c = otherbitmap.words.length;
+    for (let k = mcount; k < c; ++k) {
       this.words[k] = otherbitmap.words[k];
     }
   }
@@ -429,11 +484,11 @@ FastBitSet.prototype.union = function (otherbitmap) {
 };
 
 FastBitSet.prototype.new_union = function (otherbitmap) {
-  var answer = Object.create(FastBitSet.prototype);
-  var count = Math.max(this.words.length, otherbitmap.words.length);
+  const answer = Object.create(FastBitSet.prototype);
+  const count = Math.max(this.words.length, otherbitmap.words.length);
   answer.words = new Array(count);
-  var mcount = Math.min(this.words.length, otherbitmap.words.length);
-  var k = 0;
+  const mcount = Math.min(this.words.length, otherbitmap.words.length);
+  let k = 0;
   for (; k + 7 < mcount; k += 8) {
     answer.words[k] = this.words[k] | otherbitmap.words[k];
     answer.words[k + 1] = this.words[k + 1] | otherbitmap.words[k + 1];
@@ -447,12 +502,12 @@ FastBitSet.prototype.new_union = function (otherbitmap) {
   for (; k < mcount; ++k) {
     answer.words[k] = this.words[k] | otherbitmap.words[k];
   }
-  var c = this.words.length;
-  for (var k = mcount; k < c; ++k) {
+  const c = this.words.length;
+  for (k = mcount; k < c; ++k) {
     answer.words[k] = this.words[k];
   }
-  var c2 = otherbitmap.words.length;
-  for (var k = mcount; k < c2; ++k) {
+  const c2 = otherbitmap.words.length;
+  for (k = mcount; k < c2; ++k) {
     answer.words[k] = otherbitmap.words[k];
   }
   return answer;
@@ -460,19 +515,19 @@ FastBitSet.prototype.new_union = function (otherbitmap) {
 
 // Computes the size union between this bitset and another one
 FastBitSet.prototype.union_size = function (otherbitmap) {
-  var mcount = Math.min(this.words.length, otherbitmap.words.length);
-  var answer = 0 | 0;
-  for (var k = 0 | 0; k < mcount; ++k) {
+  const mcount = Math.min(this.words.length, otherbitmap.words.length);
+  let answer = 0 | 0;
+  for (let k = 0 | 0; k < mcount; ++k) {
     answer += this.hammingWeight(this.words[k] | otherbitmap.words[k]);
   }
   if (this.words.length < otherbitmap.words.length) {
-    var c = otherbitmap.words.length;
-    for (var k = this.words.length; k < c; ++k) {
+    const c = otherbitmap.words.length;
+    for (let k = this.words.length; k < c; ++k) {
       answer += this.hammingWeight(otherbitmap.words[k] | 0);
     }
   } else {
-    var c = this.words.length;
-    for (var k = otherbitmap.words.length; k < c; ++k) {
+    const c = this.words.length;
+    for (let k = otherbitmap.words.length; k < c; ++k) {
       answer += this.hammingWeight(this.words[k] | 0);
     }
   }

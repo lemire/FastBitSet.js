@@ -13,7 +13,8 @@
   },
   "main": "FastBitSet.js",
   "scripts": {
-    "test": "mocha unit/basictests.js"
+    "test": "mocha unit/basictests.js",
+    "benchmark": "nodejs benchmark/test.js"
   },
   "license": "Apache-2.0",
   "bugs": {
@@ -26,8 +27,10 @@
   },
   "devDependencies": {
     "benchmark": "~1.0.0",
+    "bitset": "^5.1.1",
     "bitset.js": "^5.0.0",
     "fast-bitset": "^1.3.2",
+    "microtime": "^3.0.0",
     "mocha": "^8.2.1",
     "roaring": "^1.0.6",
     "typedfastbitset": "0.0.1"
