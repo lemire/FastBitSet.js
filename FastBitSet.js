@@ -389,12 +389,8 @@ FastBitSet.prototype.change = function (otherbitmap) {
     this.words[k] ^= otherbitmap.words[k];
   }
   // remaining words are all part of change
-  if (otherbitmap.words.length > this.words.length) {
-    // this.words = this.words.concat(otherbitmap.words.slice(k));
-    const maxcount = otherbitmap.words.length;
-    for (; k < maxcount; ++k) {
-      this.words[k] = otherbitmap.words[k];
-    }
+  for (k = otherbitmap.words.length - 1; k >= mincount; --k) {
+    this.words[k] = otherbitmap.words[k];
   }
   return this;
 };
@@ -402,11 +398,34 @@ FastBitSet.prototype.change = function (otherbitmap) {
 // Computes the change between this bitset and another one,
 // a new bitmap is generated
 FastBitSet.prototype.new_change = function (otherbitmap) {
-  if (otherbitmap.words.length > this.words.length) {
-    return this.clone().change(otherbitmap);
-  } else {
-    return otherbitmap.clone().change(this);
+  const answer = Object.create(FastBitSet.prototype);
+  const count = Math.max(this.words.length, otherbitmap.words.length);
+  answer.words = new Array(count);
+  const mcount = Math.min(this.words.length, otherbitmap.words.length);
+  let k = 0;
+  for (; k + 7 < mcount; k += 8) {
+    answer.words[k] = this.words[k] ^ otherbitmap.words[k];
+    answer.words[k + 1] = this.words[k + 1] ^ otherbitmap.words[k + 1];
+    answer.words[k + 2] = this.words[k + 2] ^ otherbitmap.words[k + 2];
+    answer.words[k + 3] = this.words[k + 3] ^ otherbitmap.words[k + 3];
+    answer.words[k + 4] = this.words[k + 4] ^ otherbitmap.words[k + 4];
+    answer.words[k + 5] = this.words[k + 5] ^ otherbitmap.words[k + 5];
+    answer.words[k + 6] = this.words[k + 6] ^ otherbitmap.words[k + 6];
+    answer.words[k + 7] = this.words[k + 7] ^ otherbitmap.words[k + 7];
   }
+  for (; k < mcount; ++k) {
+    answer.words[k] = this.words[k] ^ otherbitmap.words[k];
+  }
+
+  const c = this.words.length;
+  for (k = mcount; k < c; ++k) {
+    answer.words[k] = this.words[k];
+  }
+  const c2 = otherbitmap.words.length;
+  for (k = mcount; k < c2; ++k) {
+    answer.words[k] = otherbitmap.words[k];
+  }
+  return answer;
 };
 
 // Computes the number of changed elements between this bitset and another one
