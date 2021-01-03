@@ -59,7 +59,7 @@ function FastBitSet(iterable) {
 }
 
 // Creates a bitmap from words
-FastBitSet.prototype.fromWords = function (words) {
+FastBitSet.fromWords = function (words) {
   const bitSet = Object.create(FastBitSet.prototype);
   bitSet.words = words;
   return bitSet;
