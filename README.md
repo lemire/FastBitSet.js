@@ -22,25 +22,25 @@ Usage
 ===
 
 ```javascript
-var b = new FastBitSet();// initially empty
+const b = new FastBitSet();// initially empty
 b.add(1);// add the value "1"
 b.has(1); // check that the value is present! (will return true)
 b.add(2);
 console.log(""+b);// should display {1,2}
 b.add(10);
 b.array(); // would return [1,2,10]
-var c = new FastBitSet([1,2,3,10]); // create bitset initialized with values 1,2,3,10
+let c = new FastBitSet([1,2,3,10]); // create bitset initialized with values 1,2,3,10
 c.difference(b); // from c, remove elements that are in b (modifies c)
 c.difference2(b) // from c, remove elements that are in b (modifies b)
 c.change(b); // c will contain all elements that are in b or in c, but not both (elements that changed)
-var su = c.union_size(b);// compute the size of the union (bitsets are unchanged)
+const su = c.union_size(b);// compute the size of the union (bitsets are unchanged)
 c.union(b); // c will contain all elements that are in c and b
-var out1 = c.new_union(b); // creates a new bitmap that contains everything in c and b
-var out2 = c.new_intersection(b); // creates a new bitmap that contains everything that is in both c and b
-var out3 = c.new_change(b); // creates a new bitmap that contains everything in b or in c, but not both
-var s1 = c.intersection_size(b);// compute the size of the intersection (bitsets are unchanged)
-var s2 = c.difference_size(b);// compute the size of the difference (bitsets are unchanged)
-var s3 = c.change_size(b); // compute the number of elements that are in b but not c, or vice versa
+const out1 = c.new_union(b); // creates a new bitmap that contains everything in c and b
+const out2 = c.new_intersection(b); // creates a new bitmap that contains everything that is in both c and b
+const out3 = c.new_change(b); // creates a new bitmap that contains everything in b or in c, but not both
+const s1 = c.intersection_size(b);// compute the size of the intersection (bitsets are unchanged)
+const s2 = c.difference_size(b);// compute the size of the difference (bitsets are unchanged)
+const s3 = c.change_size(b); // compute the number of elements that are in b but not c, or vice versa
 c.intersects(b); // return true if c intersects with b
 c.intersection(b); // c will only contain elements that are in both c and b
 c = b.clone(); // create a (deep) copy of b and assign it to c.

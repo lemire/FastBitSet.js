@@ -59,7 +59,7 @@ function FastBitSet(iterable) {
 }
 
 // Creates a bitmap from words
-FastBitSet.prototype.fromWords = function (words) {
+FastBitSet.fromWords = function (words) {
   const bitSet = Object.create(FastBitSet.prototype);
   bitSet.words = words;
   return bitSet;
@@ -118,7 +118,7 @@ FastBitSet.prototype.trim = function (index) {
   while (nl > 0 && this.words[nl - 1] === 0) {
     nl--;
   }
-  this.words = this.words.slice(0, nl);
+  this.words.length = nl;
 };
 
 // Resize the bitset so that we can write a value at index
@@ -327,6 +327,12 @@ FastBitSet.prototype.difference = function (otherbitmap) {
 };
 
 // Computes the difference between this bitset and another one,
+// a new bitmap is generated
+FastBitSet.prototype.new_difference = function (otherbitmap) {
+  return this.clone().difference(otherbitmap); // should be fast enough
+};
+
+// Computes the difference between this bitset and another one,
 // the other bitset is modified (and returned by the function)
 // (for this set A and other set B,
 //   this computes B = A - B  and returns B)
@@ -350,14 +356,8 @@ FastBitSet.prototype.difference2 = function (otherbitmap) {
   for (k = this.words.length - 1; k >= mincount; --k) {
     otherbitmap.words[k] = this.words[k];
   }
-  otherbitmap.words = otherbitmap.words.slice(0, this.words.length);
+  otherbitmap.words.length = this.words.length;
   return otherbitmap;
-};
-
-// Computes the difference between this bitset and another one,
-// a new bitmap is generated
-FastBitSet.prototype.new_difference = function (otherbitmap) {
-  return this.clone().difference(otherbitmap); // should be fast enough
 };
 
 // Computes the size of the difference between this bitset and another one
