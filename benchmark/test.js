@@ -880,6 +880,7 @@ function AndNotInplaceBench() {
   const b1 = new FastBitSet();
   const bb1 = new FastBitSet();
   const tb1 = new TypedFastBitSet();
+  const tbb1 = new TypedFastBitSet();
   let bs1 = new BitSet();
   const bt1 = new tBitSet();
   const r1 = new roaring.RoaringBitmap32();
@@ -888,6 +889,7 @@ function AndNotInplaceBench() {
   const b2 = new FastBitSet();
   const bb2 = new FastBitSet();
   const tb2 = new TypedFastBitSet();
+  const tbb2 = new TypedFastBitSet();
   let bs2 = new BitSet();
   const bt2 = new tBitSet();
   const fb2 = new fBitSet(largegap * N + 5);
@@ -931,10 +933,13 @@ function AndNotInplaceBench() {
       return b1.difference(b2);
     })
     .add("FastBitSet (inplace2)", function () {
-      return bb1.difference(bb2);
+      return bb1.difference2(bb2);
     })
     .add("TypedFastBitSet (inplace)", function () {
       return tb1.difference(tb2);
+    })
+    .add("TypedFastBitSet (inplace2)", function () {
+      return tbb1.difference2(tbb2);
     })
     .add("infusion.BitSet.js (inplace)", function () {
       return bs1.andNot(bs2);
@@ -1129,9 +1134,9 @@ function XORInplaceBench() {
     .add("FastBitSet (inplace)", function () {
       return b1.change(b2);
     })
-    // .add("TypedFastBitSet (inplace)", function () {
-    // return tb1.intersection(tb2);
-    // })
+    .add("TypedFastBitSet (inplace)", function () {
+      return tb1.change(tb2);
+    })
     .add("infusion.BitSet.js (inplace)", function () {
       return bs1.xor(bs2);
     })
@@ -1200,9 +1205,9 @@ function XORBench() {
     .add("FastBitSet (creates new bitset)", function () {
       return b1.new_change(b2);
     })
-    // .add("TypedFastBitSet (creates new bitset)", function () {
-    // return tb1.new_union(tb2);
-    // })
+    .add("TypedFastBitSet (creates new bitset)", function () {
+      return tb1.new_change(tb2);
+    })
     .add("mattkrick.fast-bitset (creates new bitset)", function () {
       return fb1.xor(fb2);
     })
