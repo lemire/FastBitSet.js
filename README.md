@@ -1,5 +1,4 @@
 # FastBitSet.js : a speed-optimized BitSet implementation
-[![Build Status](https://travis-ci.org/lemire/FastBitSet.js.png)](https://travis-ci.org/lemire/FastBitSet.js)
 
 
 A BitSet  (also called Bitmap or bit vector) is an ideal data structure to implement a
