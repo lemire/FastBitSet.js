@@ -31,8 +31,8 @@
     "bitset.js": "^5.0.0",
     "fast-bitset": "^1.3.2",
     "microtime": "^3.0.0",
-    "mocha": "^8.2.1",
-    "roaring": "^1.0.6",
+    "mocha": "^10.2.0",
+    "roaring": "^2.0.1",
     "typedfastbitset": "0.0.1"
   },
   "author": "Daniel Lemire <lemire@gmail.com> (http://lemire.me/en/)"

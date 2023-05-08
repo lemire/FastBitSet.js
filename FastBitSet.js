@@ -194,16 +194,33 @@ FastBitSet.prototype.forEach = function (fnc) {
 };
 
 // Returns an iterator of set bit locations (values)
-FastBitSet.prototype[Symbol.iterator] = function* () {
+FastBitSet.prototype[Symbol.iterator] = function () {
   const c = this.words.length;
-  for (let k = 0; k < c; ++k) {
-    let w = this.words[k];
-    while (w != 0) {
-      const t = w & -w;
-      yield (k << 5) + this.hammingWeight((t - 1) | 0);
-      w ^= t;
-    }
-  }
+  let k = 0;
+  let w = this.words[k];
+  let hw = this.hammingWeight
+  let words = this.words
+  return {
+    [Symbol.iterator]() {
+      return this;
+    },
+    next() {
+      while (k < c) {
+        if (w !== 0) {
+          const t = w & -w;
+          const value = (k << 5) + hw((t - 1) | 0);
+          w ^= t;
+          return { done: false, value };
+        } else {
+          k++;
+          if (k < c) {
+            w = words[k];
+          }
+        }
+      }
+      return { done: true, value: undefined };
+    },
+  };
 };
 
 // Creates a copy of this bitmap
