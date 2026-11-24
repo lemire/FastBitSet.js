@@ -321,7 +321,7 @@ FastBitSet.prototype.new_intersection = function (otherbitmap) {
 FastBitSet.prototype.equals = function (otherbitmap) {
   const mcount = Math.min(this.words.length, otherbitmap.words.length);
   for (let k = 0 | 0; k < mcount; ++k) {
-    if (this.words[k] != otherbitmap.words[k]) return false;
+    if ((this.words[k] ^ otherbitmap.words[k]) !== 0) return false;
   }
   if (this.words.length < otherbitmap.words.length) {
     const c = otherbitmap.words.length;

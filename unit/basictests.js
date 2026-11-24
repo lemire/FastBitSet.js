@@ -2,6 +2,8 @@
 
 "use strict";
 
+const assert = require("assert");
+
 describe("BitSet", function () {
   const FastBitSet = require("../FastBitSet.js");
 
@@ -86,6 +88,26 @@ describe("BitSet", function () {
     if (!arraysEquals(a, ai)) throw "bad values";
     if (!mb.equals(mb2)) throw "bad clone";
   });
+
+  for (const [name, words, values] of [
+    ["the high bit", [0x80000000], [31]],
+    ["a full word", [0xffffffff], Array.from({ length: 32 }, (_, i) => i)],
+    ["trailing zero words", [1, 0x80000000, 0], [0, 63]],
+  ]) {
+    it("Testing signed/unsigned equality with " + name, function () {
+      const unsigned = FastBitSet.fromWords(words.slice());
+      const signed = new FastBitSet(values);
+
+      assert.deepStrictEqual(unsigned.array(), values);
+      assert.strictEqual(unsigned.equals(signed), true);
+      assert.strictEqual(signed.equals(unsigned), true);
+      assert.deepStrictEqual(unsigned.words, words);
+
+      signed.flip(0);
+      assert.strictEqual(unsigned.equals(signed), false);
+      assert.strictEqual(signed.equals(unsigned), false);
+    });
+  }
 
   it("Testing trim", function () {
     const ai = [1, 2, 4, 5, 10, 31, 32, 63, 64, 127, 2030];
