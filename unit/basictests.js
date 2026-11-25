@@ -87,6 +87,27 @@ describe("BitSet", function () {
     if (!mb.equals(mb2)) throw "bad clone";
   });
 
+  it("Testing fromWords with unsigned words", function () {
+    const a = FastBitSet.fromWords([1, 0x80000000, 0]);
+    const b = new FastBitSet([0, 63]);
+    if (!arraysEquals(a.array(), [0, 63])) throw "bad values";
+    if (!a.equals(b) || !b.equals(a)) throw "bad equals";
+    if (!FastBitSet.fromWords([0xffffffff]).equals(FastBitSet.fromWords([-1])))
+      throw "bad equals";
+  });
+
+  it("Testing fromWords with a typed array", function () {
+    const a = FastBitSet.fromWords(new Uint32Array([1, 0x80000000]));
+    if (!a.equals(new FastBitSet([0, 63]))) throw "bad equals";
+    a.add(100);
+    if (!a.has(100)) throw "cannot grow";
+  });
+
+  it("Testing fromWords does not copy signed words", function () {
+    const words = [1, -2147483648];
+    if (FastBitSet.fromWords(words).words !== words) throw "unexpected copy";
+  });
+
   it("Testing trim", function () {
     const ai = [1, 2, 4, 5, 10, 31, 32, 63, 64, 127, 2030];
     const mb = new FastBitSet(ai);

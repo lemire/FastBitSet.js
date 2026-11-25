@@ -72,7 +72,7 @@ API
 
 ## Static Methods
 
-- `FastBitSet.fromWords(words)` - Creates a FastBitSet from an array of 32-bit words.
+- `FastBitSet.fromWords(words)` - Creates a FastBitSet from an array (or typed array) of 32-bit words. Signed and unsigned words are both accepted. An ordinary array of signed 32-bit integers may be used directly without a copy, so do not modify it afterwards.
 
 ## Instance Methods
 
