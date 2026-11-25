@@ -64,9 +64,21 @@ function FastBitSet(iterable) {
   }
 }
 
-// Creates a bitmap from words
+// Creates a bitmap from words.
+// The words are stored as signed 32-bit integers, which keeps the array in
+// V8's fast small-integer representation and lets equals() compare words
+// directly. A plain array that already holds such values is used as is (not
+// copied); anything else (unsigned values, typed arrays...) is copied.
 FastBitSet.fromWords = function (words) {
   const bitSet = Object.create(FastBitSet.prototype);
+  const count = words.length;
+  let ok = Array.isArray(words);
+  for (let i = 0; ok && i < count; i++) ok = (words[i] | 0) === words[i];
+  if (!ok) {
+    const copy = new Array(count);
+    for (let i = 0; i < count; i++) copy[i] = words[i] | 0;
+    words = copy;
+  }
   bitSet.words = words;
   return bitSet;
 };
